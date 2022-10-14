@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.construction_worker_forum_back.entity</OriginalElement>
+  <nodes>
+    <node x="51.70063013919156" y="688.0810000000001">com.construction_worker_forum_back.entity.AccountStatus</node>
+    <node x="-217.83673906858124" y="389.43262889838604">com.construction_worker_forum_back.entity.Post</node>
+    <node x="255.78940519737336" y="155.3926818657502">com.construction_worker_forum_back.entity.Comment</node>
+    <node x="318.1019948440752" y="600.081465311019">com.construction_worker_forum_back.entity.User</node>
+    <node x="308.07530694291773" y="402.5777489580983">com.construction_worker_forum_back.entity.Role</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.construction_worker_forum_back.entity.Comment" target="com.construction_worker_forum_back.entity.User" relationship="TO_ONE">
+      <point x="-147.00040519737337" y="3.181342497668993E-4" />
+      <point x="171.0" y="259.893" />
+      <point x="171.0" y="665.5" />
+      <point x="-109.49999484407522" y="-83.08146531101897" />
+    </edge>
+    <edge source="com.construction_worker_forum_back.entity.Post" target="com.construction_worker_forum_back.entity.Comment" relationship="TO_MANY">
+      <point x="164.49973906858122" y="88.56737110161396" />
+      <point x="156.0" y="582.5" />
+      <point x="156.0" y="563.0" />
+      <point x="290.575" y="563.0" />
+      <point x="-112.21440519737337" y="104.50031813424977" />
+    </edge>
+    <edge source="com.construction_worker_forum_back.entity.User" target="com.construction_worker_forum_back.entity.Comment" relationship="TO_MANY">
+      <point x="5.155924782229704E-6" y="-148.50046531101896" />
+      <point x="427.602" y="563.0" />
+      <point x="290.575" y="563.0" />
+      <point x="-112.21440519737337" y="104.50031813424977" />
+    </edge>
+    <edge source="com.construction_worker_forum_back.entity.User" target="com.construction_worker_forum_back.entity.AccountStatus" relationship="TO_ONE">
+      <point x="-109.5" y="-4.6531101884284E-4" />
+      <point x="74.5" y="0.0" />
+    </edge>
+    <edge source="com.construction_worker_forum_back.entity.Comment" target="com.construction_worker_forum_back.entity.Post" relationship="TO_ONE">
+      <point x="-147.0" y="-14.999681865750233" />
+      <point x="-53.33673906858124" y="244.89299999999997" />
+      <point x="0.0" y="-104.5" />
+    </edge>
+    <edge source="com.construction_worker_forum_back.entity.Post" target="com.construction_worker_forum_back.entity.User" relationship="TO_ONE">
+      <point x="164.49973906858122" y="3.7110161395048635E-4" />
+      <point x="171.0" y="493.933" />
+      <point x="171.0" y="665.5" />
+      <point x="-109.49999484407522" y="-83.08146531101897" />
+    </edge>
+    <edge source="com.construction_worker_forum_back.entity.User" target="com.construction_worker_forum_back.entity.Role" relationship="TO_ONE">
+      <point x="15.000005155924782" y="-148.5" />
+      <point x="63.52669305708224" y="60.99999999999994" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.8768020969855832" showDependencies="true" x="175.99999999999994" y="536.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
