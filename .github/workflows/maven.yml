@@ -17,6 +17,8 @@ jobs:
     env:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: forum_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
 
     steps:
     - name: Set up MySQL
