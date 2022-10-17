@@ -1,0 +1,43 @@
+version: '3.3'
+
+services:
+
+  db:
+    image: mysql:8
+    container_name: construction_worker_forum_mysql_db
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: forum_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+
+  app:
+    image: construction_worker_forum
+    container_name: construction_worker_forum_app
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/forum_db?createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: secret
+    networks:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  backend:
