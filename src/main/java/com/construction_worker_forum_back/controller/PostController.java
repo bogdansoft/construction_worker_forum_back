@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
-import com.construction_worker_forum_back.entity.Post;
-import com.construction_worker_forum_back.entity.PostDTO;
+import com.construction_worker_forum_back.model.entity.Post;
+import com.construction_worker_forum_back.model.DTOs.PostDTO;
 import com.construction_worker_forum_back.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;

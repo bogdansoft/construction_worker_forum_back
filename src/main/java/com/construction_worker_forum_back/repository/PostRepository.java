@@ -1,6 +1,6 @@
 package com.construction_worker_forum_back.repository;
 
-import com.construction_worker_forum_back.entity.Post;
+import com.construction_worker_forum_back.model.entity.Post;
 import org.springframework.data.repository.CrudRepository;
 
 public interface PostRepository extends CrudRepository<Post, Long> {

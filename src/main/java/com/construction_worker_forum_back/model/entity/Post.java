@@ -1,7 +1,5 @@
-package com.construction_worker_forum_back.entity;
+package com.construction_worker_forum_back.model.entity;
 
-import com.construction_worker_forum_back.entity.Comment;
-import com.construction_worker_forum_back.entity.User;
 import lombok.*;
 import org.springframework.data.annotation.*;
 
