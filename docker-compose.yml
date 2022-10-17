@@ -9,12 +9,10 @@ services:
       - db_data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: forum_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: secret
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       - backend
 
@@ -31,8 +29,8 @@ services:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/forum_db?createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
     networks:
       - backend
 
