@@ -17,22 +17,22 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/posts")
-    public List<Post> getAllPosts(){
+    public List<Post> getAllPosts() {
         return postService.getAllPosts();
     }
 
     @PostMapping("/post/add")
-    public Post createPost(@RequestBody PostDTO post){
+    public Post createPost(@RequestBody PostDTO post) {
         return postService.createPost(post);
     }
 
     @DeleteMapping("/post/{id}")
-    public String deletePostById(@PathVariable("id") Long id){
+    public String deletePostById(@PathVariable("id") Long id) {
         return postService.deletePostById(id);
     }
 
     @PostMapping("/post/{id}")
-    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostDTO post){
+    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostDTO post) {
         return postService.updatePostById(id, post);
     }
 }

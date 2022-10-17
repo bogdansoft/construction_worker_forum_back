@@ -8,10 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 @AllArgsConstructor
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 public class PostService {
 
     private PostRepository postRepository;
+
     public List<Post> getAllPosts() {
         List<Post> allPosts = new ArrayList<>();
         postRepository.findAll().forEach(allPosts::add);
@@ -27,28 +27,27 @@ public class PostService {
 
     public Post createPost(PostDTO post) {
         Post postToSave = new Post();
-        postToSave.setCreatedAt(Date.valueOf(LocalDate.now()));
+        postToSave.setCreatedAt(Date.from(Instant.now()));
         postToSave.setContent(post.getContent());
         postToSave.setTitle(post.getTitle());
         return postRepository.save(postToSave);
     }
 
     public String deletePostById(Long id) {
-        if(postRepository.existsById(id)){
+        if (postRepository.existsById(id)) {
             postRepository.deleteById(id);
             return "SUCCESS";
-        }
-        else {
-            return "No such id found";
+        } else {
+            return "FAIL";
         }
     }
 
     public Post updatePostById(Long id, PostDTO post) {
-        if(postRepository.findById(id).isPresent()) {
+        if (postRepository.findById(id).isPresent()) {
             Post postPrev = postRepository.findById(id).get();
             postPrev.setTitle(post.getTitle());
             postPrev.setContent(post.getContent());
-            postPrev.setUpdatedAt(Date.valueOf(LocalDate.now()));
+            postPrev.setUpdatedAt(Date.from(Instant.now()));
             postRepository.save(postPrev);
         }
         log.warn("No such post found when updating by id");
