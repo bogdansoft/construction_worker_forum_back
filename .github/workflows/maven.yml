@@ -17,7 +17,7 @@ jobs:
     env:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: forum_db
-      MYSQL_USER: user
+      MYSQL_USER: root
       MYSQL_PASSWORD: secret
 
     steps:
