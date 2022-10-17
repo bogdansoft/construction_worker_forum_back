@@ -13,6 +13,18 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    services:
+      # How to use MySQL
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: forum_db
+          MYSQL_USER: user
+          MYSQL_PASSWORD: secret
+        ports:
+        - 3307
 
     steps:
     - uses: actions/checkout@v3
