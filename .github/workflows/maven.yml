@@ -34,5 +34,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - uses: shogo82148/actions-setup-mysql@v1
+      with:
+        mysql-version: '8.0'
+    - run: mysql -uroot -h127.0.0.1 -e 'SELECT version()'
     - name: Build with Maven
       run: mvn -B package --file pom.xml
