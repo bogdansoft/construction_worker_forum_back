@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.DTOs.UserRequest;
 import com.construction_worker_forum_back.model.entity.AccountStatus;
+import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Role;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.UserRepository;
@@ -12,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,12 +35,19 @@ public class UserService {
         }
         user.setAccountStatus(AccountStatus.CREATED);
         user.setUserRoles(Role.USER);
+        user.setCreatedAt(Date.from(Instant.now()));
 
         return Optional.of(userRepository.save(user));
     }
 
     public Optional<User> getUser(Long id) {
         return userRepository.findById(id);
+    }
+
+    public List<User> getAllUsers() {
+        List<User> allComments = new ArrayList<>();
+        userRepository.findAll().forEach(allComments::add);
+        return allComments;
     }
 
     @Transactional
@@ -53,6 +65,7 @@ public class UserService {
         user.setUsername(userRequest.getUsername());
         user.setPassword(userRequest.getPassword());
         user.setEmail(userRequest.getEmail());
+        user.setUpdatedAt(Date.from(Instant.now()));
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
 
