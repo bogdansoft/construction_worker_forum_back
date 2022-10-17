@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.entity;
 
+import com.construction_worker_forum_back.entity.Comment;
+import com.construction_worker_forum_back.entity.User;
 import lombok.*;
 import org.springframework.data.annotation.*;
 
@@ -19,6 +21,9 @@ public class Post {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Size(min=1)
+    private String title;
 
     @Size(min = 1, max = 1000)
     @Column(columnDefinition = "MEDIUMTEXT")
