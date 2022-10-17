@@ -18,13 +18,12 @@ jobs:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: forum_db
       MYSQL_USER: root
-      MYSQL_PASSWORD: root
 
     steps:
     - name: Set up MySQL
       run: |
         sudo /etc/init.d/mysql start
-        mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }}
+        mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.MYSQL_USER }} -p${{ env.MYSQL_ROOT_PASSWORD }}
     - uses: actions/checkout@v3
     - name: Set up JDK 17
       uses: actions/setup-java@v3
