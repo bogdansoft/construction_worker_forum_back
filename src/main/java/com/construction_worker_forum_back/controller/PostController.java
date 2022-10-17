@@ -1,0 +1,28 @@
+package com.construction_worker_forum_back.controller;
+
+import com.construction_worker_forum_back.entity.Post;
+import com.construction_worker_forum_back.entity.PostDTO;
+import com.construction_worker_forum_back.service.PostService;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@CrossOrigin("http://localhost:3000")
+@RequestMapping("/api")
+@AllArgsConstructor
+public class PostController {
+
+    private PostService postService;
+
+    @GetMapping("/posts")
+    public List<Post> getAllPosts(){
+        return postService.getAllPosts();
+    }
+
+    @PostMapping("/post/add")
+    public Post createPost(@RequestBody PostDTO post){
+        return postService.createPost(post);
+    }
+}
