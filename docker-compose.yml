@@ -14,7 +14,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: secret
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - backend
 
