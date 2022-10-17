@@ -25,4 +25,14 @@ public class PostController {
     public Post createPost(@RequestBody PostDTO post){
         return postService.createPost(post);
     }
+
+    @DeleteMapping("/post/{id}")
+    public String deletePostById(@PathVariable("id") Long id){
+        return postService.deletePostById(id);
+    }
+
+    @PostMapping("/post/{id}")
+    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostDTO post){
+        return postService.updatePostById(id, post);
+    }
 }
