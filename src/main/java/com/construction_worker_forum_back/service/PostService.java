@@ -53,4 +53,8 @@ public class PostService {
         log.warn("No such post found when updating by id");
         return null;
     }
+
+    public Post getPostById(Long id) {
+        return postRepository.findById(id).orElseThrow();
+    }
 }
