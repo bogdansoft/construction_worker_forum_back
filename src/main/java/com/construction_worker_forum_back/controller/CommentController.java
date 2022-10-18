@@ -3,8 +3,8 @@ package com.construction_worker_forum_back.controller;
 import com.construction_worker_forum_back.model.DTOs.CommentRequest;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.service.CommentService;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +16,9 @@ import java.util.List;
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/comment")
+@AllArgsConstructor
 public class CommentController {
-
-    @Autowired
     ModelMapper modelMapper;
-
-    @Autowired
     CommentService commentService;
 
     @PostMapping()

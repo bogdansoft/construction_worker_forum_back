@@ -3,8 +3,8 @@ package com.construction_worker_forum_back.controller;
 import com.construction_worker_forum_back.model.DTOs.UserRequest;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.service.UserService;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +17,9 @@ import java.util.Map;
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/user")
+@AllArgsConstructor
 public class UserController {
-
-    @Autowired
     ModelMapper modelMapper;
-
-    @Autowired
     UserService userService;
 
     @PostMapping()
