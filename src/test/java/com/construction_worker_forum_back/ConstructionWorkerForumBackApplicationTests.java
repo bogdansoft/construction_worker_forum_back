@@ -15,7 +15,13 @@ class ConstructionWorkerForumBackApplicationTests {
     void dummyTest() {
         int actual = 1;
 
-        Assertions.assertEquals(2, actual);
+        Assertions.assertEquals(1, actual);
     }
 
+    @Test
+    void dummyTwoTest() {
+        int actual = 3;
+
+        Assertions.assertEquals(2, actual);
+    }
 }
