@@ -1,8 +1,7 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.DTOs.CommentRequest;
-import com.construction_worker_forum_back.model.DTOs.UserRequest;
-import com.construction_worker_forum_back.model.entity.*;
+import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +31,7 @@ public class CommentService {
     }
 
     public List<Comment> getAllComments() {
-        List<Comment> allComments = new ArrayList<>();
-        commentRepository.findAll().forEach(allComments::add);
-        return allComments;
+        return commentRepository.findAll();
     }
 
     @Transactional
@@ -50,10 +46,10 @@ public class CommentService {
 
     @Transactional
     public Comment updateComment(Long id, CommentRequest commentRequest) {
-        if(!commentRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        Comment comment = commentRepository.findById(id).get();
+        Comment comment = commentRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         comment.setContent(commentRequest.getContent());
         comment.setUpdatedAt(Date.from(Instant.now()));
 

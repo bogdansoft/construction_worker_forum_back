@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.DTOs.PostRequest;
+import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

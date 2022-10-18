@@ -2,12 +2,11 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.DTOs.UserRequest;
 import com.construction_worker_forum_back.model.entity.AccountStatus;
-import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Role;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,17 +14,13 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.sql.Date;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class UserService {
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     ModelMapper modelMapper;
 
     @Transactional
@@ -45,23 +40,21 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        List<User> allComments = new ArrayList<>();
-        userRepository.findAll().forEach(allComments::add);
-        return allComments;
+        return userRepository.findAll();
     }
 
     @Transactional
     public Boolean deleteUser(Long id) {
-        User user = userRepository.findById(id).get();
-        return userRepository.deleteByUsernameIgnoreCase(user.getUsername()) == 1;
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) return false;
+        return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
     }
 
     @Transactional
     public User updateUser(Long id, UserRequest userRequest) {
-        if(!userRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        User user = userRepository.findById(id).get();
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         user.setUsername(userRequest.getUsername());
         user.setPassword(userRequest.getPassword());
         user.setEmail(userRequest.getEmail());
