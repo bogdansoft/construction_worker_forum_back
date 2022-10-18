@@ -33,6 +33,7 @@ public class UserService {
         user.setCreatedAt(Date.from(Instant.now()));
 
         return Optional.of(userRepository.save(user));
+        // return Optional.of(modelMapper.map(user, SecureUser.class)
     }
 
     public Optional<User> getUser(Long id) {
