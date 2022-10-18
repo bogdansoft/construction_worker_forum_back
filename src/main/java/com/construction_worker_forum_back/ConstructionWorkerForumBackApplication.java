@@ -9,5 +9,4 @@ public class ConstructionWorkerForumBackApplication {
     public static void main(String[] args) {
         SpringApplication.run(ConstructionWorkerForumBackApplication.class, args);
     }
-
 }
