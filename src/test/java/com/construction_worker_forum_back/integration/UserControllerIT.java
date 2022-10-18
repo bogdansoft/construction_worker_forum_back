@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back;
+package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.UserRepository;
