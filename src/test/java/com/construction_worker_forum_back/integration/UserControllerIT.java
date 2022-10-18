@@ -38,7 +38,6 @@ class UserControllerIT {
 
     public static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
 
-
     static {
         mySQLContainer.start();
     }
