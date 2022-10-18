@@ -30,14 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(initializers = UserControllerIT.DockerMysqlDataSourceInitializer.class)
+@ContextConfiguration(initializers = UserControllerIntegrationTests.DockerMysqlDataSourceInitializer.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
-class UserControllerIT {
+class UserControllerIntegrationTests {
 
     @Container
-    public static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
+    public static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
 
     static {
         mySQLContainer.start();
