@@ -32,10 +32,10 @@ public class UserDetailsImpl implements UserDetails, UserDetailsMixin {
 
         authorities.add(user.getUserRoles());
 
-        if (user.getUserRoles() == Role.USER) {
-            authorities.add(user.getAccountStatus());
-        } else {
+        if (user.getUserRoles() == Role.ADMINISTRATOR) {
             authorities.add(AccountStatus.ACTIVE);
+        } else {
+            authorities.add(user.getAccountStatus());
         }
 
         return authorities;
