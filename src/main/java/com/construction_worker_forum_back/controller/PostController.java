@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
-import com.construction_worker_forum_back.entity.Post;
-import com.construction_worker_forum_back.entity.PostDTO;
+import com.construction_worker_forum_back.model.entity.Post;
+import com.construction_worker_forum_back.model.DTOs.PostRequest;
 import com.construction_worker_forum_back.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,7 @@ public class PostController {
     }
 
     @PostMapping("/post/add")
-    public Post createPost(@RequestBody PostDTO post) {
+    public Post createPost(@RequestBody PostRequest post) {
         return postService.createPost(post);
     }
 
@@ -37,7 +37,7 @@ public class PostController {
     }
 
     @PostMapping("/post/{id}")
-    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostDTO post) {
+    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostRequest post) {
         return postService.updatePostById(id, post);
     }
 }

@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.entity.Post;
-import com.construction_worker_forum_back.entity.PostDTO;
+import com.construction_worker_forum_back.model.entity.Post;
+import com.construction_worker_forum_back.model.DTOs.PostRequest;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class PostService {
         return allPosts;
     }
 
-    public Post createPost(PostDTO post) {
+    public Post createPost(PostRequest post) {
         Post postToSave = new Post();
         postToSave.setCreatedAt(Date.from(Instant.now()));
         postToSave.setContent(post.getContent());
@@ -42,7 +42,7 @@ public class PostService {
         }
     }
 
-    public Post updatePostById(Long id, PostDTO post) {
+    public Post updatePostById(Long id, PostRequest post) {
         if (postRepository.findById(id).isPresent()) {
             Post postPrev = postRepository.findById(id).get();
             postPrev.setTitle(post.getTitle());

@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.entity;
+package com.construction_worker_forum_back.model.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO {
+public class PostRequest {
     private String content;
     private String title;
 }

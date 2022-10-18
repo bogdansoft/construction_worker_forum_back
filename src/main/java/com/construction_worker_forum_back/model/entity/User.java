@@ -1,5 +1,6 @@
-package com.construction_worker_forum_back.entity;
+package com.construction_worker_forum_back.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -24,6 +25,7 @@ public class User {
     private String username;
 
     @NotNull
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(unique = true)
