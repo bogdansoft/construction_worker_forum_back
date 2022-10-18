@@ -55,7 +55,4 @@ public class UserController {
     User updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable Long id) {
         return userService.updateUser(id, userRequest);
     }
-
-
-
 }

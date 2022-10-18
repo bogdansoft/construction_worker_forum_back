@@ -44,7 +44,7 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean deleteUser(Long id) {
+    public boolean deleteUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;
         return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
