@@ -1,26 +1,21 @@
 package com.construction_worker_forum_back.controller;
 
-
 import com.construction_worker_forum_back.model.DTOs.CommentRequest;
-import com.construction_worker_forum_back.model.DTOs.UserRequest;
 import com.construction_worker_forum_back.model.entity.Comment;
-import com.construction_worker_forum_back.model.entity.Post;
-import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.service.CommentService;
-import com.construction_worker_forum_back.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/comment")
+@RequestMapping("/api/comment")
 public class CommentController {
 
     @Autowired
@@ -42,6 +37,7 @@ public class CommentController {
         return commentService.getComment(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @GetMapping()
     List<Comment> getAllComments() {
         return commentService.getAllComments();
@@ -56,7 +52,4 @@ public class CommentController {
     Comment updateComment(@Valid @RequestBody CommentRequest userRequest, @PathVariable Long id) {
         return commentService.updateComment(id, userRequest);
     }
-
-
-
 }

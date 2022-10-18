@@ -1,24 +1,22 @@
 package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.DTOs.UserRequest;
-import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.sql.Date;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
@@ -40,11 +38,13 @@ public class UserController {
         return userService.getUser(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @GetMapping()
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @DeleteMapping("/{id}")
     Map<String, String> deleteUser(@PathVariable Long id) {
         if(userService.deleteUser(id)) {
@@ -57,11 +57,9 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @PutMapping("/{id}")
     User updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable Long id) {
         return userService.updateUser(id, userRequest);
     }
-
-
-
 }

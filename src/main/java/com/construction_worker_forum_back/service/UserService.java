@@ -1,14 +1,16 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.DTOs.UserRequest;
-import com.construction_worker_forum_back.model.entity.AccountStatus;
-import com.construction_worker_forum_back.model.entity.Comment;
-import com.construction_worker_forum_back.model.entity.Role;
 import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     UserRepository userRepository;
@@ -28,14 +30,24 @@ public class UserService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
+
+        return user.map(UserDetailsImpl::new)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
+    }
+
     @Transactional
     public Optional<User> register(User user) {
         if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
             return Optional.empty();
         }
-        user.setAccountStatus(AccountStatus.CREATED);
-        user.setUserRoles(Role.USER);
         user.setCreatedAt(Date.from(Instant.now()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return Optional.of(userRepository.save(user));
     }

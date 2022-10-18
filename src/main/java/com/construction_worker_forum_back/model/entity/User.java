@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.model.entity;
 
+import com.construction_worker_forum_back.model.security.AccountStatus;
+import com.construction_worker_forum_back.model.security.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -48,11 +50,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status")
-    private AccountStatus accountStatus;
+    private AccountStatus accountStatus = AccountStatus.CREATED;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private Role userRoles;
+    private Role userRoles = Role.USER;
 
     @OneToMany
     private List<Comment> userComments;
