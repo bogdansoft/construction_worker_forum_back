@@ -1,9 +1,8 @@
-package com.construction_worker_forum_back.integration;
+package com.construction_worker_forum_back;
 
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 class UserControllerIT {
 
+    @Container
     public static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
 
     static {
@@ -45,7 +46,7 @@ class UserControllerIT {
     public static class DockerMysqlDataSourceInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
-        public void initialize(@NotNull ConfigurableApplicationContext applicationContext) {
+        public void initialize(ConfigurableApplicationContext applicationContext) {
             TestPropertySourceUtils.addInlinedPropertiesToEnvironment(
                     applicationContext,
                     "spring.datasource.url=" + mySQLContainer.getJdbcUrl(),
