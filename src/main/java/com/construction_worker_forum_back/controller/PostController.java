@@ -6,6 +6,7 @@ import com.construction_worker_forum_back.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ public class PostController {
     }
 
     @PostMapping("/post/add")
-    public Post createPost(@RequestBody PostRequest post) {
+    public Post createPost(@Valid @RequestBody PostRequest post) {
         return postService.createPost(post);
     }
 
