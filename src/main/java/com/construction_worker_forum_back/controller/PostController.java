@@ -4,6 +4,7 @@ import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.DTOs.PostRequest;
 import com.construction_worker_forum_back.service.PostService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,6 +29,7 @@ public class PostController {
     }
 
     @PostMapping("/post/add")
+    @ResponseStatus(HttpStatus.CREATED)
     public Post createPost(@Valid @RequestBody PostRequest post) {
         return postService.createPost(post);
     }
