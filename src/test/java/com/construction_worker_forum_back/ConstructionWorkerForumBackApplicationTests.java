@@ -14,7 +14,8 @@ class ConstructionWorkerForumBackApplicationTests {
     @Test
     void dummyTest() {
         int actual = 1;
-        Assertions.assertEquals(1, actual);
+
+        Assertions.assertEquals(2, actual);
     }
 
 }
