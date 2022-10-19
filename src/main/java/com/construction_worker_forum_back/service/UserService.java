@@ -1,46 +1,61 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.model.DTOs.UserRequest;
-import com.construction_worker_forum_back.model.entity.AccountStatus;
-import com.construction_worker_forum_back.model.entity.Role;
+import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.sql.Date;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
-    UserRepository userRepository;
-    ModelMapper modelMapper;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+
+    public List<UserDto> getAllUsers() {
+        return userRepository
+                .findAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .toList();
+    }
+
+    public Optional<UserDto> findById(Long id) {
+        return userRepository.findById(id)
+                .map(user -> modelMapper.map(user, UserDto.class));
+    }
 
     @Transactional
-    public Optional<User> register(User user) {
+    public Optional<UserDto> register(UserRequestDto userRequestDto) {
+        User user = modelMapper.map(userRequestDto, User.class);
         if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
             return Optional.empty();
         }
-        user.setAccountStatus(AccountStatus.CREATED);
-        user.setUserRoles(Role.USER);
-        user.setCreatedAt(Date.from(Instant.now()));
-
-        return Optional.of(userRepository.save(user));
+        return Optional.of(modelMapper.map(userRepository.save(user), UserDto.class));
     }
 
-    public Optional<User> getUser(Long id) {
-        return userRepository.findById(id);
-    }
+    @Transactional
+    public UserDto updateUser(Long id, UserRequestDto userRequestDto) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+        modelMapper.map(userRequestDto, user);
+        user.setUpdatedAt(Date.from(Instant.now()));
+
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Transactional
@@ -48,20 +63,5 @@ public class UserService {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;
         return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
-    }
-
-    @Transactional
-    public User updateUser(Long id, UserRequest userRequest) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        user.setUsername(userRequest.getUsername());
-        user.setPassword(userRequest.getPassword());
-        user.setEmail(userRequest.getEmail());
-        user.setUpdatedAt(Date.from(Instant.now()));
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
-
-        return userRepository.save(user);
     }
 }
