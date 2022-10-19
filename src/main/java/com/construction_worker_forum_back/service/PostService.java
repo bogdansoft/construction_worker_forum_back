@@ -63,7 +63,7 @@ public class PostService {
     }
 
     @Transactional
-    public Boolean deleteById(Long id) {
+    public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
     }
 }
