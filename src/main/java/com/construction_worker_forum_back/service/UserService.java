@@ -2,11 +2,10 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.model.entity.AccountStatus;
-import com.construction_worker_forum_back.model.entity.Role;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -43,10 +43,6 @@ public class UserService {
         if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
             return Optional.empty();
         }
-        user.setAccountStatus(AccountStatus.CREATED);
-        user.setUserRoles(Role.USER);
-        user.setCreatedAt(Date.from(Instant.now()));
-
         return Optional.of(modelMapper.map(userRepository.save(user), UserDto.class));
     }
 
@@ -56,14 +52,10 @@ public class UserService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        user.setUsername(userRequestDto.getUsername());
-        user.setPassword(userRequestDto.getPassword());
-        user.setEmail(userRequestDto.getEmail());
+        modelMapper.map(userRequestDto, user);
         user.setUpdatedAt(Date.from(Instant.now()));
-        user.setFirstName(userRequestDto.getFirstName());
-        user.setLastName(userRequestDto.getLastName());
 
-        return modelMapper.map(userRepository.save(user), UserDto.class);
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Transactional

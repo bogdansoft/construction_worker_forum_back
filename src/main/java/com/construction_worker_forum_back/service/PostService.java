@@ -40,29 +40,26 @@ public class PostService {
     }
 
     @Transactional
-    public PostDto createPost(PostRequestDto post) {
-        Post postToSave = new Post();
+    public PostDto createPost(PostRequestDto postRequestDto) {
+        Post postToSave = modelMapper.map(postRequestDto, Post.class);
         UserDto userById = userService
-                .findById(post.getUserId())
+                .findById(postRequestDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         postToSave.setUser(modelMapper.map(userById, User.class));
-        postToSave.setCreatedAt(Date.from(Instant.now()));
-        postToSave.setContent(post.getContent());
-        postToSave.setTitle(post.getTitle());
         return modelMapper.map(postRepository.save(postToSave), PostDto.class);
     }
 
     @Transactional
-    public PostDto updatePostById(Long id, PostRequestDto post) {
+    public PostDto updatePostById(Long id, PostRequestDto postRequestDto) {
         Post postFromDb = postRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        postFromDb.setTitle(post.getTitle());
-        postFromDb.setContent(post.getContent());
+        modelMapper.map(postRequestDto, postFromDb);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));
-        return modelMapper.map(postRepository.save(postFromDb), PostDto.class);
+
+        return modelMapper.map(postFromDb, PostDto.class);
     }
 
     @Transactional

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -42,4 +43,9 @@ public class Post {
 
     @OneToMany
     private List<Comment> comments;
+
+    @PrePersist
+    private void beforeSaving() {
+        createdAt = Date.from(Instant.now());
+    }
 }

@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -59,4 +61,11 @@ public class User {
 
     @OneToMany
     private List<Comment> userComments;
+
+    @PrePersist
+    private void beforeSaving() {
+        createdAt = Date.from(Instant.now());
+        accountStatus = AccountStatus.CREATED;
+        userRoles = Role.USER;
+    }
 }
