@@ -24,6 +24,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
+    public List<UserDto> getAllUsers() {
+        return userRepository
+                .findAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .toList();
+    }
+
+    public Optional<UserDto> findById(Long id) {
+        return userRepository.findById(id)
+                .map(user -> modelMapper.map(user, UserDto.class));
+    }
+
     @Transactional
     public Optional<UserDto> register(UserRequestDto userRequestDto) {
         User user = modelMapper.map(userRequestDto, User.class);
@@ -35,26 +48,6 @@ public class UserService {
         user.setCreatedAt(Date.from(Instant.now()));
 
         return Optional.of(modelMapper.map(userRepository.save(user), UserDto.class));
-    }
-
-    public Optional<UserDto> findById(Long id) {
-        return userRepository.findById(id)
-                .map(user -> modelMapper.map(user, UserDto.class));
-    }
-
-    public List<UserDto> getAllUsers() {
-        return userRepository
-                .findAll()
-                .stream()
-                .map(user -> modelMapper.map(user, UserDto.class))
-                .toList();
-    }
-
-    @Transactional
-    public boolean deleteUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) return false;
-        return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
     }
 
     @Transactional
@@ -71,5 +64,12 @@ public class UserService {
         user.setLastName(userRequestDto.getLastName());
 
         return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    @Transactional
+    public boolean deleteUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) return false;
+        return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
     }
 }

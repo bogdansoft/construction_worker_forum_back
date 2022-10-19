@@ -4,7 +4,6 @@ import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,16 +17,11 @@ import java.util.Map;
 @RequestMapping("/api/user")
 @AllArgsConstructor
 public class UserController {
-
-    ModelMapper modelMapper;
     UserService userService;
 
-    @PostMapping()
-    @ResponseStatus(HttpStatus.CREATED)
-    UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        return userService
-                .register(userRequestDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
+    @GetMapping()
+    public List<UserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
@@ -37,9 +31,17 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping()
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        return userService
+                .register(userRequestDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
+    }
+
+    @PutMapping("/{id}")
+    UserDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long id) {
+        return userService.updateUser(id, userRequestDto);
     }
 
     @DeleteMapping("/{id}")
@@ -52,10 +54,5 @@ public class UserController {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @PutMapping("/{id}")
-    UserDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long id) {
-        return userService.updateUser(id, userRequestDto);
     }
 }

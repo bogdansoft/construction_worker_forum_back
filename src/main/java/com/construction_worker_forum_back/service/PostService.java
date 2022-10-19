@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,12 @@ public class PostService {
                 .toList();
     }
 
+    public Optional<PostDto> findById(Long id) {
+        return postRepository.findById(id)
+                .map(post -> modelMapper.map(post, PostDto.class));
+    }
+
+    @Transactional
     public PostDto createPost(PostRequestDto post) {
         Post postToSave = new Post();
         UserDto userById = userService
@@ -46,10 +53,7 @@ public class PostService {
         return modelMapper.map(postRepository.save(postToSave), PostDto.class);
     }
 
-    public Boolean deleteById(Long id) {
-        return postRepository.deletePostById(id) == 1;
-    }
-
+    @Transactional
     public PostDto updatePostById(Long id, PostRequestDto post) {
         Post postFromDb = postRepository
                 .findById(id)
@@ -61,8 +65,8 @@ public class PostService {
         return modelMapper.map(postRepository.save(postFromDb), PostDto.class);
     }
 
-    public Optional<PostDto> findById(Long id) {
-        return postRepository.findById(id)
-                .map(user -> modelMapper.map(user, PostDto.class));
+    @Transactional
+    public Boolean deleteById(Long id) {
+        return postRepository.deletePostById(id) == 1;
     }
 }

@@ -37,6 +37,11 @@ public class PostController {
         return postService.createPost(post);
     }
 
+    @PostMapping("/post/{id}")
+    public PostDto updatePostById(@PathVariable("id") Long id, @RequestBody PostRequestDto post) {
+        return postService.updatePostById(id, post);
+    }
+
     @DeleteMapping("/post/{id}")
     public Map<String, String> deletePostById(@PathVariable("id") Long id) {
         if (postService.deleteById(id)) {
@@ -47,10 +52,5 @@ public class PostController {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @PostMapping("/post/{id}")
-    public PostDto updatePostById(@PathVariable("id") Long id, @RequestBody PostRequestDto post) {
-        return postService.updatePostById(id, post);
     }
 }

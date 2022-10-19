@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -13,6 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
@@ -38,4 +40,14 @@ public class Comment {
 
     @ManyToOne
     private Post post;
+
+    @PrePersist
+    private void beforeSaving() {
+        createdAt = Date.from(Instant.now());
+    }
+
+    @PreUpdate
+    private void beforeUpdating() {
+        updatedAt = Date.from(Instant.now());
+    }
 }
