@@ -19,7 +19,7 @@ import java.util.Map;
 public class CommentController {
     CommentService commentService;
 
-    @GetMapping()
+    @GetMapping
     List<CommentDto> getAllComments() {
         return commentService.getAllComments();
     }
@@ -29,7 +29,7 @@ public class CommentController {
         return commentService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CommentDto createComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         return commentService.createComment(commentRequestDto);

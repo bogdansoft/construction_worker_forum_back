@@ -1,6 +1,6 @@
 package com.construction_worker_forum_back.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -16,12 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
     UserDetailsService userDetailsService;
-
-    @Autowired
     PasswordEncoderConfig passwordEncoderConfig;
 
     @Bean

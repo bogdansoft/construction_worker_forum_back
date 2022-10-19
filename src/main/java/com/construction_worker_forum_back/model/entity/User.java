@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.model.entity;
 
+import com.construction_worker_forum_back.model.security.AccountStatus;
+import com.construction_worker_forum_back.model.security.Role;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -65,7 +67,7 @@ public class User {
     @PrePersist
     private void beforeSaving() {
         createdAt = Date.from(Instant.now());
-        accountStatus = AccountStatus.CREATED;
+        accountStatus = AccountStatus.ACTIVE;
         userRoles = Role.USER;
     }
 }
