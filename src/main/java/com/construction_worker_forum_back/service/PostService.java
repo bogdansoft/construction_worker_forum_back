@@ -1,60 +1,68 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
+import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class PostService {
 
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
-    public List<Post> getAllPosts() {
-        List<Post> allPosts = new ArrayList<>();
-        postRepository.findAll().forEach(allPosts::add);
-        return allPosts;
+    public List<PostDto> getAllPosts() {
+        return postRepository
+                .findAll()
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
     }
 
-    public Post createPost(PostRequestDto post) {
+    public PostDto createPost(PostRequestDto post) {
         Post postToSave = new Post();
+        UserDto userById = userService
+                .findById(post.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        postToSave.setUser(modelMapper.map(userById, User.class));
         postToSave.setCreatedAt(Date.from(Instant.now()));
         postToSave.setContent(post.getContent());
         postToSave.setTitle(post.getTitle());
-        return postRepository.save(postToSave);
+        return modelMapper.map(postRepository.save(postToSave), PostDto.class);
     }
 
-    public String deletePostById(Long id) {
-        if (postRepository.existsById(id)) {
-            postRepository.deleteById(id);
-            return "SUCCESS";
-        } else {
-            return "FAIL";
-        }
+    public Boolean deleteById(Long id) {
+        return postRepository.deletePostById(id) == 1;
     }
 
-    public Post updatePostById(Long id, PostRequestDto post) {
-        if (postRepository.findById(id).isPresent()) {
-            Post postPrev = postRepository.findById(id).get();
-            postPrev.setTitle(post.getTitle());
-            postPrev.setContent(post.getContent());
-            postPrev.setUpdatedAt(Date.from(Instant.now()));
-            postRepository.save(postPrev);
-        }
-        log.warn("No such post found when updating by id");
-        return null;
+    public PostDto updatePostById(Long id, PostRequestDto post) {
+        Post postFromDb = postRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        postFromDb.setTitle(post.getTitle());
+        postFromDb.setContent(post.getContent());
+        postFromDb.setUpdatedAt(Date.from(Instant.now()));
+        return modelMapper.map(postRepository.save(postFromDb), PostDto.class);
     }
 
-    public Post getPostById(Long id) {
-        return postRepository.findById(id).orElseThrow();
+    public Optional<PostDto> findById(Long id) {
+        return postRepository.findById(id)
+                .map(user -> modelMapper.map(user, PostDto.class));
     }
 }
