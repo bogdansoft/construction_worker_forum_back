@@ -71,7 +71,7 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
                 .andExpect(jsonPath("$.createdAt",
                         is(notNullValue())))
                 .andExpect(jsonPath("$.accountStatus",
-                        is("CREATED")))
+                        is("ACTIVE")))
                 .andExpect(jsonPath("$.userRoles",
                         is("USER")));
     }
@@ -145,7 +145,7 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
                 .andExpect(jsonPath("$.createdAt",
                         is(notNullValue())))
                 .andExpect(jsonPath("$.accountStatus",
-                        is("CREATED")))
+                        is("ACTIVE")))
                 .andExpect(jsonPath("$.userRoles",
                         is("USER")));
     }
