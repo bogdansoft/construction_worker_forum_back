@@ -1,7 +1,6 @@
 package com.construction_worker_forum_back.model.dto;
 
 import com.construction_worker_forum_back.model.entity.AccountStatus;
-import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,5 +22,5 @@ public class UserDto {
     private Date updatedAt;
     private AccountStatus accountStatus;
     private Role userRoles;
-    private List<Comment> userComments;
+    private List<CommentDto> userComments;
 }
