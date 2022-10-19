@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,15 +43,15 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDto createComment(CommentRequestDto commentRequest) {
-        Comment commentToSave = modelMapper.map(commentRequest, Comment.class);
+    public CommentDto createComment(CommentRequestDto commentRequestDto) {
+        Comment commentToSave = modelMapper.map(commentRequestDto, Comment.class);
 
         UserDto userById = userService
-                .findById(commentRequest.getUserId())
+                .findById(commentRequestDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         PostDto postById = postService
-                .findById(commentRequest.getPostId())
+                .findById(commentRequestDto.getPostId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         commentToSave.setUser(modelMapper.map(userById, User.class));
@@ -64,9 +66,10 @@ public class CommentService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        comment.setContent(commentRequestDto.getContent());
+        modelMapper.map(commentRequestDto, comment);
+        comment.setUpdatedAt(Date.from(Instant.now()));
 
-        return modelMapper.map(commentRepository.save(comment), CommentDto.class);
+        return modelMapper.map(comment, CommentDto.class);
     }
 
     @Transactional

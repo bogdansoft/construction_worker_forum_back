@@ -1,6 +1,7 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
 
+@Slf4j
 @Entity
 @Table(name = "comments")
 @Getter
@@ -44,10 +46,5 @@ public class Comment {
     @PrePersist
     private void beforeSaving() {
         createdAt = Date.from(Instant.now());
-    }
-
-    @PreUpdate
-    private void beforeUpdating() {
-        updatedAt = Date.from(Instant.now());
     }
 }
