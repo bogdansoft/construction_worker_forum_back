@@ -1,15 +1,15 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.model.dto.PostRequest;
+import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,7 +25,7 @@ public class PostService {
         return allPosts;
     }
 
-    public Post createPost(PostRequest post) {
+    public Post createPost(PostRequestDto post) {
         Post postToSave = new Post();
         postToSave.setCreatedAt(Date.from(Instant.now()));
         postToSave.setContent(post.getContent());
@@ -42,7 +42,7 @@ public class PostService {
         }
     }
 
-    public Post updatePostById(Long id, PostRequest post) {
+    public Post updatePostById(Long id, PostRequestDto post) {
         if (postRepository.findById(id).isPresent()) {
             Post postPrev = postRepository.findById(id).get();
             postPrev.setTitle(post.getTitle());

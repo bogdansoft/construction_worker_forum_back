@@ -1,6 +1,6 @@
 package com.construction_worker_forum_back.controller;
 
-import com.construction_worker_forum_back.model.dto.PostRequest;
+import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.service.PostService;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class PostController {
 
     @PostMapping("/post/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public Post createPost(@Valid @RequestBody PostRequest post) {
+    public Post createPost(@Valid @RequestBody PostRequestDto post) {
         return postService.createPost(post);
     }
 
@@ -40,7 +40,7 @@ public class PostController {
     }
 
     @PostMapping("/post/{id}")
-    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostRequest post) {
+    public Post updatePostById(@PathVariable("id") Long id, @RequestBody PostRequestDto post) {
         return postService.updatePostById(id, post);
     }
 }

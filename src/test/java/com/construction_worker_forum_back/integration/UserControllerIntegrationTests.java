@@ -1,7 +1,6 @@
 package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,14 +24,14 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserRepository userRepository;
+    RemoveService removeService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
+        removeService.removeAll();
     }
 
     @Test

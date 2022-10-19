@@ -1,26 +1,28 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
-import org.springframework.data.annotation.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "posts")
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Post {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Size(min=1)
+    @Size(min = 1)
     private String title;
 
     @Size(min = 1, max = 1000)

@@ -10,9 +10,11 @@ import java.util.Date;
 
 @Entity
 @Table(name = "comments")
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
 
     @Id
