@@ -1,6 +1,6 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.model.DTOs.CommentRequest;
+import com.construction_worker_forum_back.model.dto.CommentRequest;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.construction_worker_forum_back.integration;
 
-import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +75,7 @@ class UserControllerIntegrationTests {
     void givenUser_whenCreated_thenReturnSavedUser() throws Exception {
 
         // given
-        User user = User.builder()
+        UserRequestDto userRequestDto = UserRequestDto.builder()
                 .username("user123")
                 .password("secret")
                 .email("johndoe@example.com")
@@ -86,19 +86,21 @@ class UserControllerIntegrationTests {
         // when
         ResultActions response = mockMvc.perform(post("/api/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)));
+                .content(objectMapper.writeValueAsString(userRequestDto)));
 
         // then
         response.andDo(print()).
                 andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id",
+                        is(notNullValue())))
                 .andExpect(jsonPath("$.username",
-                        is(user.getUsername())))
+                        is(userRequestDto.getUsername())))
                 .andExpect(jsonPath("$.email",
-                        is(user.getEmail())))
+                        is(userRequestDto.getEmail())))
                 .andExpect(jsonPath("$.firstName",
-                        is(user.getFirstName())))
+                        is(userRequestDto.getFirstName())))
                 .andExpect(jsonPath("$.lastName",
-                        is(user.getLastName())))
+                        is(userRequestDto.getLastName())))
                 .andExpect(jsonPath("$.createdAt",
                         is(notNullValue())))
                 .andExpect(jsonPath("$.accountStatus",

@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
 
-import com.construction_worker_forum_back.model.DTOs.CommentRequest;
+import com.construction_worker_forum_back.model.dto.CommentRequest;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.service.CommentService;
 import lombok.AllArgsConstructor;

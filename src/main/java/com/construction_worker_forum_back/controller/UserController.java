@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
-import com.construction_worker_forum_back.model.DTOs.UserRequest;
-import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,32 +18,35 @@ import java.util.Map;
 @RequestMapping("/api/user")
 @AllArgsConstructor
 public class UserController {
+
     ModelMapper modelMapper;
     UserService userService;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    User createUser(@Valid @RequestBody UserRequest userRequest) {
-        User user = modelMapper.map(userRequest, User.class);
-        return userService.register(user)
+    UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        return userService
+                .register(userRequestDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
     @GetMapping("/{id}")
-    User getUser(@PathVariable Long id) {
-        return userService.getUser(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    UserDto getUser(@PathVariable Long id) {
+        return userService
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping()
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @DeleteMapping("/{id}")
     Map<String, String> deleteUser(@PathVariable Long id) {
-        if(userService.deleteUser(id)) {
+        if (userService.deleteUser(id)) {
             return Map.of(
-                    "ID", id+"",
+                    "ID", id + "",
                     "status", "Deleted successfully!"
             );
         } else {
@@ -52,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    User updateUser(@Valid @RequestBody UserRequest userRequest, @PathVariable Long id) {
-        return userService.updateUser(id, userRequest);
+    UserDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long id) {
+        return userService.updateUser(id, userRequestDto);
     }
 }
