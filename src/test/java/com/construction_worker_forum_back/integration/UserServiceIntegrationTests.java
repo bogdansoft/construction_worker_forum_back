@@ -1,17 +1,15 @@
 package com.construction_worker_forum_back.integration;
 
-import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-class UserServiceIntegrationTests {
+class UserServiceIntegrationTests extends TestcontainersConfig {
 
     @Autowired
     UserService userService;
@@ -29,7 +27,7 @@ class UserServiceIntegrationTests {
 
     @Test
     void saveUser() {
-        User user = User.builder()
+        UserRequestDto userRequestDto = UserRequestDto.builder()
                 .username("jake")
                 .password("secret")
                 .email("jake@example.com")
@@ -37,8 +35,9 @@ class UserServiceIntegrationTests {
                 .lastName("Doe")
                 .build();
 
-        userService.register(user);
+        userService.register(userRequestDto);
 
-        assertTrue(userRepository.existsByUsernameIgnoreCase(user.getUsername()));
+
+        assertTrue(userRepository.existsByUsernameIgnoreCase(userRequestDto.getUsername()));
     }
 }

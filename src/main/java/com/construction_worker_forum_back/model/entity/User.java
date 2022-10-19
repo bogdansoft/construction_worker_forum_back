@@ -1,12 +1,6 @@
 package com.construction_worker_forum_back.model.entity;
 
-import com.construction_worker_forum_back.model.security.AccountStatus;
-import com.construction_worker_forum_back.model.security.Role;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -14,15 +8,18 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -34,7 +31,6 @@ public class User {
     private String username;
 
     @NotNull
-    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(unique = true)
@@ -57,12 +53,19 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status")
-    private AccountStatus accountStatus = AccountStatus.CREATED;
+    private AccountStatus accountStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private Role userRoles = Role.USER;
+    private Role userRoles;
 
     @OneToMany
     private List<Comment> userComments;
+
+    @PrePersist
+    private void beforeSaving() {
+        createdAt = Date.from(Instant.now());
+        accountStatus = AccountStatus.CREATED;
+        userRoles = Role.USER;
+    }
 }
