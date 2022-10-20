@@ -59,8 +59,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private Role userRoles;
+    private Role userRoles = Role.USER;
 
+    @ToString.Exclude
     @OneToMany
     private List<Comment> userComments;
 
@@ -68,6 +69,5 @@ public class User {
     private void beforeSaving() {
         createdAt = Date.from(Instant.now());
         accountStatus = AccountStatus.ACTIVE;
-        userRoles = Role.USER;
     }
 }
