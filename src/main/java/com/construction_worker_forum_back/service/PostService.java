@@ -2,9 +2,7 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
-import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
-import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,7 +21,6 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserService userService;
     private final ModelMapper modelMapper;
 
     public List<PostDto> getAllPosts() {

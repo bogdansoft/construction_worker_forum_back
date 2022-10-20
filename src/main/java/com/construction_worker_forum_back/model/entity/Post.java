@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -40,10 +42,6 @@ public class Post {
 
     @ManyToOne
     private User user;
-
-    @OneToMany
-    private List<Comment> comments;
-
     @PrePersist
     private void beforeSaving() {
         createdAt = Date.from(Instant.now());
