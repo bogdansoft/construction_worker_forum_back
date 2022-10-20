@@ -1,6 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.UserLoginDto;
 import com.construction_worker_forum_back.model.dto.UserLoginRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserDto loginUser(@RequestBody UserLoginRequestDto loginRequestDto) {
+    public UserLoginDto loginUser(@RequestBody UserLoginRequestDto loginRequestDto) {
         return userService.login(loginRequestDto);
     }
 
