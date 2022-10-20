@@ -42,6 +42,10 @@ public class PostService {
     @Transactional
     public PostDto createPost(PostRequestDto postRequestDto) {
         Post postToSave = modelMapper.map(postRequestDto, Post.class);
+        /*UserDto userById = userService
+                .findById(postRequestDto.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+*/
         return modelMapper.map(postRepository.save(postToSave), PostDto.class);
     }
 
