@@ -65,6 +65,9 @@ public class User {
     @OneToMany
     private List<Comment> userComments;
 
+    @OneToMany
+    private List<Post> userPosts;
+
     @PrePersist
     private void beforeSaving() {
         createdAt = Date.from(Instant.now());

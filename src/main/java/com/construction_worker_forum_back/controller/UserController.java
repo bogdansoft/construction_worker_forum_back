@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
+import com.construction_worker_forum_back.model.dto.CommentDto;
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
@@ -19,7 +21,8 @@ import java.util.Map;
 public class UserController {
     UserService userService;
 
-    @GetMapping()
+    //zmieniona sciezka zeby uniknac niejednoznacznego mapowania
+    @GetMapping("/all")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -31,12 +34,40 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    //query string zeby uniknac niejednoznacznego mapowania
+    @GetMapping()
+    UserDto getUserByUsername(@RequestParam(value="username") String username) {
+        return userService
+                .findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{username}/posts")
+    List<PostDto> getUserPosts(@PathVariable String username) {
+        return userService
+                .findByUsername(username).map(UserDto::getUserPosts)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{username}/comments")
+    List<CommentDto> getUserComments(@PathVariable String username) {
+        return userService
+                .findByUsername(username).map(UserDto::getUserComments)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         return userService
                 .register(userRequestDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
+    }
+
+    @PostMapping("/{username}/changebio")
+    @ResponseStatus(HttpStatus.CREATED)
+    UserDto changeBio(@PathVariable String username, @Valid @RequestBody String newBio) {
+        return userService.changeBio(username, newBio);
     }
 
     @PutMapping("/{id}")

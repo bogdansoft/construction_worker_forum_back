@@ -26,4 +26,5 @@ public class UserDto {
     private AccountStatus accountStatus;
     private Role userRoles;
     private List<CommentDto> userComments;
+    private List<PostDto> userPosts;
 }
