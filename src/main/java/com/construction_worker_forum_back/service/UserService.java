@@ -35,6 +35,11 @@ public class UserService {
                 .map(user -> modelMapper.map(user, UserDto.class));
     }
 
+    public Optional<UserDto> findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(user -> modelMapper.map(user, UserDto.class));
+    }
+
     @Transactional
     public Optional<UserDto> register(UserRequestDto userRequestDto) {
         User user = modelMapper.map(userRequestDto, User.class);
@@ -42,6 +47,15 @@ public class UserService {
             return Optional.empty();
         }
         return Optional.of(modelMapper.map(userRepository.save(user), UserDto.class));
+    }
+
+    @Transactional
+    public UserDto changeBio(String username, String newBio) {
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        user.setBio(newBio);
+        return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
     @Transactional
@@ -62,4 +76,5 @@ public class UserService {
         if (user.isEmpty()) return false;
         return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
     }
+
 }
