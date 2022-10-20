@@ -5,6 +5,7 @@ import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.service.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 public class CommentController {
     CommentService commentService;
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @GetMapping
     List<CommentDto> getAllComments() {
         return commentService.getAllComments();

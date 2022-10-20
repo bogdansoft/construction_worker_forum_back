@@ -5,6 +5,7 @@ import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,6 +21,7 @@ public class PostController {
 
     private PostService postService;
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @GetMapping
     public List<PostDto> getAllPosts() {
         return postService.getAllPosts();
