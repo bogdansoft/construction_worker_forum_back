@@ -12,10 +12,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class PostRequestDto {
 
-
-//    @NotEmpty
-//    private Long userId;
-
     @NotEmpty
     @Size(min = 1, max = 150)
     private String content;
