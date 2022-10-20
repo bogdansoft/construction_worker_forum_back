@@ -11,9 +11,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Collections;
 
@@ -21,9 +21,7 @@ import java.util.Collections;
 @EnableMethodSecurity
 @AllArgsConstructor
 public class SecurityConfig {
-
-    UserDetailsService userDetailsService;
-    PasswordEncoderConfig passwordEncoderConfig;
+    JwtFilter jwtFilter;
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
@@ -32,21 +30,23 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-                .httpBasic(configurer -> configurer
-                        .authenticationEntryPoint(restAuthenticationEntryPoint()))
                 .csrf().disable()
                 .headers(configurer -> configurer
                         .frameOptions().disable())
                 .authorizeRequests(configurer -> configurer
-                        .mvcMatchers(HttpMethod.POST, "/api/user").permitAll()
+                        .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/**").authenticated()
                         .anyRequest().denyAll())
+                .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint()).and()
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -59,8 +59,8 @@ public class SecurityConfig {
     @Bean
     public FilterRegistrationBean<JwtFilter> filterRegistrationBean() {
         FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(new JwtFilter());
-        filterRegistrationBean.setUrlPatterns(Collections.singleton("/api/user/login"));
+        filterRegistrationBean.setFilter(jwtFilter);
+        filterRegistrationBean.setUrlPatterns(Collections.singleton("/api/**"));
         return filterRegistrationBean;
     }
 }

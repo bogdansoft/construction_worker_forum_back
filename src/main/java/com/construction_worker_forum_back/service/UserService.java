@@ -7,8 +7,6 @@ import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -43,15 +41,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserLoginDto login(UserLoginRequestDto loginRequestDto) {
-        User user = userRepository.findByUsernameIgnoreCase(loginRequestDto.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User " + loginRequestDto.getUsername() + " not found"));
-
-        if (passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
-            UserLoginDto userLoginDto = modelMapper.map(user, UserLoginDto.class);
-            userLoginDto.setToken(generateToken(loginRequestDto));
-            return userLoginDto;
-        }
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+       return null;
     }
 
     public List<UserDto> getAllUsers() {
@@ -95,16 +85,5 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;
         return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
-    }
-
-    private String generateToken(UserLoginRequestDto loginRequestDto) {
-        long now = System.currentTimeMillis();
-        return Jwts.builder()
-                .setSubject(loginRequestDto.getUsername())
-                .claim("roles", "user")
-                .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + 10000))
-                .signWith(SignatureAlgorithm.HS512, "secretkey").compact();
-
     }
 }
