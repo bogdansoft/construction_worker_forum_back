@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
@@ -41,6 +42,9 @@ public class User {
 
     @Size(max = 30)
     private String lastName;
+
+    @Size(min = 5)
+    private String bio;
 
     @CreatedDate
     @Column(name = "created_at")
