@@ -3,7 +3,6 @@ package com.construction_worker_forum_back.validation.role;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RoleValidator implements ConstraintValidator<ValidRole, CharSequence> {
@@ -13,7 +12,7 @@ public class RoleValidator implements ConstraintValidator<ValidRole, CharSequenc
     public void initialize(ValidRole annotation) {
         acceptedValues = Stream.of(annotation.enumClass().getEnumConstants())
                 .map(Enum::name)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
