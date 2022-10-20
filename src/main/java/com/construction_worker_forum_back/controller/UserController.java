@@ -1,6 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.UserLoginRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,12 @@ public class UserController {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
+
+    @PostMapping("/login")
+    public UserDto loginUser(@RequestBody UserLoginRequestDto loginRequestDto) {
+        return userService.login(loginRequestDto);
+    }
+
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)

@@ -1,11 +1,13 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.UserLoginRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
@@ -34,6 +37,18 @@ public class UserService implements UserDetailsService {
 
         return user.map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
+    }
+
+    public UserDto login(UserLoginRequestDto loginRequestDto) {
+        User user = userRepository.findByUsernameIgnoreCase(loginRequestDto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User " + loginRequestDto.getUsername() + " not found"));
+
+        if (passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            return modelMapper.map(user, UserDto.class);
+        } else {
+            log.warn("Wrong credentials!");
+        }
+        return null;
     }
 
     public List<UserDto> getAllUsers() {
