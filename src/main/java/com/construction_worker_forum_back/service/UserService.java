@@ -6,7 +6,6 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
