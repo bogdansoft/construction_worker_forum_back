@@ -32,7 +32,7 @@ public class JwtTokenUtil {
         return claimsResolver.apply(claims);
     }
 
-    //for retrieveing any information from token we will need the secret key
+    //for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
