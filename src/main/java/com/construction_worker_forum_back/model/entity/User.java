@@ -1,8 +1,10 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -61,10 +63,20 @@ public class User {
     @Column(name = "user_role")
     private Role userRoles;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Comment> userComments;
-
     @OneToMany
+    @JoinTable(
+            name = "users_user_comments",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_comments_id")
+    )
+    private List<Comment> userComments;
+    
+    @OneToMany
+    @JoinTable(
+            name = "users_user_posts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_posts_id")
+    )
     private List<Post> userPosts;
 
     @PrePersist
