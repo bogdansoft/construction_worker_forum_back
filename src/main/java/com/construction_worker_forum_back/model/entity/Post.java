@@ -39,6 +39,9 @@ public class Post {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Date updatedAt;
+    
+    @OneToMany
+    private List<Comment> comments;
 
     @ManyToOne
     private User user;
