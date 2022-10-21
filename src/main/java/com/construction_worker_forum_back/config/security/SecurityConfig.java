@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .frameOptions().disable())
                 .authorizeRequests(configurer -> configurer
                         .mvcMatchers("/api/login").permitAll()
+                        .mvcMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")

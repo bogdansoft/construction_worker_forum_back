@@ -32,14 +32,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-            return;
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         String token = header.substring(7);
 
         if (!jwtTokenUtil.validateToken(token, userRepository)) {
             filterChain.doFilter(request, response);
-            return;
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         User user = userRepository.findByUsernameIgnoreCase(jwtTokenUtil.getUsernameFromToken(token)).orElse(null);
