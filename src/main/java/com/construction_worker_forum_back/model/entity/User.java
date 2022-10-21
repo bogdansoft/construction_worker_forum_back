@@ -61,7 +61,7 @@ public class User {
     @Column(name = "user_role")
     private Role userRoles;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> userComments;
 
     @OneToMany

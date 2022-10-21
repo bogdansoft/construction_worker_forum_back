@@ -2,9 +2,9 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
-import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.service.CommentService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/comment")
 @AllArgsConstructor
@@ -33,6 +34,7 @@ public class CommentController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     CommentDto createComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
+        log.info(String.valueOf(commentRequestDto));
         return commentService.createComment(commentRequestDto);
     }
 
@@ -54,7 +56,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{id}")
-    List<CommentDto> getCommentsOfPost(@PathVariable Long id){
+    List<CommentDto> getCommentsOfPost(@PathVariable Long id) {
         return commentService.getCommentsOfPost(id);
     }
 
