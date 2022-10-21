@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil {
-    private final String secret = "secret";
+    private static final String SECRET = "secret";
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -34,7 +34,7 @@ public class JwtTokenUtil {
 
     //for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
     }
 
     private boolean isTokenExpired(String token) {
@@ -50,7 +50,7 @@ public class JwtTokenUtil {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 10000000))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .signWith(SignatureAlgorithm.HS512, SECRET).compact();
     }
 
     public boolean validateToken(String token, UserRepository userRepository) {
