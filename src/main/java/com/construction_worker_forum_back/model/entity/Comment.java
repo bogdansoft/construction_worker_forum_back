@@ -22,7 +22,7 @@ import java.util.Date;
 public class Comment {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(min = 1, max = 100)
