@@ -1,7 +1,6 @@
 package com.construction_worker_forum_back.config.security;
 
 import lombok.AllArgsConstructor;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -14,8 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.Collections;
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -36,7 +33,7 @@ public class SecurityConfig {
                 .headers(configurer -> configurer
                         .frameOptions().disable())
                 .authorizeRequests(configurer -> configurer
-                        .mvcMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .mvcMatchers("/api/login").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
@@ -55,13 +52,5 @@ public class SecurityConfig {
     @Bean
     AuthenticationEntryPoint restAuthenticationEntryPoint() {
         return ((request, response, authException) -> response.sendError(HttpStatus.UNAUTHORIZED.value(), authException.getMessage()));
-    }
-
-    @Bean
-    public FilterRegistrationBean<JwtFilter> filterRegistrationBean() {
-        FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(jwtFilter);
-        filterRegistrationBean.setUrlPatterns(Collections.singleton("/api/**"));
-        return filterRegistrationBean;
     }
 }

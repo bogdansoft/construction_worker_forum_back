@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @RequestMapping("/api")
 @AllArgsConstructor
 public class LoginController {
