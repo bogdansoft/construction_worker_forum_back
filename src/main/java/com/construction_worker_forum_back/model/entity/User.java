@@ -8,7 +8,6 @@ import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
@@ -71,6 +70,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "user_comments_id")
     )
     private List<Comment> userComments;
+    
     @OneToMany
     @JoinTable(
             name = "users_user_posts",

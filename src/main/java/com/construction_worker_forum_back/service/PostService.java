@@ -2,9 +2,7 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
-import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
-import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,13 +15,13 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserService userService;
     private final ModelMapper modelMapper;
 
     public List<PostDto> getAllPosts() {
@@ -65,4 +63,5 @@ public class PostService {
     public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
     }
+
 }

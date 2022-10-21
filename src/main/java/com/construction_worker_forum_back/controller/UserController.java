@@ -36,7 +36,7 @@ public class UserController {
 
     //query string zeby uniknac niejednoznacznego mapowania
     @GetMapping()
-    UserDto getUserByUsername(@RequestParam(value="username") String username) {
+    UserDto getUserByUsername(@RequestParam(value = "username") String username) {
         return userService
                 .findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

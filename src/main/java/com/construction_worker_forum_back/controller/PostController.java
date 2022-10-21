@@ -25,17 +25,20 @@ public class PostController {
         return postService.getAllPosts();
     }
 
+
     @GetMapping("/post/{id}")
     public PostDto getPostById(@PathVariable("id") Long id) {
         return postService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+
     @PostMapping("/post/add")
     @ResponseStatus(HttpStatus.CREATED)
     public PostDto createPost(@Valid @RequestBody PostRequestDto post) {
         return postService.createPost(post);
     }
+
 
     @PostMapping("/post/{id}")
     public PostDto updatePostById(@PathVariable("id") Long id, @RequestBody PostRequestDto post) {
@@ -53,4 +56,5 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
 }
