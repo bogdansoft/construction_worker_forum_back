@@ -37,7 +37,7 @@ public class JwtTokenUtil {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -53,7 +53,7 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    public Boolean validateToken(String token, UserRepository userRepository) {
+    public boolean validateToken(String token, UserRepository userRepository) {
         final String username = getUsernameFromToken(token);
         final User userFromRepo = userRepository.findByUsernameIgnoreCase(username).orElseThrow();
         return (username.equals(userFromRepo.getUsername()) && !isTokenExpired(token));
