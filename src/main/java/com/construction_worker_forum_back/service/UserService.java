@@ -60,6 +60,7 @@ public class UserService implements UserDetailsService {
         UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
 
         if (!authenticate.isAuthenticated()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
         return new UserLoginDto(jwtTokenUtil.generateToken(user), userFromDb.getId(), user.getUsername());
     }
 
