@@ -53,4 +53,5 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
 }

@@ -53,10 +53,8 @@ public class CommentService {
         PostDto postById = postService
                 .findById(commentRequestDto.getPostId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
         commentToSave.setUser(modelMapper.map(userById, User.class));
         commentToSave.setPost(modelMapper.map(postById, Post.class));
-
         return modelMapper.map(commentRepository.save(commentToSave), CommentDto.class);
     }
 
@@ -75,5 +73,12 @@ public class CommentService {
     @Transactional
     public Boolean deleteById(Long id) {
         return commentRepository.deleteCommentById(id) == 1;
+    }
+
+    public List<CommentDto> getCommentsOfPost(Long id) {
+        return commentRepository.findByPost_Id(id)
+                .stream()
+                .map(comment -> modelMapper.map(comment, CommentDto.class))
+                .toList();
     }
 }

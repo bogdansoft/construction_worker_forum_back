@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
+import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.service.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,4 +52,10 @@ public class CommentController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/post/{id}")
+    List<CommentDto> getCommentsOfPost(@PathVariable Long id){
+        return commentService.getCommentsOfPost(id);
+    }
+
 }
