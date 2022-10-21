@@ -1,9 +1,6 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.config.security.JwtTokenUtil;
 import com.construction_worker_forum_back.model.dto.UserDto;
-import com.construction_worker_forum_back.model.dto.UserLoginDto;
-import com.construction_worker_forum_back.model.dto.UserLoginRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
@@ -11,9 +8,6 @@ import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,8 +27,6 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -42,26 +34,6 @@ public class UserService implements UserDetailsService {
 
         return user.map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
-    }
-
-    public UserLoginDto login(UserLoginRequestDto loginRequestDto) {
-        String username = loginRequestDto.getUsername();
-        User userFromDb = userRepository
-                .findByUsernameIgnoreCase(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
-
-        Authentication authenticate = authenticationManager
-                .authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                username, loginRequestDto.getPassword()
-                        )
-                );
-
-        UserDetailsImpl user = (UserDetailsImpl) authenticate.getPrincipal();
-
-        if (!authenticate.isAuthenticated()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-
-        return new UserLoginDto(jwtTokenUtil.generateToken(user), userFromDb.getId(), user.getUsername());
     }
 
     public List<UserDto> getAllUsers() {

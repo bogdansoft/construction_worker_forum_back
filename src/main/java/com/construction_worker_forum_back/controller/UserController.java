@@ -1,15 +1,11 @@
 package com.construction_worker_forum_back.controller;
 
-import com.construction_worker_forum_back.config.security.JwtTokenUtil;
 import com.construction_worker_forum_back.model.dto.UserDto;
-import com.construction_worker_forum_back.model.dto.UserLoginDto;
-import com.construction_worker_forum_back.model.dto.UserLoginRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,9 +18,6 @@ import java.util.Map;
 @RequestMapping("/api/user")
 @AllArgsConstructor
 public class UserController {
-
-    AuthenticationManager authenticationManager;
-    JwtTokenUtil jwtTokenUtil;
     UserService userService;
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
@@ -39,12 +32,6 @@ public class UserController {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
-
-    @PostMapping("/login")
-    public UserLoginDto loginUser(@RequestBody UserLoginRequestDto loginRequestDto) {
-        return userService.login(loginRequestDto);
-    }
-
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
