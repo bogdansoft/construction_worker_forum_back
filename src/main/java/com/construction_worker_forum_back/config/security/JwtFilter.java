@@ -4,6 +4,7 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -32,14 +34,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         String token = header.substring(7);
 
         if (!jwtTokenUtil.validateToken(token, userRepository)) {
             filterChain.doFilter(request, response);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         User user = userRepository.findByUsernameIgnoreCase(jwtTokenUtil.getUsernameFromToken(token)).orElse(null);
