@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
+import com.construction_worker_forum_back.model.dto.CommentDto;
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
@@ -22,6 +24,8 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @GetMapping
+    //zmieniona sciezka zeby uniknac niejednoznacznego mapowania
+    @GetMapping("/all")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -30,6 +34,28 @@ public class UserController {
     UserDto getUser(@PathVariable Long id) {
         return userService
                 .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    //query string zeby uniknac niejednoznacznego mapowania
+    @GetMapping()
+    UserDto getUserByUsername(@RequestParam(value = "username") String username) {
+        return userService
+                .findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{username}/posts")
+    List<PostDto> getUserPosts(@PathVariable String username) {
+        return userService
+                .findByUsername(username).map(UserDto::getUserPosts)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{username}/comments")
+    List<CommentDto> getUserComments(@PathVariable String username) {
+        return userService
+                .findByUsername(username).map(UserDto::getUserComments)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -42,6 +68,12 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
+    @PostMapping("/{username}/changebio")
+    @ResponseStatus(HttpStatus.CREATED)
+    UserDto changeBio(@PathVariable String username, @Valid @RequestBody String newBio) {
+        return userService.changeBio(username, newBio);
+    }
+
     @PutMapping("/{id}")
     UserDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long id) {
         return userService.updateUser(id, userRequestDto);

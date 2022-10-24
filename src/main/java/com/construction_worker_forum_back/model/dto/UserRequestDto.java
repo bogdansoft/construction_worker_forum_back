@@ -33,4 +33,7 @@ public class UserRequestDto {
     @NotEmpty
     @Size(max = 30)
     private String lastName;
+
+    @Size(min = 5)
+    private String bio;
 }

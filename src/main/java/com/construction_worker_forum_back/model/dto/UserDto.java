@@ -3,13 +3,15 @@ package com.construction_worker_forum_back.model.dto;
 import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.Role;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
@@ -18,9 +20,11 @@ public class UserDto {
     private String email;
     private String firstName;
     private String lastName;
+    private String bio;
     private Date createdAt;
     private Date updatedAt;
     private AccountStatus accountStatus;
     private Role userRoles;
     private List<CommentDto> userComments;
+    private List<PostDto> userPosts;
 }

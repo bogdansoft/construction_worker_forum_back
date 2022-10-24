@@ -3,8 +3,10 @@ package com.construction_worker_forum_back.model.entity;
 import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.Role;
 import lombok.*;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -44,6 +46,9 @@ public class User {
     @Size(max = 30)
     private String lastName;
 
+    @Size(min = 5)
+    private String bio;
+
     @CreatedDate
     @Column(name = "created_at")
     private Date createdAt;
@@ -62,7 +67,20 @@ public class User {
 
     @ToString.Exclude
     @OneToMany
+    @JoinTable(
+            name = "users_user_comments",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_comments_id")
+    )
     private List<Comment> userComments;
+    
+    @OneToMany
+    @JoinTable(
+            name = "users_user_posts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_posts_id")
+    )
+    private List<Post> userPosts;
 
     @PrePersist
     private void beforeSaving() {

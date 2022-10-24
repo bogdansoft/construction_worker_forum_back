@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     int deleteByUsernameIgnoreCase(String username);
 
     Optional<User> findByUsernameIgnoreCase(String username);
+
+    Optional<User> findByUsername(String username);
+
 }
