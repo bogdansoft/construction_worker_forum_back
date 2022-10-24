@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil {
-    private static final String SECRET = "secret";
+    private static final String SECRET = "secret"; //use @Value and get it from resources + it can be generated automatically
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -43,14 +43,16 @@ public class JwtTokenUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>(); //
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 10000000))
-                .signWith(SignatureAlgorithm.HS512, SECRET).compact();
+        return Jwts.builder().setClaims(claims).setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis())) //USE INSTANT NOW HERE + addHours etc.
+                .setExpiration(new Date(System.currentTimeMillis() + 10_000_000))
+                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .compact();
     }
 
     public boolean validateToken(String token, UserRepository userRepository) {
