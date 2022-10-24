@@ -3,10 +3,15 @@ package com.construction_worker_forum_back.service;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,9 +23,18 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
+
+        return user.map(UserDetailsImpl::new)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
+    }
 
     public List<UserDto> getAllUsers() {
         return userRepository
@@ -46,6 +60,8 @@ public class UserService {
         if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
             return Optional.empty();
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return Optional.of(modelMapper.map(userRepository.save(user), UserDto.class));
     }
 

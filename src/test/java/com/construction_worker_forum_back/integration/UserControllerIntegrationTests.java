@@ -1,6 +1,10 @@
 package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
+import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.AccountStatus;
+import com.construction_worker_forum_back.model.security.Role;
+import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -21,8 +26,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerIntegrationTests extends TestcontainersConfig {
 
+    private void setupUser() {
+        User admin = User.builder()
+                .username("admin")
+                .password("password1")
+                .userRoles(Role.ADMINISTRATOR)
+                .build();
+
+        User user = User.builder()
+                .username("user")
+                .password("password2")
+                .userRoles(Role.USER)
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
+
+        userRepository.save(admin);
+        userRepository.save(user);
+    }
+
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     RemoveService removeService;
@@ -36,6 +62,7 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
     @BeforeEach
     void setUp() {
         removeService.removeAll();
+        setupUser();
     }
 
     @Test
@@ -71,7 +98,7 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
                 .andExpect(jsonPath("$.createdAt",
                         is(notNullValue())))
                 .andExpect(jsonPath("$.accountStatus",
-                        is("CREATED")))
+                        is("ACTIVE")))
                 .andExpect(jsonPath("$.userRoles",
                         is("USER")));
     }
@@ -109,13 +136,14 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
     }
 
     @Test
+    @WithUserDetails("admin")
     void givenSavedUser_whenSearchedById_thenReturnFoundUser() throws Exception {
 
         // given
         UserRequestDto userToSave = UserRequestDto.builder()
-                .username("user1")
+                .username("test")
                 .password("secret")
-                .email("user@example.com")
+                .email("test@example.com")
                 .firstName("John")
                 .lastName("Doe")
                 .build();
@@ -145,7 +173,7 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
                 .andExpect(jsonPath("$.createdAt",
                         is(notNullValue())))
                 .andExpect(jsonPath("$.accountStatus",
-                        is("CREATED")))
+                        is("ACTIVE")))
                 .andExpect(jsonPath("$.userRoles",
                         is("USER")));
     }

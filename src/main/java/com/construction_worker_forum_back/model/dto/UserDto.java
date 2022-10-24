@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.model.dto;
 
-import com.construction_worker_forum_back.model.entity.AccountStatus;
-import com.construction_worker_forum_back.model.entity.Role;
+import com.construction_worker_forum_back.model.security.AccountStatus;
+import com.construction_worker_forum_back.model.security.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

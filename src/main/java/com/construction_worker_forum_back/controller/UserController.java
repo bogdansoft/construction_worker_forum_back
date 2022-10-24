@@ -7,6 +7,7 @@ import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,7 +22,7 @@ import java.util.Map;
 public class UserController {
     UserService userService;
 
-    //zmieniona sciezka zeby uniknac niejednoznacznego mapowania
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @GetMapping("/all")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
@@ -34,8 +35,7 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    //query string zeby uniknac niejednoznacznego mapowania
-    @GetMapping()
+    @GetMapping
     UserDto getUserByUsername(@RequestParam(value = "username") String username) {
         return userService
                 .findByUsername(username)
@@ -64,6 +64,7 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @PostMapping("/{username}/changebio")
     @ResponseStatus(HttpStatus.CREATED)
     UserDto changeBio(@PathVariable String username, @Valid @RequestBody String newBio) {
@@ -75,6 +76,7 @@ public class UserController {
         return userService.updateUser(id, userRequestDto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @DeleteMapping("/{id}")
     Map<String, String> deleteUser(@PathVariable Long id) {
         if (userService.deleteUser(id)) {

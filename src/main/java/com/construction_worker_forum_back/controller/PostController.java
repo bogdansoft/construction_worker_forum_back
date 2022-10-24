@@ -14,38 +14,35 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/api")
+@RequestMapping("/api/post")
 @AllArgsConstructor
 public class PostController {
 
     private PostService postService;
 
-    @GetMapping("/posts")
+    @GetMapping
     public List<PostDto> getAllPosts() {
         return postService.getAllPosts();
     }
 
-
-    @GetMapping("/post/{id}")
+    @GetMapping("/{id}")
     public PostDto getPostById(@PathVariable("id") Long id) {
         return postService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-
-    @PostMapping("/post/add")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public PostDto createPost(@Valid @RequestBody PostRequestDto post) {
         return postService.createPost(post);
     }
 
-
-    @PostMapping("/post/{id}")
+    @PutMapping("/{id}")
     public PostDto updatePostById(@PathVariable("id") Long id, @RequestBody PostRequestDto post) {
         return postService.updatePostById(id, post);
     }
 
-    @DeleteMapping("/post/{id}")
+    @DeleteMapping("/{id}")
     public Map<String, String> deletePostById(@PathVariable("id") Long id) {
         if (postService.deleteById(id)) {
             return Map.of(
@@ -56,5 +53,4 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
-
 }

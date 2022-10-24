@@ -6,6 +6,7 @@ import com.construction_worker_forum_back.service.CommentService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,7 +22,8 @@ import java.util.Map;
 public class CommentController {
     CommentService commentService;
 
-    @GetMapping()
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
+    @GetMapping
     List<CommentDto> getAllComments() {
         return commentService.getAllComments();
     }
@@ -31,7 +33,7 @@ public class CommentController {
         return commentService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CommentDto createComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         log.info(String.valueOf(commentRequestDto));

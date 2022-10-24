@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.model.entity;
 
+import com.construction_worker_forum_back.model.security.AccountStatus;
+import com.construction_worker_forum_back.model.security.Role;
 import lombok.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.CreatedDate;
@@ -61,8 +63,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
-    private Role userRoles;
+    private Role userRoles = Role.USER;
 
+    @ToString.Exclude
     @OneToMany
     @JoinTable(
             name = "users_user_comments",
@@ -82,7 +85,6 @@ public class User {
     @PrePersist
     private void beforeSaving() {
         createdAt = Date.from(Instant.now());
-        accountStatus = AccountStatus.CREATED;
-        userRoles = Role.USER;
+        accountStatus = AccountStatus.ACTIVE;
     }
 }
