@@ -23,8 +23,6 @@ public class UserController {
     UserService userService;
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
-    @GetMapping
-    //zmieniona sciezka zeby uniknac niejednoznacznego mapowania
     @GetMapping("/all")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
@@ -37,8 +35,7 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    //query string zeby uniknac niejednoznacznego mapowania
-    @GetMapping()
+    @GetMapping
     UserDto getUserByUsername(@RequestParam(value = "username") String username) {
         return userService
                 .findByUsername(username)
