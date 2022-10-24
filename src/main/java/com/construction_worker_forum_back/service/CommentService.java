@@ -73,7 +73,7 @@ public class CommentService {
     }
 
     @Transactional
-    public Boolean deleteById(Long id) {
+    public boolean deleteById(Long id) {
         return commentRepository.deleteCommentById(id) == 1;
     }
 }
