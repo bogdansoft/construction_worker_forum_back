@@ -39,19 +39,9 @@ public class Comment {
     private Date updatedAt;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinTable(
-            name = "users_user_comments",
-            joinColumns = @JoinColumn(name = "user_comments_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
     private User user;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinTable(
-            name = "posts_comments",
-            joinColumns = @JoinColumn(name = "comments_id"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
-    )
     private Post post;
 
     @PrePersist
