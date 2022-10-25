@@ -67,19 +67,10 @@ public class User {
 
     @ToString.Exclude
     @OneToMany
-    @JoinTable(
-            name = "users_user_comments",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_comments_id")
-    )
+
     private List<Comment> userComments;
     
     @OneToMany
-    @JoinTable(
-            name = "users_user_posts",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_posts_id")
-    )
     private List<Post> userPosts;
 
     @PrePersist
