@@ -3,6 +3,8 @@ package com.construction_worker_forum_back.controller;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.service.CommentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,8 @@ import java.util.Map;
 @Slf4j
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/comment")
+@SecurityRequirement(name = "Bearer Authentication")
+@Tag(name = "Comment", description = "The Comment API. Contains all the operations that can be performed on a comment.")
 @AllArgsConstructor
 public class CommentController {
     CommentService commentService;
