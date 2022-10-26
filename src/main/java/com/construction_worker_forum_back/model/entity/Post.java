@@ -39,19 +39,9 @@ public class Post {
     private Date updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "users_user_posts",
-            joinColumns = @JoinColumn(name = "user_posts_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
     private User user;
 
-    @OneToMany
-    @JoinTable(
-            name = "posts_comments",
-            joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "comments_id")
-    )
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     @PrePersist
