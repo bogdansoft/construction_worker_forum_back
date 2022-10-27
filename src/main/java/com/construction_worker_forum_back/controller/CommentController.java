@@ -32,6 +32,12 @@ public class CommentController {
         return commentService.getAllComments();
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/all_by_username/{username}")
+    public List<CommentDto> getAllCommentsByUsername(@PathVariable String username) {
+        return commentService.getCommentsByUsername(username);
+    }
+
     @GetMapping("/{id}")
     CommentDto getComment(@PathVariable Long id) {
         return commentService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
