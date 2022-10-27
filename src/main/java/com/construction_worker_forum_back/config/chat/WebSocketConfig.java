@@ -14,7 +14,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import java.util.List;
 
 /**
- * No using kafka yet!
+ * Not using kafka yet!
  */
 @Configuration
 @EnableWebSocketMessageBroker
