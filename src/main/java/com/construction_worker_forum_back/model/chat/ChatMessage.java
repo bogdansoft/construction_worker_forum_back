@@ -1,12 +1,13 @@
-package com.construction_worker_forum_back.model.entity;
+package com.construction_worker_forum_back.model.chat;
 
-import com.construction_worker_forum_back.model.utils.MessageStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
