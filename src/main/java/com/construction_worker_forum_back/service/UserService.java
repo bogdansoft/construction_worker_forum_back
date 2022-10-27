@@ -92,5 +92,4 @@ public class UserService implements UserDetailsService {
         if (user.isEmpty()) return false;
         return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
     }
-
 }

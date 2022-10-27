@@ -18,8 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 public class LoginService {
 
-    AuthenticationManager authenticationManager;
-    JwtTokenUtil jwtTokenUtil;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
 
     public LoginDto login(LoginRequestDto loginRequestDto) {
 

@@ -5,6 +5,9 @@ import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,16 +21,20 @@ import java.util.Map;
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/user")
+@Tag(name = "User", description = "The User API. Contains all the operations that can be performed on a user.")
 @AllArgsConstructor
 public class UserController {
     UserService userService;
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/all")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 
+    @Operation(summary = "Delete user", description = "Delete user")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
     UserDto getUser(@PathVariable Long id) {
         return userService
@@ -35,6 +42,7 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping
     UserDto getUserByUsername(@RequestParam(value = "username") String username) {
         return userService
@@ -42,6 +50,7 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{username}/posts")
     List<PostDto> getUserPosts(@PathVariable String username) {
         return userService
@@ -49,6 +58,7 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{username}/comments")
     List<CommentDto> getUserComments(@PathVariable String username) {
         return userService
@@ -65,18 +75,21 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/{username}/changebio")
     @ResponseStatus(HttpStatus.CREATED)
     UserDto changeBio(@PathVariable String username, @Valid @RequestBody String newBio) {
         return userService.changeBio(username, newBio);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     UserDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long id) {
         return userService.updateUser(id, userRequestDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     Map<String, String> deleteUser(@PathVariable Long id) {
         if (userService.deleteUser(id)) {

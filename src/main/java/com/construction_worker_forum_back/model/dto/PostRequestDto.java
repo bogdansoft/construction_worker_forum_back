@@ -22,4 +22,7 @@ public class PostRequestDto {
     @NotNull
     @Size(min = 2, max = 20)
     private String title;
+
+    @NotNull
+    private Long topicId;
 }

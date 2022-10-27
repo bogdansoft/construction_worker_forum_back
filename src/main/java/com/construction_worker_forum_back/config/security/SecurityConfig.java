@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/**").authenticated()
+                        .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().denyAll())
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint()).and()
                 .sessionManagement(configurer -> configurer

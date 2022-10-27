@@ -2,8 +2,10 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
+import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
+    private final TopicService topicService;
     private final ModelMapper modelMapper;
 
     public List<PostDto> getAllPosts() {
@@ -46,7 +49,12 @@ public class PostService {
                 .findById(postRequestDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        TopicDto topicById = topicService
+                .findTopicById(postRequestDto.getTopicId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         postToSave.setUser(modelMapper.map(userById, User.class));
+        postToSave.setTopic(modelMapper.map(topicById, Topic.class));
 
         return modelMapper.map(postRepository.save(postToSave), PostDto.class);
     }
@@ -57,7 +65,12 @@ public class PostService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        TopicDto topicById = topicService
+                .findTopicById(postRequestDto.getTopicId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         modelMapper.map(postRequestDto, postFromDb);
+        modelMapper.map(postRequestDto, topicById);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));
 
         return modelMapper.map(postFromDb, PostDto.class);
@@ -67,5 +80,4 @@ public class PostService {
     public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
     }
-
 }
