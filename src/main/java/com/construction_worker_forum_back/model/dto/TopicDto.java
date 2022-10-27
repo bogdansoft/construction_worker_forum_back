@@ -1,6 +1,9 @@
 package com.construction_worker_forum_back.model.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
@@ -9,13 +12,10 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostDto {
+public class TopicDto {
     private Long id;
-    private String title;
-    private String content;
+    private String name;
     private Date createdAt;
     private Date updatedAt;
-    private UserDto user;
-    private List<CommentDto> comments;
-    private TopicDto topic;
+    private List<PostDto> posts;
 }

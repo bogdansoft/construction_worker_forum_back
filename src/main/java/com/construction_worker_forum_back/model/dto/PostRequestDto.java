@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -12,7 +13,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class PostRequestDto {
 
-    @NotEmpty
+    @NotNull
     private Long userId;
 
     @NotEmpty
@@ -22,4 +23,7 @@ public class PostRequestDto {
     @NotEmpty
     @Size(min = 2, max = 20)
     private String title;
+
+    @NotNull
+    private Long topicId;
 }

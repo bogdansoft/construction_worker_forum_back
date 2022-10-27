@@ -61,5 +61,4 @@ public class CommentController {
     List<CommentDto> getCommentsOfPost(@PathVariable Long id) {
         return commentService.getCommentsOfPost(id);
     }
-
 }

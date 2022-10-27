@@ -24,10 +24,10 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CommentService {
 
-    CommentRepository commentRepository;
-    PostService postService;
-    UserService userService;
-    ModelMapper modelMapper;
+    private final CommentRepository commentRepository;
+    private final PostService postService;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     public List<CommentDto> getAllComments() {
         return commentRepository
