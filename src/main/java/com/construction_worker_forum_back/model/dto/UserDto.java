@@ -25,6 +25,6 @@ public class UserDto {
     private Date updatedAt;
     private AccountStatus accountStatus;
     private Role userRoles;
-    private List<CommentDto> userComments;
-    private List<PostDto> userPosts;
+    private List<Long> userCommentsIds;
+    private List<Long> userPostsIds;
 }

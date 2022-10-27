@@ -2,7 +2,6 @@ package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -20,7 +19,7 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment {
+public class Comment implements IEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +37,10 @@ public class Comment {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(targetEntity = User.class, cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     private User user;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(targetEntity = Post.class, cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Post post;
 
     @PrePersist

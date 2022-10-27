@@ -18,6 +18,6 @@ public class PostDto {
     private String content;
     private Date createdAt;
     private Date updatedAt;
-    private UserDto user;
-    private List<CommentDto> comments;
+    private Long userId;
+    private List<Long> commentsIds;
 }

@@ -1,7 +1,5 @@
 package com.construction_worker_forum_back.controller;
 
-import com.construction_worker_forum_back.model.dto.CommentDto;
-import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.service.UserService;
@@ -43,16 +41,16 @@ public class UserController {
     }
 
     @GetMapping("/{username}/posts")
-    List<PostDto> getUserPosts(@PathVariable String username) {
+    List<Long> getUserPosts(@PathVariable String username) {
         return userService
-                .findByUsername(username).map(UserDto::getUserPosts)
+                .findByUsername(username).map(UserDto::getUserPostsIds)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{username}/comments")
-    List<CommentDto> getUserComments(@PathVariable String username) {
+    List<Long> getUserComments(@PathVariable String username) {
         return userService
-                .findByUsername(username).map(UserDto::getUserComments)
+                .findByUsername(username).map(UserDto::getUserCommentsIds)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
