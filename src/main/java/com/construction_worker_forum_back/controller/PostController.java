@@ -28,6 +28,12 @@ public class PostController {
         return postService.getAllPosts();
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/all_by_username/{username}")
+    public List<PostDto> getAllPostsByUsername(@PathVariable String username) {
+        return postService.getPostsByUsername(username);
+    }
+
     @GetMapping("/{id}")
     public PostDto getPostById(@PathVariable("id") Long id) {
         return postService.findById(id)

@@ -37,6 +37,14 @@ public class CommentService {
                 .toList();
     }
 
+    public List<CommentDto> getCommentsByUsername(String username) {
+        return commentRepository
+                .findByUser_UsernameIgnoreCase(username)
+                .stream()
+                .map(comment -> modelMapper.map(comment, CommentDto.class))
+                .toList();
+    }
+
     public Optional<CommentDto> findById(Long id) {
         return commentRepository.findById(id)
                 .map(comment -> modelMapper.map(comment, CommentDto.class));

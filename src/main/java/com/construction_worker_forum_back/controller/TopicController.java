@@ -42,8 +42,6 @@ public class TopicController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     TopicDto createTopic(@Valid @RequestBody TopicRequestDto topicRequestDto) {
-        log.info(String.valueOf(topicRequestDto));
-
         return topicService.createTopic(topicRequestDto);
     }
 
