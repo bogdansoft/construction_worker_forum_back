@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class TopicRequestDto {
 
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 50)
     private String name;
 
     private Long postId;

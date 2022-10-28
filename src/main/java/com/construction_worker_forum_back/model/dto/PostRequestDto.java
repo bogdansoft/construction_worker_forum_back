@@ -16,11 +16,11 @@ public class PostRequestDto {
     private Long userId;
 
     @NotNull
-    @Size(min = 1, max = 150)
+    @Size(min = 1, max = 1000)
     private String content;
 
     @NotNull
-    @Size(min = 2, max = 20)
+    @Size(min = 2, max = 50)
     private String title;
 
     @NotNull

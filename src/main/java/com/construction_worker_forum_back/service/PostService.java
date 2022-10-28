@@ -48,7 +48,6 @@ public class PostService {
         UserDto userById = userService
                 .findById(postRequestDto.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
         TopicDto topicById = topicService
                 .findTopicById(postRequestDto.getTopicId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
