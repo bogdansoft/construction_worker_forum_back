@@ -15,7 +15,6 @@
     <description>construction_worker_forum_back</description>
     <properties>
         <java.version>17</java.version>
-        <liquibase.version>4.17.1</liquibase.version>
     </properties>
     <dependencies>
         <dependency>
@@ -105,8 +104,11 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>${liquibase.version}</version>
         </dependency>
+        <!-- <dependency>
+             <groupId>org.liquibase.ext</groupId>
+             <artifactId>liquibase-forum_db</artifactId>
+         </dependency>-->
     </dependencies>
 
     <dependencyManagement>
@@ -126,6 +128,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${project.parent.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -146,19 +149,21 @@
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-                <version>${liquibase.version}</version>
-                <executions>
-                    <execution>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <propertyFile>src/main/resources/application.properties</propertyFile>
-                            <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
-                        </configuration>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <propertyFile>resources/liquibase/liquibase.properties</propertyFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <shutdown>kill</shutdown>
+                        <include>RestWebServiceTestManager.java</include>
+                        <include>FirefoxTestManager.java</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
