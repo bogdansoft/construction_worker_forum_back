@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.config.chat;
+package com.construction_worker_forum_back.config.chat.kafka;
 
 import com.construction_worker_forum_back.constants.KafkaConstants;
 import com.construction_worker_forum_back.model.chat.ChatMessage;

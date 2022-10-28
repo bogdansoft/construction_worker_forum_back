@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.config.chat;
+package com.construction_worker_forum_back.config.chat.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
