@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -60,7 +61,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/{username}/changebio")
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto changeBio(@PathVariable String username, @Valid @RequestBody String newBio) {
+    UserDto changeBio(@PathVariable String username, @Valid @RequestBody BioSimpleDto newBio) {
         return userService.changeBio(username, newBio);
     }
 
