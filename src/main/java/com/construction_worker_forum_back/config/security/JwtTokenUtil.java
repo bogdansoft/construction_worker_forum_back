@@ -2,10 +2,7 @@ package com.construction_worker_forum_back.config.security;
 
 import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -68,8 +65,8 @@ public class JwtTokenUtil {
     private Claims getAllClaimsFromToken(String token) {
         try {
             return Jwts.parser().setSigningKey(getConvertedBinaryKey(key)).parseClaimsJws(token).getBody();
-        } catch (SignatureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token signature! This token cannot be trusted.");
+        } catch (SignatureException | ExpiredJwtException jwtException) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token signature or token is expired! In result this token cannot be trusted.");
         }
     }
 
