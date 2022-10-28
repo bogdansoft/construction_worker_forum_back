@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
@@ -66,11 +67,11 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto changeBio(String username, String newBio) {
+    public UserDto changeBio(String username, BioSimpleDto newBio) {
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        user.setBio(newBio);
+        user.setBio(newBio.getNewBio());
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
