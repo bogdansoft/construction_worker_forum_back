@@ -151,7 +151,7 @@
                     <execution>
                         <phase>process-resources</phase>
                         <configuration>
-                            <propertyFile>./src/main/resources/application.properties</propertyFile>
+                            <propertyFile>src/main/resources/application.properties</propertyFile>
                             <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                         </configuration>
                         <goals>
