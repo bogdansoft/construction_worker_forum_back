@@ -101,6 +101,14 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.6.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+        <!-- <dependency>
+             <groupId>org.liquibase.ext</groupId>
+             <artifactId>liquibase-forum_db</artifactId>
+         </dependency>-->
     </dependencies>
 
     <dependencyManagement>
@@ -120,6 +128,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${project.parent.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -135,6 +144,25 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <configuration>
+                    <propertyFile>resources/liquibase/liquibase.properties</propertyFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <shutdown>kill</shutdown>
+                        <include>RestWebServiceTestManager.java</include>
+                        <include>FirefoxTestManager.java</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>
