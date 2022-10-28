@@ -1,21 +1,37 @@
 package com.construction_worker_forum_back.config.security;
 
-import com.construction_worker_forum_back.model.entity.User;
-import com.construction_worker_forum_back.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.construction_worker_forum_back.model.security.AccountStatus;
+import com.construction_worker_forum_back.model.security.Role;
+import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.xml.bind.DatatypeConverter;
+import java.time.Instant;
+import java.util.*;
 import java.util.function.Function;
 
+import static java.time.temporal.ChronoUnit.MINUTES;
+
+@Slf4j
+@PropertySource(value={"classpath:application.properties"})
 @Component
 public class JwtTokenUtil {
-    private static final String SECRET = "secret"; //use @Value and get it from resources + it can be generated automatically
+
+    @Value("${jwt.token.signature:default}")
+    private String key;
+
+    //convert string key to array of bytes
+    private byte[] getConvertedBinaryKey(String key) {
+        String base64Key = DatatypeConverter.printBase64Binary(key.getBytes());
+        return DatatypeConverter.parseBase64Binary(base64Key);
+    }
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -27,6 +43,19 @@ public class JwtTokenUtil {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    public List<GrantedAuthority> getGrantedAuthoritiesFromToken(String token) {
+        var userRoles =  ((List<?>) getClaimFromToken(token, claims -> claims.get("roles")))
+                .stream()
+                .map(role -> Role.valueOf((String) role))
+                .toList();
+
+        var userStatus = AccountStatus.valueOf((String) getClaimFromToken(token, claims -> claims.get("status")));
+        var userGrantedAuthorities = new ArrayList<GrantedAuthority>(userRoles);
+        userGrantedAuthorities.add(userStatus);
+
+        return userGrantedAuthorities;
+    }
+
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
@@ -34,7 +63,11 @@ public class JwtTokenUtil {
 
     //for retrieving any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parser().setSigningKey(getConvertedBinaryKey(key)).parseClaimsJws(token).getBody();
+        } catch (SignatureException | ExpiredJwtException jwtException) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token signature or token is expired! In result this token cannot be trusted.");
+        }
     }
 
     private boolean isTokenExpired(String token) {
@@ -43,21 +76,37 @@ public class JwtTokenUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>(); //
+        Map<String, Object> claims = new HashMap<>();
+
+        List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .filter(authority -> authority instanceof Role)
+                .map(authority -> ((Role) authority).name())
+                .toList();
+
+        String status = userDetails.getAuthorities()
+                .stream()
+                .filter(authority -> authority instanceof AccountStatus)
+                .map(authority -> ((AccountStatus) authority).getAuthority())
+                .findFirst().orElse("CREATED");
+
+        claims.put("roles", roles);
+        claims.put("status", status);
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis())) //USE INSTANT NOW HERE + addHours etc.
-                .setExpiration(new Date(System.currentTimeMillis() + 10_000_000))
-                .signWith(SignatureAlgorithm.HS512, SECRET)
+        var now = Instant.now();
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plus(10, MINUTES)))
+                .signWith(SignatureAlgorithm.HS512, getConvertedBinaryKey(key))
                 .compact();
     }
 
-    public boolean validateToken(String token, UserRepository userRepository) {
-        final String username = getUsernameFromToken(token);
-        final User userFromRepo = userRepository.findByUsernameIgnoreCase(username).orElseThrow();
-        return (username.equals(userFromRepo.getUsername()) && !isTokenExpired(token));
+    public boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 }
