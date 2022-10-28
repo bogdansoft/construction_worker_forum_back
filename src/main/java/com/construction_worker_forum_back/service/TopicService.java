@@ -50,7 +50,6 @@ public class TopicService {
     @Transactional
     public TopicDto createTopic(TopicRequestDto topicRequestDto) {
         Topic topicToSave = modelMapper.map(topicRequestDto, Topic.class);
-        topicToSave.setCreatedAt(Date.from(Instant.now()));
 
         return modelMapper.map(topicRepository.save(topicToSave), TopicDto.class);
     }
