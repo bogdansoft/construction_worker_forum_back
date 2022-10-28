@@ -37,6 +37,14 @@ public class PostService {
                 .toList();
     }
 
+    public List<PostDto> getPostsByUsername(String username) {
+        return postRepository
+                .findByUser_UsernameIgnoreCase(username)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
     public Optional<PostDto> findById(Long id) {
         return postRepository.findById(id)
                 .map(post -> modelMapper.map(post, PostDto.class));
