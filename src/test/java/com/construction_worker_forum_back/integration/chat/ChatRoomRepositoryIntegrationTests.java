@@ -22,25 +22,26 @@ class ChatRoomRepositoryIntegrationTests extends MongoDbTestContainersConfig {
         chatRoomRepository.deleteAll();
     }
 
+    private final String senderId = "senderId";
+    private final String recipientId = "recipientId";
+    private final String chatId = String.format("%s_%s", senderId, recipientId);
+
+    private final ChatRoom senderRecipient = ChatRoom.builder()
+            .chatId(chatId)
+            .senderId(senderId)
+            .recipientId(recipientId)
+            .build();
+
+    private final ChatRoom recipientSender = ChatRoom.builder()
+            .chatId(chatId)
+            .senderId(recipientId)
+            .recipientId(senderId)
+            .build();
+
     @Test
     void givenChatRooms_whenSavedToDb_thenReturnSavedChatRooms() {
 
         // given
-        String senderId = "senderId";
-        String recipientId = "recipientId";
-        String chatId = String.format("%s_%s", senderId, recipientId);
-
-        ChatRoom senderRecipient = ChatRoom.builder()
-                .chatId(chatId)
-                .senderId(senderId)
-                .recipientId(recipientId)
-                .build();
-
-        ChatRoom recipientSender = ChatRoom.builder()
-                .chatId(chatId)
-                .senderId(recipientId)
-                .recipientId(senderId)
-                .build();
 
         // when
         chatRoomRepository.save(senderRecipient);
@@ -69,21 +70,6 @@ class ChatRoomRepositoryIntegrationTests extends MongoDbTestContainersConfig {
     void givenChatRooms_whenSavedToDb_thenReturnListOfSavedRoomsByChatId() {
 
         // given
-        String senderId = "senderId";
-        String recipientId = "recipientId";
-        String chatId = String.format("%s_%s", senderId, recipientId);
-
-        ChatRoom senderRecipient = ChatRoom.builder()
-                .chatId(chatId)
-                .senderId(senderId)
-                .recipientId(recipientId)
-                .build();
-
-        ChatRoom recipientSender = ChatRoom.builder()
-                .chatId(chatId)
-                .senderId(recipientId)
-                .recipientId(senderId)
-                .build();
 
         // when
         chatRoomRepository.save(senderRecipient);
