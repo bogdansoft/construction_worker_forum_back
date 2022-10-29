@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ChatRoomRepositoryIntegrationTests extends MongoDbTestContainersConfig {
 
@@ -56,12 +55,14 @@ class ChatRoomRepositoryIntegrationTests extends MongoDbTestContainersConfig {
         assertEquals(chatId, chatRoomSenderRecipient.getChatId());
         assertEquals(senderId, chatRoomSenderRecipient.getSenderId());
         assertEquals(recipientId, chatRoomSenderRecipient.getRecipientId());
+        assertNotNull(chatRoomSenderRecipient.getId());
 
         assertTrue(actualChatRoomRecipientSender.isPresent());
         ChatRoom chatRoomRecipientSender = actualChatRoomRecipientSender.get();
         assertEquals(chatId, chatRoomRecipientSender.getChatId());
         assertEquals(recipientId, chatRoomRecipientSender.getSenderId());
         assertEquals(senderId, chatRoomRecipientSender.getRecipientId());
+        assertNotNull(chatRoomRecipientSender.getId());
     }
 
     @Test
