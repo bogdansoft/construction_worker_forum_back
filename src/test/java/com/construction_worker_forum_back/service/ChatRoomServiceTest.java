@@ -43,7 +43,7 @@ class ChatRoomServiceTest {
                 .willReturn(Optional.ofNullable(chatRoom));
 
         // when
-        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId, true);
+        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId);
 
         // then
         assertTrue(actualChatId.isPresent());
@@ -52,29 +52,14 @@ class ChatRoomServiceTest {
     }
 
     @Test
-    void givenNotExistingChatRoom_whenCreateIfNotExistsIsFalse_thenReturnOptionalEmpty() {
+    void givenNotExistingChatRoom_whenTryingToGetChatId_thenCreateChatRoomsAndReturnCommonChatId() {
 
         // given
         given(chatRoomRepository.findBySenderIdAndRecipientId(senderId, recipientId))
                 .willReturn(Optional.empty());
 
         // when
-        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId, false);
-
-        // then
-        assertTrue(actualChatId.isEmpty());
-        verify(chatRoomRepository, never()).save(any(ChatRoom.class));
-    }
-
-    @Test
-    void givenNotExistingChatRoom_whenCreateIfNotExistsIsTrue_thenReturnCreatedChatId() {
-
-        // given
-        given(chatRoomRepository.findBySenderIdAndRecipientId(senderId, recipientId))
-                .willReturn(Optional.empty());
-
-        // when
-        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId, true);
+        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId);
 
         // then
         assertTrue(actualChatId.isPresent());

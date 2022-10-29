@@ -13,13 +13,11 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    public Optional<String> getChatId(String senderId, String recipientId, boolean createIfNotExists) {
+    public Optional<String> getChatId(String senderId, String recipientId) {
 
         return chatRoomRepository.findBySenderIdAndRecipientId(senderId, recipientId)
                 .map(ChatRoom::getChatId)
                 .or(() -> {
-                    if (!createIfNotExists) return Optional.empty();
-
                     var chatId = String.format("%s_%s", senderId, recipientId);
 
                     ChatRoom senderRecipient = ChatRoom.builder()
