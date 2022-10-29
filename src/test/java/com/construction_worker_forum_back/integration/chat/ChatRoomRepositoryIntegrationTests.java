@@ -12,13 +12,13 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ChatRoomRepositoryIntegrationTests extends MongoDbTestContainersConfig {
+class ChatRoomRepositoryIntegrationTests extends MongoDbTestcontainersConfig {
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
 
     @AfterEach
-    void cleanUp() {
+    void cleanup() {
         chatRoomRepository.deleteAll();
     }
 

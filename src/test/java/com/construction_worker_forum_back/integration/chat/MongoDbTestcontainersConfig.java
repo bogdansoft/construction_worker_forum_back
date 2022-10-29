@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 @DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-public abstract class MongoDbTestContainersConfig {
+public abstract class MongoDbTestcontainersConfig {
 
     @Container
     public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo");
