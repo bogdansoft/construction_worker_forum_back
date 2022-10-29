@@ -12,7 +12,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ChatRoomServiceTest {
@@ -45,6 +48,7 @@ class ChatRoomServiceTest {
         // then
         assertTrue(actualChatId.isPresent());
         assertEquals(chatId, actualChatId.get());
+        verify(chatRoomRepository, never()).save(any(ChatRoom.class));
     }
 
     @Test
@@ -59,6 +63,7 @@ class ChatRoomServiceTest {
 
         // then
         assertTrue(actualChatId.isEmpty());
+        verify(chatRoomRepository, never()).save(any(ChatRoom.class));
     }
 
     @Test
