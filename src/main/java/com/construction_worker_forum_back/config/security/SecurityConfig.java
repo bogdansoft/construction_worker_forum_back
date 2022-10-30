@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .mvcMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
+                        .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/**").authenticated()
