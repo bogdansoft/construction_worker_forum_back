@@ -39,8 +39,14 @@ public class ChatMessageService {
     public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         Optional<String> chatId = chatRoomService.getChatId(senderId, recipientId);
 
-        return chatId.map(repository::findByChatId)
+        List<ChatMessage> chatMessages = chatId.map(repository::findByChatId)
                 .orElse(new ArrayList<>());
+
+        if (!chatMessages.isEmpty()) {
+            updateStatus(senderId, recipientId, MessageStatus.DELIVERED);
+        }
+
+        return chatMessages;
     }
 
     public ChatMessage findById(String id) {
