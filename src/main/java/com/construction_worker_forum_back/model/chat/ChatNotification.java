@@ -13,4 +13,8 @@ public class ChatNotification {
     private String id;
     private String senderId;
     private String senderName;
+
+    public static ChatNotification of(String id, String senderId, String senderName) {
+        return new ChatNotification(id, senderId, senderName);
+    }
 }
