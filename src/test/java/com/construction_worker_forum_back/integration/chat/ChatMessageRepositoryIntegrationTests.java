@@ -15,7 +15,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -31,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ChatMessageRepositoryIntegrationTests {
 
     @Container
-    public static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo"));
+    public static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo");
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry registry) {
