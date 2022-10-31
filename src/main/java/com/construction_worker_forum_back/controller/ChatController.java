@@ -24,7 +24,11 @@ public class ChatController {
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessage message) {
         chatRoomService
-                .getChatId(message.getSenderId(), message.getRecipientId(), true)
+                .getChatId(
+                        message.getSenderId(),
+                        message.getRecipientId(),
+                        true
+                )
                 .ifPresent(message::setChatId);
 
         chatMessageService.save(message);
