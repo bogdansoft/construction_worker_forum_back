@@ -36,7 +36,7 @@ public class ChatMessageService {
         return repository.countBySenderIdAndRecipientIdAndStatus(senderId, recipientId, MessageStatus.RECEIVED);
     }
 
-    public List<ChatMessage> findChatMessage(String senderId, String recipientId) {
+    public List<ChatMessage> findChatMessages(String senderId, String recipientId) {
         Optional<String> chatId = chatRoomService.getChatId(senderId, recipientId);
 
         return chatId.map(repository::findByChatId)
