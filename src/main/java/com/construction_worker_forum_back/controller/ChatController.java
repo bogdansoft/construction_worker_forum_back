@@ -28,8 +28,16 @@ public class ChatController {
                 .ifPresent(message::setChatId);
 
         chatMessageService.save(message);
-        ChatNotification chatNotification = new ChatNotification(message.getId(), message.getSenderId(), message.getRecipientId());
-        messagingTemplate.convertAndSendToUser(message.getRecipientId(), "/queue/messages", chatNotification);
+
+        messagingTemplate.convertAndSendToUser(
+                message.getRecipientId(),
+                "/queue/messages",
+                ChatNotification.of(
+                        message.getId(),
+                        message.getSenderId(),
+                        message.getRecipientId()
+                )
+        );
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}/count")
@@ -42,7 +50,7 @@ public class ChatController {
         return ResponseEntity.ok(chatMessageService.findChatMessages(senderId, recipientId));
     }
 
-    @GetMapping("/messages/{id")
+    @GetMapping("/messages/{id}")
     public ResponseEntity<?> findMessage(@PathVariable String id) {
         return ResponseEntity.ok(chatMessageService.findById(id));
     }
