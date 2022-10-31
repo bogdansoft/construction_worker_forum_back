@@ -1,6 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.chat.ChatMessage;
+import com.construction_worker_forum_back.model.chat.ChatNotification;
 import com.construction_worker_forum_back.service.ChatMessageService;
 import com.construction_worker_forum_back.service.ChatRoomService;
 import lombok.AllArgsConstructor;
@@ -23,10 +24,12 @@ public class ChatController {
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessage message) {
         chatRoomService
-                .getChatId(message.getSenderId(), message.getRecipientId())
+                .getChatId(message.getSenderId(), message.getRecipientId(), true)
                 .ifPresent(message::setChatId);
 
         chatMessageService.save(message);
+        ChatNotification chatNotification = new ChatNotification(message.getId(), message.getSenderId(), message.getRecipientId());
+        messagingTemplate.convertAndSendToUser(message.getRecipientId(), "/queue/messages", chatNotification);
     }
 
     @GetMapping("/messages/{senderId}/{recipientId}/count")

@@ -43,7 +43,7 @@ class ChatRoomServiceTest {
                 .willReturn(Optional.ofNullable(chatRoom));
 
         // when
-        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId);
+        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId, true);
 
         // then
         assertTrue(actualChatId.isPresent());
@@ -59,7 +59,7 @@ class ChatRoomServiceTest {
                 .willReturn(Optional.empty());
 
         // when
-        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId);
+        Optional<String> actualChatId = chatRoomService.getChatId(senderId, recipientId, true);
 
         // then
         assertTrue(actualChatId.isPresent());
