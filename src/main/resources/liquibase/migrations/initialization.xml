@@ -11,8 +11,8 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="content" type="TEXT"/>
-            <column name="created_at" type="datetime(6)"/>
-            <column name="updated_at" type="datetime(6)"/>
+            <column name="created_at" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
+            <column name="updated_at" type="timestamp"/>
             <column name="post_id" type="bigint"/>
             <column name="user_id" type="bigint"/>
         </createTable>
@@ -21,9 +21,9 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="content" type="MEDIUMTEXT"/>
-            <column name="created_at" type="datetime(6)"/>
+            <column name="created_at" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
             <column name="title" type="varchar(255)"/>
-            <column name="updated_at" type="datetime(6)"/>
+            <column name="updated_at" type="timestamp"/>
             <column name="topic_id" type="bigint"/>
             <column name="user_id" type="bigint"/>
         </createTable>
@@ -31,9 +31,9 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="created_at" type="datetime(6)"/>
+            <column name="created_at" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
             <column name="name" type="varchar(20)"/>
-            <column name="updated_at" type="datetime(6)"/>
+            <column name="updated_at" type="timestamp"/>
         </createTable>
         <createTable tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
@@ -41,7 +41,7 @@
             </column>
             <column name="account_status" type="varchar(255)"/>
             <column name="bio" type="varchar(255)"/>
-            <column name="created_at" type="datetime(6)"/>
+            <column name="created_at" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
             <column name="email" type="varchar(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
@@ -50,7 +50,7 @@
             <column name="password" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_at" type="datetime(6)"/>
+            <column name="updated_at" type="timestamp"/>
             <column name="user_role" type="varchar(255)"/>
             <column name="username" type="varchar(20)">
                 <constraints unique="true" nullable="false"/>

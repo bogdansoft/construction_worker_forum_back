@@ -1,0 +1,92 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="2" author="sysoiev">
+        <insert tableName="users">
+            <column name="account_status" value="ACTIVE"/>
+            <column name="email" value="jake@example.com"/>
+            <column name="first_name" value="Jake"/>
+            <column name="last_name" value="Johnson"/>
+            <column name="password" value="$2y$10$790tAElGoR.OwefHib1Zp.Ew.NIpBT9i3A6//EhKvzFs3clAQypz2"/>
+            <column name="user_role" value="ADMINISTRATOR"/>
+            <column name="username" value="jake123"/>
+        </insert>
+        <insert tableName="users">
+            <column name="account_status" value="ACTIVE"/>
+            <column name="email" value="ben@example.com"/>
+            <column name="first_name" value="Ben"/>
+            <column name="last_name" value="Peterson"/>
+            <column name="password" value="$2a$10$yaivzREajtcrmdQRwZdPBOlx5o/WJjmHMtSTTmHy2d7i11genkP5y"/>
+            <column name="user_role" value="SUPPORT"/>
+            <column name="username" value="benny"/>
+        </insert>
+        <insert tableName="users">
+            <column name="account_status" value="ACTIVE"/>
+            <column name="email" value="den@example.com"/>
+            <column name="first_name" value="Denny"/>
+            <column name="last_name" value="Smith"/>
+            <column name="password" value="$2a$10$pr.tOBXEyTcLIkCXhmZobu6ne1AOt8QanF.6o2hc8UAuMeuXyFNHS"/>
+            <column name="user_role" value="USER"/>
+            <column name="username" value="denny"/>
+        </insert>
+
+        <insert tableName="topics">
+            <column name="name" value="Tower cranes"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="name" value="Building materials"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="name" value="Foundation"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="name" value="Engineering"/>
+        </insert>
+
+        <insert tableName="posts">
+            <column name="content" value="A crane is a type of machine, generally equipped with a hoist rope."/>
+            <column name="title" value="Building cranes"/>
+            <column name="topic_id" value="1"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="posts">
+            <column name="content"
+                    value="Building material is material used for construction. Many naturally occurring substances, such as clay, rocks, sand, wood, and even twigs and leaves, have been used to construct buildings. Apart from naturally occurring materials, many man-made products are in use, some more and some less synthetic."/>
+            <column name="title" value="Materials"/>
+            <column name="topic_id" value="2"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="posts">
+            <column name="content"
+                    value="With decades of innovation and experience under our belts, we’re achieving remarkable results in building technologies, energy, and environmental performance for our clients. We’re with you from initial concept through design, construction, commissioning, and validation."/>
+            <column name="title" value="Building engineering"/>
+            <column name="topic_id" value="4"/>
+            <column name="user_id" value="1"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="content" value="Wow, great!!!"/>
+            <column name="post_id" value="1"/>
+            <column name="user_id" value="1"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="content" value="Awesome"/>
+            <column name="post_id" value="1"/>
+            <column name="user_id" value="3"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="content" value="It`s exactly what I need!"/>
+            <column name="post_id" value="2"/>
+            <column name="user_id" value="3"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="content" value="I do not agree!!"/>
+            <column name="post_id" value="3"/>
+            <column name="user_id" value="2"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

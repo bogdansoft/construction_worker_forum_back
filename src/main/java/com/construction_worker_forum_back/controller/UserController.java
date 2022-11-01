@@ -51,7 +51,7 @@ public class UserController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+    public UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         return userService
                 .register(userRequestDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
