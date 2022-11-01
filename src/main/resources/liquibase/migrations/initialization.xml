@@ -1,0 +1,69 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="1" author="sysoiev">
+        <createTable tableName="comments">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="content" type="TEXT"/>
+            <column name="created_at" type="datetime(6)"/>
+            <column name="updated_at" type="datetime(6)"/>
+            <column name="post_id" type="bigint"/>
+            <column name="user_id" type="bigint"/>
+        </createTable>
+        <createTable tableName="posts">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="content" type="MEDIUMTEXT"/>
+            <column name="created_at" type="datetime(6)"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="updated_at" type="datetime(6)"/>
+            <column name="topic_id" type="bigint"/>
+            <column name="user_id" type="bigint"/>
+        </createTable>
+        <createTable tableName="topics">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="created_at" type="datetime(6)"/>
+            <column name="name" type="varchar(20)"/>
+            <column name="updated_at" type="datetime(6)"/>
+        </createTable>
+        <createTable tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="account_status" type="varchar(255)"/>
+            <column name="bio" type="varchar(255)"/>
+            <column name="created_at" type="datetime(6)"/>
+            <column name="email" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(30)"/>
+            <column name="last_name" type="varchar(30)"/>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="datetime(6)"/>
+            <column name="user_role" type="varchar(255)"/>
+            <column name="username" type="varchar(20)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_post_id" baseColumnNames="post_id"
+                                 referencedTableName="posts" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_user_id" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_topic_id" baseColumnNames="topic_id"
+                                 referencedTableName="topics" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_user_id" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
