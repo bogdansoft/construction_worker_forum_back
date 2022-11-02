@@ -33,7 +33,9 @@
             </column>
             <column name="created_at" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
             <column name="name" type="varchar(20)"/>
+            <column name="description" type="MEDIUMTEXT"/>
             <column name="updated_at" type="timestamp"/>
+            <column name="user_id" type="bigint" />
         </createTable>
         <createTable tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
@@ -65,5 +67,7 @@
                                  referencedTableName="topics" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_user_id" baseColumnNames="user_id"
                                  referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="topics" baseColumnNames="user_id" constraintName="FK_topic_user_id" referencedTableName="users"
+                                 referencedColumnNames="id" />
     </changeSet>
 </databaseChangeLog>
