@@ -1,10 +1,13 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.chat.ChatRoom;
+import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.ChatRoomRepository;
+import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -12,6 +15,7 @@ import java.util.Optional;
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRepository userRepository;
 
     public Optional<String> getChatId(String senderId, String recipientId, boolean createIfNotExist) {
 
@@ -38,5 +42,9 @@ public class ChatRoomService {
                     chatRoomRepository.save(recipientSender);
                     return Optional.of(chatId);
                 });
+    }
+
+    public List<User> findAllContacts() {
+        return userRepository.findAll();
     }
 }
