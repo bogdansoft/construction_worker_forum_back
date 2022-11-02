@@ -36,15 +36,23 @@
 
         <insert tableName="topics">
             <column name="name" value="Tower cranes"/>
+            <column name="description" value="Test description" />
+            <column name="user_id" value="1" />
         </insert>
         <insert tableName="topics">
             <column name="name" value="Building materials"/>
+            <column name="description" value="Test description" />
+            <column name="user_id" value="1" />
         </insert>
         <insert tableName="topics">
             <column name="name" value="Foundation"/>
+            <column name="description" value="Test description" />
+            <column name="user_id" value="2" />
         </insert>
         <insert tableName="topics">
             <column name="name" value="Engineering"/>
+            <column name="description" value="Test description" />
+            <column name="user_id" value="2" />
         </insert>
 
         <insert tableName="posts">
