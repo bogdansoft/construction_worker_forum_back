@@ -87,4 +87,12 @@ public class PostService {
     public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
     }
+
+    public List<PostDto> findPostByContentOrTitle(String contentOrTitle) {
+        return postRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(contentOrTitle, contentOrTitle)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+
+    }
 }

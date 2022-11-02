@@ -15,4 +15,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p  JOIN FETCH p.comments c")
     List<Post> findAllWithComments();
+
+    List<Post> findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(String title, String content);
+
+
 }
