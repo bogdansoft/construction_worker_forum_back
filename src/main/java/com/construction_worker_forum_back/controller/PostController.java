@@ -65,4 +65,10 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/search")
+    public List<PostDto> findPostByContentOrTitle(@RequestParam(name ="searchItem") String contentOrTitle){
+        System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
+        return postService.findPostByContentOrTitle(contentOrTitle);
+    }
 }
