@@ -23,6 +23,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
@@ -105,10 +109,6 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-        <!-- <dependency>
-             <groupId>org.liquibase.ext</groupId>
-             <artifactId>liquibase-forum_db</artifactId>
-         </dependency>-->
     </dependencies>
 
     <dependencyManagement>
@@ -150,7 +150,8 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
-                    <propertyFile>resources/liquibase/liquibase.properties</propertyFile>
+                    <propertyFile>/src/main/resources/application.properties</propertyFile>
+                    <changeLogFile>/src/main/resources/liquibase/db.changelog.xml</changeLogFile>
                 </configuration>
             </plugin>
             <plugin>
