@@ -30,12 +30,14 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
         User admin = User.builder()
                 .username("admin")
                 .password("password1")
+                .email("admin@example.com")
                 .userRoles(Role.ADMINISTRATOR)
                 .build();
 
         User user = User.builder()
                 .username("user")
                 .password("password2")
+                .email("userunique@example.com")
                 .userRoles(Role.USER)
                 .accountStatus(AccountStatus.ACTIVE)
                 .build();
