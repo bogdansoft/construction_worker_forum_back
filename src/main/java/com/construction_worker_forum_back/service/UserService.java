@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.AvatarSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
@@ -14,9 +15,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -73,6 +77,21 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         user.setBio(newBio.getNewBio());
         return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    @Transactional
+    public UserDto changeAvatar(String username, MultipartFile multipartFile) throws IOException {
+        User user = userRepository.findByUsername(username).get();
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        user.setAvatar(fileName);
+
+        User savedUser = userRepository.save(user);
+
+        String uploadDir = "user-avatar/" + savedUser.getId();
+
+        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+        return modelMapper.map(savedUser, UserDto.class);
     }
 
     @Transactional

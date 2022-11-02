@@ -47,6 +47,9 @@ public class User {
     @Size(min = 5)
     private String bio;
 
+    @Column(nullable = true, length = 64)
+    private String avatar;
+
     @CreatedDate
     @Column(name = "created_at")
     private Date createdAt;
