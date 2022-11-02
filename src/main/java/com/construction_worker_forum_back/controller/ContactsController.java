@@ -1,5 +1,6 @@
-package com.construction_worker_forum_back.service;
+package com.construction_worker_forum_back.controller;
 
+import com.construction_worker_forum_back.service.ChatRoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
