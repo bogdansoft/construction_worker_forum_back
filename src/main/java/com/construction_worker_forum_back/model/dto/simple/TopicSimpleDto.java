@@ -14,6 +14,7 @@ import java.util.Date;
 public class TopicSimpleDto {
     private Long id;
     private String name;
+    private String description;
     private Date createdAt;
     private Date updatedAt;
 }

@@ -34,6 +34,11 @@ public class PostController {
         return postService.getPostsByUsername(username);
     }
 
+    @GetMapping("/all_by_topicid/{topicId}")
+    public List<PostDto> getAllPostsByTopicId(@PathVariable Long topicId) {
+        return postService.getPostsByTopicId(topicId);
+    }
+
     @GetMapping("/{id}")
     public PostDto getPostById(@PathVariable("id") Long id) {
         return postService.findById(id)

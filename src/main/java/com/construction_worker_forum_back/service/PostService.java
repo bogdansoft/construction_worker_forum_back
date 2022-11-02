@@ -45,6 +45,14 @@ public class PostService {
                 .toList();
     }
 
+    public List<PostDto> getPostsByTopicId(Long topicId) {
+        return postRepository
+                .findByTopic_Id(topicId)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
     public Optional<PostDto> findById(Long id) {
         return postRepository.findById(id)
                 .map(post -> modelMapper.map(post, PostDto.class));
