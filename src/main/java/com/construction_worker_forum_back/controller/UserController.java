@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping
+    @GetMapping("/username/{username}")
     UserDto getUserByUsername(@RequestParam(value = "username") String username) {
         return userService
                 .findByUsername(username)
