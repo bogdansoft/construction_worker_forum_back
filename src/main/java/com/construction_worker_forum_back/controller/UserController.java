@@ -27,7 +27,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping("/all")
+    @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -59,7 +59,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping("/{username}/changebio")
+    @PutMapping("/{username}/bio")
     @ResponseStatus(HttpStatus.CREATED)
     UserDto changeBio(@PathVariable String username, @Valid @RequestBody BioSimpleDto newBio) {
         return userService.changeBio(username, newBio);
