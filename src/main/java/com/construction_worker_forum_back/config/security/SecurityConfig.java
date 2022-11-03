@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .mvcMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
+                        .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
                         .mvcMatchers("/ws").permitAll() // for chat tests
                         .mvcMatchers("/ws/**").permitAll() // for chat tests
                         .mvcMatchers(HttpMethod.GET, "/messages/**").permitAll() // for chat tests

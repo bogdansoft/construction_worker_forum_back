@@ -41,9 +41,10 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping("/username/{username}")
-    UserDto getUserByUsername(@RequestParam(value = "username") String username) {
+    @GetMapping("/user")
+    UserDto getUserByUsername(@RequestParam() String username) {
         return userService
                 .findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

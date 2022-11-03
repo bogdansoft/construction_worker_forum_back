@@ -26,6 +26,10 @@ public class Topic {
     @Size(min = 3, max = 20)
     private String name;
 
+    @Size(min = 1, max = 1000)
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String description;
+
     @CreatedDate
     @Column(name = "created_at")
     private Date createdAt;
@@ -33,6 +37,10 @@ public class Topic {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
     private List<Post> posts;

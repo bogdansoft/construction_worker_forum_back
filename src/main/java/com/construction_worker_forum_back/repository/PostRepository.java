@@ -11,8 +11,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUser_UsernameIgnoreCase(@NonNull String username);
 
+    List<Post> findByTopic_Id(@NonNull Long id);
+
     int deletePostById(Long postId);
 
     @Query("SELECT p FROM Post p  JOIN FETCH p.comments c")
     List<Post> findAllWithComments();
+
+    List<Post> findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(String title, String content);
+
+
 }
