@@ -87,6 +87,7 @@ public class PostService {
         modelMapper.map(postRequestDto, postFromDb);
         modelMapper.map(postRequestDto, topicById);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));
+        postFromDb.setTopic(modelMapper.map(topicById, Topic.class));
 
         return modelMapper.map(postFromDb, PostDto.class);
     }
