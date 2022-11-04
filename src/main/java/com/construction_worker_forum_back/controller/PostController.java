@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,8 +29,8 @@ public class PostController {
         return postService.getAllPosts();
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/all_by_username/{username}")
+    @SecurityRequirement(name = "Bearer Authentication")
     public List<PostDto> getAllPostsByUsername(@PathVariable String username) {
         return postService.getPostsByUsername(username);
     }
@@ -45,11 +46,24 @@ public class PostController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/likers/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public List<LikerSimpleDto> getPostLikers(@PathVariable("id") Long id) {
+        return postService.getPostLikers(id);
+    }
+
     @PostMapping
     @SecurityRequirement(name = "Bearer Authentication")
     @ResponseStatus(HttpStatus.CREATED)
     public PostDto createPost(@Valid @RequestBody PostRequestDto post) {
         return postService.createPost(post);
+    }
+
+    @PostMapping("/like")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostDto likePost(@RequestParam Long postId, @RequestParam Long userId) {
+        return postService.likePost(postId, userId);
     }
 
     @PutMapping("/{id}")

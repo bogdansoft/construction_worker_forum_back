@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.service.CommentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,11 +44,24 @@ public class CommentController {
         return commentService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/likers/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public List<LikerSimpleDto> getCommentLikers(@PathVariable("id") Long id) {
+        return commentService.getCommentLikers(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     CommentDto createComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         log.info(String.valueOf(commentRequestDto));
         return commentService.createComment(commentRequestDto);
+    }
+
+    @PostMapping("/like")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto likeComment(@RequestParam Long commentId, @RequestParam Long userId) {
+        return commentService.likeComment(commentId, userId);
     }
 
     @PutMapping("/{id}")
