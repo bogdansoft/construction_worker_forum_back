@@ -32,7 +32,6 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @Operation(summary = "Delete user", description = "Delete user")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/{id}")
     UserDto getUser(@PathVariable Long id) {
