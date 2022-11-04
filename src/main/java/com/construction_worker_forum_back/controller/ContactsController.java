@@ -2,7 +2,6 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.service.ChatRoomService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,7 @@ public class ContactsController {
 
     private final ChatRoomService chatRoomService;
 
-    @GetMapping(value = "/users/summaries", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/users/summaries")
     public ResponseEntity<?> findAllContacts() {
         return ResponseEntity.ok(chatRoomService.findAllContacts());
     }
