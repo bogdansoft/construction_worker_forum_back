@@ -18,6 +18,9 @@ jobs:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: forum_db
       MYSQL_USER: root
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/forum_db?createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false
 
     steps:
     - name: Set up MySQL
