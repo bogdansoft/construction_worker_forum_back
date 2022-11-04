@@ -17,8 +17,6 @@ public class RemoveService {
     private final CommentRepository commentRepository;
     private final TopicRepository topicRepository;
 
-    private final TopicRepository topicRepository;
-
     @Transactional
     public void removeAll() {
         topicRepository.deleteAll();
