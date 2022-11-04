@@ -38,7 +38,7 @@ public class Topic {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = User.class, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

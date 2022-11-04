@@ -15,6 +15,7 @@ public class RemoveService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final TopicRepository topicRepository;
 
     private final TopicRepository topicRepository;
 
