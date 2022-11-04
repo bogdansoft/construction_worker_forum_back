@@ -40,6 +40,10 @@ public class SecurityConfig {
                         .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
+                        .mvcMatchers("/ws").permitAll() // for chat tests
+                        .mvcMatchers("/ws/**").permitAll() // for chat tests
+                        .mvcMatchers(HttpMethod.GET, "/messages/**").permitAll() // for chat tests
+                        .mvcMatchers(HttpMethod.GET, "/users/summaries").permitAll() // for chat tests
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/**").authenticated()

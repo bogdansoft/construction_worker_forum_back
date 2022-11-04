@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @ActiveProfiles("test")
@@ -19,7 +18,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public abstract class TestcontainersConfig {
 
-    @Container
     public static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
 
     static {

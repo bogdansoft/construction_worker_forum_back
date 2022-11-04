@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.controller;
 
+import com.construction_worker_forum_back.exception.MessageNotFoundException;
 import com.construction_worker_forum_back.model.dto.ExceptionDto;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,13 @@ public class GlobalExceptionHandler {
     ResponseEntity<ExceptionDto> conflictHandler(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(new ExceptionDto(e.getMessage()));
+    }
+
+    @ExceptionHandler(MessageNotFoundException.class)
+    ResponseEntity<ExceptionDto> messageNotFoundHandler(RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(new ExceptionDto(e.getMessage()));
     }
 }
