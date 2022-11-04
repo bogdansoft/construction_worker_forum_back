@@ -30,7 +30,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping("/all")
+    @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -44,9 +44,10 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping
-    UserDto getUserByUsername(@RequestParam(value = "username") String username) {
+    @GetMapping("/user")
+    UserDto getUserByUsername(@RequestParam() String username) {
         return userService
                 .findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -54,7 +55,7 @@ public class UserController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+    public UserDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         return userService
                 .register(userRequestDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
@@ -62,7 +63,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping("/{username}/changebio")
+    @PutMapping("/{username}/bio")
     @ResponseStatus(HttpStatus.CREATED)
     UserDto changeBio(@PathVariable String username, @Valid @RequestBody BioSimpleDto newBio) {
         return userService.changeBio(username, newBio);

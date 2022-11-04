@@ -63,4 +63,10 @@ public class TopicController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/search")
+    public List<TopicDto> findTopicByContentOrTitle(@RequestParam(name = "searchItem") String name) {
+        System.out.println(topicService.findAllTopicsByName(name));
+        return topicService.findAllTopicsByName(name);
+    }
 }

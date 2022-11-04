@@ -45,6 +45,14 @@ public class PostService {
                 .toList();
     }
 
+    public List<PostDto> getPostsByTopicId(Long topicId) {
+        return postRepository
+                .findByTopic_Id(topicId)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+    }
+
     public Optional<PostDto> findById(Long id) {
         return postRepository.findById(id)
                 .map(post -> modelMapper.map(post, PostDto.class));
@@ -79,6 +87,7 @@ public class PostService {
         modelMapper.map(postRequestDto, postFromDb);
         modelMapper.map(postRequestDto, topicById);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));
+        postFromDb.setTopic(modelMapper.map(topicById, Topic.class));
 
         return modelMapper.map(postFromDb, PostDto.class);
     }
@@ -86,5 +95,13 @@ public class PostService {
     @Transactional
     public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
+    }
+
+    public List<PostDto> findPostByContentOrTitle(String contentOrTitle) {
+        return postRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(contentOrTitle, contentOrTitle)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
+
     }
 }

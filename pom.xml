@@ -23,6 +23,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
@@ -105,10 +109,6 @@
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-        <!-- <dependency>
-             <groupId>org.liquibase.ext</groupId>
-             <artifactId>liquibase-forum_db</artifactId>
-         </dependency>-->
     </dependencies>
 
     <dependencyManagement>
@@ -150,20 +150,13 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <configuration>
-                    <propertyFile>resources/liquibase/liquibase.properties</propertyFile>
+                    <propertyFile>/src/main/resources/application.properties</propertyFile>
+                    <changeLogFile>/src/main/resources/liquibase/db.changelog.xml</changeLogFile>
                 </configuration>
             </plugin>
-            <plugin>
+                <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <testFailureIgnore>true</testFailureIgnore>
-                        <shutdown>kill</shutdown>
-                        <include>RestWebServiceTestManager.java</include>
-                        <include>FirefoxTestManager.java</include>
-                    </includes>
-                </configuration>
             </plugin>
         </plugins>
     </build>

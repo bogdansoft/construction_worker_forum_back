@@ -2,7 +2,9 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.TopicRequestDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Topic;
+import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.TopicRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class TopicService {
 
     private final TopicRepository topicRepository;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     public List<TopicDto> getAllTopics() {
@@ -50,6 +53,11 @@ public class TopicService {
     @Transactional
     public TopicDto createTopic(TopicRequestDto topicRequestDto) {
         Topic topicToSave = modelMapper.map(topicRequestDto, Topic.class);
+        UserDto userById = userService
+                .findById(topicRequestDto.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        topicToSave.setUser(modelMapper.map(userById, User.class));
 
         return modelMapper.map(topicRepository.save(topicToSave), TopicDto.class);
     }
@@ -64,5 +72,12 @@ public class TopicService {
         modelMapper.map(topicRequestDto, topic);
 
         return modelMapper.map(topic, TopicDto.class);
+    }
+
+    public List<TopicDto> findAllTopicsByName(String name) {
+        return topicRepository.findByNameContainsIgnoreCase(name)
+                .stream()
+                .map(topic -> modelMapper.map(topic, TopicDto.class))
+                .collect(Collectors.toList());
     }
 }
