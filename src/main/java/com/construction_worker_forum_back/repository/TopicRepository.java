@@ -13,8 +13,4 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     Optional<Topic> findTopicByName(String name);
 
     List<Topic> findByNameContainsIgnoreCase(String name);
-
-
-
-
 }
