@@ -73,4 +73,11 @@ public class TopicService {
 
         return modelMapper.map(topic, TopicDto.class);
     }
+
+    public List<TopicDto> findAllTopicsByName(String name) {
+        return topicRepository.findByNameContainsIgnoreCase(name)
+                .stream()
+                .map(topic -> modelMapper.map(topic, TopicDto.class))
+                .collect(Collectors.toList());
+    }
 }

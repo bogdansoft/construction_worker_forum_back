@@ -3,16 +3,14 @@ package com.construction_worker_forum_back.model.dto;
 import com.construction_worker_forum_back.model.dto.simple.CommentSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.TopicSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostDto {
