@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.xml.bind.DatatypeConverter;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 
@@ -101,7 +102,7 @@ public class JwtTokenUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(10, MINUTES)))
+                .setExpiration(Date.from(now.plus(1, ChronoUnit.DAYS)))
                 .signWith(SignatureAlgorithm.HS512, getConvertedBinaryKey(key))
                 .compact();
     }
