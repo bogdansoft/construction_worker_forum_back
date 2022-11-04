@@ -1,13 +1,16 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.chat.ChatRoom;
-import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.security.Role;
 import com.construction_worker_forum_back.repository.ChatRoomRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -16,6 +19,7 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     public Optional<String> getChatId(String senderId, String recipientId, boolean createIfNotExist) {
 
@@ -32,6 +36,11 @@ public class ChatRoomService {
                             .recipientId(recipientId)
                             .build();
 
+                    if (Objects.equals(senderId, recipientId)) {
+                        chatRoomRepository.save(senderRecipient);
+                        return Optional.of(chatId);
+                    }
+
                     ChatRoom recipientSender = ChatRoom.builder()
                             .chatId(chatId)
                             .senderId(recipientId)
@@ -44,7 +53,10 @@ public class ChatRoomService {
                 });
     }
 
-    public List<User> findAllContacts() {
-        return userRepository.findAll();
+    public List<UserDto> findAllContacts() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserRoles().equals(Role.USER))
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .toList();
     }
 }
