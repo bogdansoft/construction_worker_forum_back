@@ -31,5 +31,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        env:
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/forum_db?createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false
     - name: Build with Maven
       run: mvn clean install
