@@ -18,9 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.apache.commons.io.IOUtils;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -80,18 +81,21 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto changeAvatar(String username, MultipartFile multipartFile) throws IOException {
+    public byte[] changeAvatar(String username, MultipartFile multipartFile) throws IOException {
         User user = userRepository.findByUsername(username).get();
         String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        user.setAvatar(fileName);
+        user.setAvatar("C:/Projects/ForumProjectBackend/construction_worker_forum_back"+ "/user-avatar/"+user.getId()+"/"+fileName);
 
         User savedUser = userRepository.save(user);
 
-        String uploadDir = "user-avatar/" + savedUser.getId();
+        String uploadDir = "user-avatar/" + user.getId();
 
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-        return modelMapper.map(savedUser, UserDto.class);
+        InputStream in = getClass()
+                .getResourceAsStream("file:///C:/Projects/ForumProjectBackend/construction_worker_forum_back/src/main/resources/user-avatar/1/cropped-image.jpeg");
+        return IOUtils.toByteArray(in);
+        //return modelMapper.map(savedUser, UserDto.class);
     }
 
     @Transactional
