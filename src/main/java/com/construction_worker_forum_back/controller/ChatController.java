@@ -41,7 +41,7 @@ public class ChatController {
                 ChatNotification.of(
                         message.getId(),
                         message.getSenderId(),
-                        message.getRecipientId(),
+                        message.getSenderName(),
                         message.getContent()
                 )
         );
