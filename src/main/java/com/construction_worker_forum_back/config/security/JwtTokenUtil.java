@@ -28,6 +28,11 @@ public class JwtTokenUtil {
     @Value("${jwt.token.signature:default}")
     private String key;
 
+    @Value("${jwt.token.expiration:default}")
+    private int expirationTime;
+
+
+
     //convert string key to array of bytes
     private byte[] getConvertedBinaryKey(String key) {
         String base64Key = DatatypeConverter.printBase64Binary(key.getBytes());
@@ -102,7 +107,7 @@ public class JwtTokenUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(1, ChronoUnit.DAYS)))
+                .setExpiration(Date.from(now.plus(expirationTime, MINUTES)))
                 .signWith(SignatureAlgorithm.HS512, getConvertedBinaryKey(key))
                 .compact();
     }
