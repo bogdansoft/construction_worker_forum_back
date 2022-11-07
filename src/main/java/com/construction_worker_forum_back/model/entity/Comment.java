@@ -8,6 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "comments")
@@ -42,6 +44,9 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
+
+    @ManyToMany(mappedBy= "likedComments")
+    private Set<User> likers = new HashSet<>();
 
     @PrePersist
     private void beforeSaving() {

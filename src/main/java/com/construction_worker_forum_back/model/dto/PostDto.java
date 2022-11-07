@@ -1,6 +1,7 @@
 package com.construction_worker_forum_back.model.dto;
 
 import com.construction_worker_forum_back.model.dto.simple.CommentSimpleDto;
+import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.TopicSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
 import lombok.*;
@@ -21,5 +22,6 @@ public class PostDto {
     private Date updatedAt;
     private UserSimpleDto user;
     private List<CommentSimpleDto> comments;
+    private List<LikerSimpleDto> likers;
     private TopicSimpleDto topic;
 }

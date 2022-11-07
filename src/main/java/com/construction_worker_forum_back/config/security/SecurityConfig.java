@@ -38,6 +38,8 @@ public class SecurityConfig {
                         .mvcMatchers(HttpMethod.OPTIONS, "/users/summaries").permitAll()
                         .mvcMatchers(HttpMethod.OPTIONS, "/messages/**").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
+                        .mvcMatchers(HttpMethod.GET, "/api/post/likers/{id}").authenticated()
+                        .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
                         .mvcMatchers("/ws").anonymous()
