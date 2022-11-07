@@ -12,7 +12,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -55,6 +57,8 @@ public class User {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    private String avatar;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status")
     private AccountStatus accountStatus;
@@ -69,6 +73,22 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> userPosts;
+
+    @ManyToMany(targetEntity = Post.class, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "post_like",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id")
+    )
+    private Set<Post> likedPosts = new HashSet<>();
+
+    @ManyToMany(targetEntity = Comment.class, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "comment_like",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "comment_id", referencedColumnName = "id")
+    )
+    private Set<Comment> likedComments = new HashSet<>();
 
     @PrePersist
     private void beforeSaving() {

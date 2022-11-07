@@ -23,10 +23,13 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String bio;
+    private String avatar;
     private Date createdAt;
     private Date updatedAt;
     private AccountStatus accountStatus;
     private Role userRoles;
     private List<CommentSimpleDto> userComments;
     private List<PostSimpleDto> userPosts;
+    private List<CommentSimpleDto> likedComments;
+    private List<PostSimpleDto> likedPosts;
 }
