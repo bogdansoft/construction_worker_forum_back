@@ -2,7 +2,6 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.model.dto.simple.AvatarSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;

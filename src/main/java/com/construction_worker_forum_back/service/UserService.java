@@ -2,12 +2,12 @@ package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.model.dto.simple.AvatarSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.apache.commons.io.IOUtils;
+
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
