@@ -57,6 +57,8 @@ public class User {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    private String avatar;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "account_status")
     private AccountStatus accountStatus;

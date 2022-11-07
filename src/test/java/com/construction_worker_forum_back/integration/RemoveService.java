@@ -6,8 +6,10 @@ import com.construction_worker_forum_back.repository.TopicRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+@ActiveProfiles("dev")
 @Service
 @RequiredArgsConstructor
 public class RemoveService {

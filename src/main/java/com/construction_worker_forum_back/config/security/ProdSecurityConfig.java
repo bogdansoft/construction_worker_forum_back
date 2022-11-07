@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.config.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,10 +15,11 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Profile("production")
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
-public class SecurityConfig {
+public class ProdSecurityConfig {
     JwtFilter jwtFilter;
 
     @Bean
@@ -49,7 +51,6 @@ public class SecurityConfig {
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/**").authenticated()
-                        .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().denyAll())
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint()).and()
                 .sessionManagement(configurer -> configurer
