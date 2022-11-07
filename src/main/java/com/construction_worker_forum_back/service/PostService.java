@@ -4,10 +4,12 @@ import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
+import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final UserService userService;
     private final TopicService topicService;
     private final ModelMapper modelMapper;
@@ -53,6 +56,16 @@ public class PostService {
                 .toList();
     }
 
+    public List<LikerSimpleDto> getPostLikers(Long id) {
+        return postRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getLikers()
+                .stream()
+                .map(user -> modelMapper.map(user, LikerSimpleDto.class))
+                .toList();
+    }
+
     public Optional<PostDto> findById(Long id) {
         return postRepository.findById(id)
                 .map(post -> modelMapper.map(post, PostDto.class));
@@ -72,6 +85,26 @@ public class PostService {
         postToSave.setTopic(modelMapper.map(topicById, Topic.class));
 
         return modelMapper.map(postRepository.save(postToSave), PostDto.class);
+    }
+
+    @Transactional
+    public PostDto likePost(Long postId, Long userId) {
+        Post postFromDb = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User userById = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (postFromDb.getLikers().contains(userById)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Post already liked by user!");
+        }
+
+        postFromDb.getLikers().add(userById);
+        userById.getLikedPosts().add(postFromDb);
+
+        return modelMapper.map(postFromDb, PostDto.class);
     }
 
     @Transactional

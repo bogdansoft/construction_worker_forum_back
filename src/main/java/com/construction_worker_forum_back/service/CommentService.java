@@ -4,10 +4,12 @@ import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.CommentRepository;
+import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
     private final PostService postService;
     private final UserService userService;
     private final ModelMapper modelMapper;
@@ -42,6 +45,16 @@ public class CommentService {
                 .findByUser_UsernameIgnoreCase(username)
                 .stream()
                 .map(comment -> modelMapper.map(comment, CommentDto.class))
+                .toList();
+    }
+
+    public List<LikerSimpleDto> getCommentLikers(Long id) {
+        return commentRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getLikers()
+                .stream()
+                .map(user -> modelMapper.map(user, LikerSimpleDto.class))
                 .toList();
     }
 
@@ -64,6 +77,26 @@ public class CommentService {
         commentToSave.setUser(modelMapper.map(userById, User.class));
         commentToSave.setPost(modelMapper.map(postById, Post.class));
         return modelMapper.map(commentRepository.save(commentToSave), CommentDto.class);
+    }
+
+    @Transactional
+    public CommentDto likeComment(Long commentId, Long userId) {
+        Comment commentFromDb = commentRepository
+                .findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User userById = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (commentFromDb.getLikers().contains(userById)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Comment already liked by user!");
+        }
+
+        commentFromDb.getLikers().add(userById);
+        userById.getLikedComments().add(commentFromDb);
+
+        return modelMapper.map(commentFromDb, CommentDto.class);
     }
 
     @Transactional

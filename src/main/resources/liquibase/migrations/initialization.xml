@@ -58,6 +58,22 @@
                 <constraints unique="true" nullable="false"/>
             </column>
         </createTable>
+        <createTable tableName="post_like">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="post_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="comment_like">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
         <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_post_id" baseColumnNames="post_id"
                                  referencedTableName="posts" referencedColumnNames="id"/>
@@ -68,6 +84,14 @@
         <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_user_id" baseColumnNames="user_id"
                                  referencedTableName="users" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="topics" baseColumnNames="user_id" constraintName="FK_topic_user_id" referencedTableName="users"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="post_like" baseColumnNames="user_id" constraintName="FK_post_liked_by_user_id" referencedTableName="users"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="post_like" baseColumnNames="post_id" constraintName="FK_user_liked_post_id" referencedTableName="posts"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="comment_like" baseColumnNames="user_id" constraintName="FK_comment_liked_by_user_id" referencedTableName="users"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="comment_like" baseColumnNames="comment_id" constraintName="FK_user_liked_comment_id" referencedTableName="comments"
                                  referencedColumnNames="id" />
     </changeSet>
 </databaseChangeLog>

@@ -29,4 +29,6 @@ public class UserDto {
     private Role userRoles;
     private List<CommentSimpleDto> userComments;
     private List<PostSimpleDto> userPosts;
+    private List<CommentSimpleDto> likedComments;
+    private List<PostSimpleDto> likedPosts;
 }
