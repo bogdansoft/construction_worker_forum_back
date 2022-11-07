@@ -81,6 +81,19 @@ public class CommentController {
         }
     }
 
+    @DeleteMapping("/like")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public Map<String, String> unlikeComment(@RequestParam Long commentId, @RequestParam Long userId) {
+        if (commentService.unlikeComment(commentId, userId)) {
+            return Map.of(
+                    "Comment ID", commentId + "",
+                    "status", "Comment unliked successfully!"
+            );
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/post/{id}")
     List<CommentDto> getCommentsOfPost(@PathVariable Long id) {
         return commentService.getCommentsOfPost(id);
