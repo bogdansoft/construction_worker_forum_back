@@ -35,15 +35,17 @@ public class SecurityConfig {
                 .authorizeRequests(configurer -> configurer
                         .mvcMatchers("/api/login").permitAll()
                         .mvcMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .mvcMatchers(HttpMethod.OPTIONS, "/users/summaries").permitAll()
+                        .mvcMatchers(HttpMethod.OPTIONS, "/messages/**").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/likers/{id}").authenticated()
                         .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
-                        .mvcMatchers("/ws").permitAll() // for chat tests
-                        .mvcMatchers("/ws/**").permitAll() // for chat tests
-                        .mvcMatchers(HttpMethod.GET, "/messages/**").permitAll() // for chat tests
-                        .mvcMatchers(HttpMethod.GET, "/users/summaries").permitAll() // for chat tests
+                        .mvcMatchers("/ws").anonymous()
+                        .mvcMatchers("/ws/**").anonymous()
+                        .mvcMatchers(HttpMethod.GET, "/messages/**").authenticated()
+                        .mvcMatchers(HttpMethod.GET, "/users/summaries").authenticated()
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
                         .mvcMatchers("/api/**").authenticated()
