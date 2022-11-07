@@ -8,7 +8,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -48,6 +50,9 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @ManyToMany(mappedBy = "likedPosts")
+    private Set<User> likers = new HashSet<>();
 
     @PrePersist
     private void beforeSaving() {
