@@ -4,6 +4,7 @@ import com.construction_worker_forum_back.model.chat.ChatMessage;
 import com.construction_worker_forum_back.model.chat.ChatNotification;
 import com.construction_worker_forum_back.service.ChatMessageService;
 import com.construction_worker_forum_back.service.ChatRoomService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,6 +24,7 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final ChatRoomService chatRoomService;
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessage message) {
         chatRoomService
@@ -47,16 +49,19 @@ public class ChatController {
         );
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/messages/{senderId}/{recipientId}/count")
     public ResponseEntity<Long> countNewMessages(@PathVariable String senderId, @PathVariable String recipientId) {
         return ResponseEntity.ok(chatMessageService.countNewMessages(senderId, recipientId));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/messages/{senderId}/{recipientId}")
     public ResponseEntity<?> findChatMessages(@PathVariable String senderId, @PathVariable String recipientId) {
         return ResponseEntity.ok(chatMessageService.findChatMessages(senderId, recipientId));
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/messages/{id}")
     public ResponseEntity<?> findMessage(@PathVariable String id) {
         return ResponseEntity.ok(chatMessageService.findById(id));
