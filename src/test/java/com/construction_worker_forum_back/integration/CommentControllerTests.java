@@ -13,12 +13,14 @@ import com.construction_worker_forum_back.repository.PostRepository;
 import com.construction_worker_forum_back.repository.TopicRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -27,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
+@ActiveProfiles("dev")
 class CommentControllerTests extends TestcontainersConfig {
 
     @Autowired
@@ -47,17 +50,12 @@ class CommentControllerTests extends TestcontainersConfig {
     JwtTokenUtil tokenUtil;
     @Autowired
     private ObjectMapper objectMapper;
+    private UserDetailsImpl userDetails;
+    private User savedUser;
+    private Topic savedTopic;
+    private Post savedPost;
+    private void setupUser() {
 
-
-    @BeforeEach
-    void setUp() {
-        removeService.removeAll();
-    }
-
-    @Test
-    void () throws Exception {
-
-        //given
         User user = User.builder()
                 .username("user")
                 .password("password2")
@@ -65,27 +63,40 @@ class CommentControllerTests extends TestcontainersConfig {
                 .userRoles(Role.USER)
                 .accountStatus(AccountStatus.ACTIVE)
                 .build();
-        User savedUser = userRepository.save(user);
+        savedUser = userRepository.save(user);
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
-
+        userDetails = new UserDetailsImpl(user);
+    }
+    private void setupTopic() {
         Topic topic = Topic.builder()
-                .user(user)
+                .user(savedUser)
                 .name("Tower cranes")
                 .description("Test description")
                 .build();
 
-        topicRepository.save(topic);
-
+        savedTopic = topicRepository.save(topic);
+    }
+    private void setupPost(){
         Post post = Post.builder()
                 .user(savedUser)
-                .topic(topic)
+                .topic(savedTopic)
                 .title("Building cranes")
                 .content("A crane is a type of machine, generally equipped with a hoist rope.")
                 .build();
 
-        Post savedPost = postRepository.save(post);
+        savedPost = postRepository.save(post);
+    }
+    @BeforeEach
+    void setUp() {
+        removeService.removeAll();
+        setupUser();
+        setupTopic();
+        setupPost();
+    }
 
+    @Test
+    void givenAuthenticatedUser_whenCreatingComment_thenReturnStatusCreated() throws Exception {
+        //given
         CommentRequestDto comment = CommentRequestDto.builder()
                 .postId(savedPost.getId())
                 .userId(savedUser.getId())
@@ -105,8 +116,22 @@ class CommentControllerTests extends TestcontainersConfig {
     }
 
     @Test
-    void canGetAllComments() {
+    void givenUnauthenticatedUser_whenCreatingComment_thenReturnStatusUnauthorized() throws Exception {
+        //given
+        CommentRequestDto comment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
 
+        //when
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/comment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(comment)));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isUnauthorized());
 
     }
 
