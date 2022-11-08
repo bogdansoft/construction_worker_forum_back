@@ -22,7 +22,7 @@
             <column name="last_name" value="Peterson"/>
             <column name="password" value="$2a$10$yaivzREajtcrmdQRwZdPBOlx5o/WJjmHMtSTTmHy2d7i11genkP5y"/>
             <column name="user_role" value="SUPPORT"/>
-            <column name="username" value="benny"/>
+            <column name="username" value="benny123"/>
         </insert>
         <insert tableName="users">
             <column name="account_status" value="ACTIVE"/>
@@ -31,7 +31,16 @@
             <column name="last_name" value="Smith"/>
             <column name="password" value="$2a$10$pr.tOBXEyTcLIkCXhmZobu6ne1AOt8QanF.6o2hc8UAuMeuXyFNHS"/>
             <column name="user_role" value="USER"/>
-            <column name="username" value="denny"/>
+            <column name="username" value="denny123"/>
+        </insert>
+        <insert tableName="users">
+            <column name="account_status" value="ACTIVE"/>
+            <column name="email" value="john@example.com"/>
+            <column name="first_name" value="John"/>
+            <column name="last_name" value="Smith"/>
+            <column name="password" value="$2a$10$A..9tzKsiW.Ng.ECFRaV4eOQprYH8Byl3Sw7P2McBZUmAyipNkLhi"/>
+            <column name="user_role" value="USER"/>
+            <column name="username" value="john123"/>
         </insert>
 
         <insert tableName="topics">
