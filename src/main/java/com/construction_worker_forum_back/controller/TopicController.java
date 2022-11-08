@@ -3,6 +3,8 @@ package com.construction_worker_forum_back.controller;
 import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.TopicRequestDto;
 import com.construction_worker_forum_back.service.TopicService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/topic")
+@Tag(name = "Topic", description = "The Topic API. Contains all the operations that can be performed on a topic.")
 @AllArgsConstructor
 public class TopicController {
 
@@ -39,6 +42,7 @@ public class TopicController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     TopicDto createTopic(@Valid @RequestBody TopicRequestDto topicRequestDto) {
@@ -46,12 +50,14 @@ public class TopicController {
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     TopicDto updateTopic(@Valid @RequestBody TopicRequestDto topicRequestDto, @PathVariable("id") Long id) {
         return topicService.updateTopicById(id, topicRequestDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     Map<String, String> deleteTopic(@PathVariable("id") Long id) {
         if (topicService.deleteTopicById(id)) {
@@ -68,5 +74,10 @@ public class TopicController {
     public List<TopicDto> findTopicByContentOrTitle(@RequestParam(name = "searchItem") String name) {
         System.out.println(topicService.findAllTopicsByName(name));
         return topicService.findAllTopicsByName(name);
+    }
+
+    @GetMapping("/number/{number}/page/{page}")
+    List<TopicDto> getDesignatedNumberOfTopics(@PathVariable("number") Integer number, @PathVariable("page") Integer page) {
+        return topicService.getDesignatedNumberOfTopics(number, page);
     }
 }
