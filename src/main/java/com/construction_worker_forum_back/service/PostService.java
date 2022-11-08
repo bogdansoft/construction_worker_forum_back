@@ -130,6 +130,19 @@ public class PostService {
         return postRepository.deletePostById(id) == 1;
     }
 
+    @Transactional
+    public boolean unlikePost(Long postId, Long userId) {
+        Post postFromDb = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User userById = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return postFromDb.getLikers().remove(userById) && userById.getLikedPosts().remove(postFromDb);
+    }
+
     public List<PostDto> findPostByContentOrTitle(String contentOrTitle) {
         return postRepository.findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(contentOrTitle, contentOrTitle)
                 .stream()

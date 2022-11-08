@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api")
@@ -16,7 +18,7 @@ public class LoginController {
     LoginService loginService;
 
     @PostMapping("/login")
-    public LoginDto loginUser(@RequestBody LoginRequestDto loginRequestDto) {
+    public LoginDto loginUser(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return loginService.login(loginRequestDto);
     }
 }

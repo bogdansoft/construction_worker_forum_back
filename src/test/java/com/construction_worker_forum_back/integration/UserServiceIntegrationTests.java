@@ -39,7 +39,6 @@ class UserServiceIntegrationTests extends TestcontainersConfig {
 
         userService.register(userRequestDto);
 
-
         assertTrue(userRepository.existsByUsernameIgnoreCase(userRequestDto.getUsername()));
     }
 }
