@@ -85,6 +85,19 @@ public class PostController {
         }
     }
 
+    @DeleteMapping("/like")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public Map<String, String> unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
+        if (postService.unlikePost(postId, userId)) {
+            return Map.of(
+                    "Post ID", postId + "",
+                    "status", "Post unliked successfully!"
+            );
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/search")
     public List<PostDto> findPostByContentOrTitle(@RequestParam(name ="searchItem") String contentOrTitle){
         System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
