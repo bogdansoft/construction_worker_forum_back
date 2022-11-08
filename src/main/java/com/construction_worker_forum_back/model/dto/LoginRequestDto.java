@@ -1,19 +1,20 @@
 package com.construction_worker_forum_back.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequestDto {
 
-    @NotEmpty
+    @NotEmpty(message = "Username is required.")
+    @Size(min = 6, message = "Too short for username.")
     private String username;
 
-    @NotEmpty
+    @NotEmpty(message = "Password is required.")
+    @Size(min = 6, message = "Password should be at least 6 characters.")
     private String password;
 }
