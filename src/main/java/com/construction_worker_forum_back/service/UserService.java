@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -80,21 +81,24 @@ public class UserService implements UserDetailsService {
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
-    @Transactional
+
     public byte[] changeAvatar(String username, MultipartFile multipartFile) throws IOException {
-        User user = userRepository.findByUsername(username).get();
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        user.setAvatar("C:/Projects/ForumProjectBackend/construction_worker_forum_back"+ "/user-avatar/"+user.getId()+"/"+fileName);
+//        User user = userRepository.findByUsername(username).get();
+//        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+//        user.setAvatar("/user-avatar/"+user.getId()+"/"+fileName);
+//
+//        User savedUser = userRepository.save(user);
+//
+//        String uploadDir = "user-avatar/" + user.getId();
+//
+//        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-        User savedUser = userRepository.save(user);
-
-        String uploadDir = "user-avatar/" + user.getId();
-
-        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-
-        InputStream in = getClass()
-                .getResourceAsStream("file:///C:/Projects/ForumProjectBackend/construction_worker_forum_back/src/main/resources/user-avatar/1/cropped-image.jpeg");
+        InputStream in = getClass().getClassLoader()
+                .getResourceAsStream("cropped-image.jpeg");
         return IOUtils.toByteArray(in);
+
+//        var fis = new FileInputStream("src/main/resources/cropped-image.jpeg");
+//        return fis.readAllBytes();
         //return modelMapper.map(savedUser, UserDto.class);
     }
 
