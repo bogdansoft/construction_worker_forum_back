@@ -11,13 +11,13 @@ public class TestProductivityExecutionListener implements TestExecutionListener 
     private long startTime;
 
     @Override
-    public void beforeTestExecution(TestContext testContext) throws Exception {
+    public void beforeTestExecution(TestContext testContext) {
         startTime = System.currentTimeMillis();
         log.info("LOGGER => test method started");
     }
 
     @Override
-    public void afterTestExecution(TestContext testContext) throws Exception {
+    public void afterTestExecution(TestContext testContext) {
         long endTime = System.currentTimeMillis();
         log.info("LOGGER => test method completed execution at {} seconds", TimeUnit.MILLISECONDS.toSeconds(endTime - startTime));
     }
