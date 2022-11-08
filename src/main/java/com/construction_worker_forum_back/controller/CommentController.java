@@ -64,21 +64,15 @@ public class CommentController {
         return commentService.likeComment(commentId, userId);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     CommentDto updateComment(@Valid @RequestBody CommentRequestDto userRequest, @PathVariable Long id) {
         return commentService.updateCommentById(id, userRequest);
     }
-
-    @DeleteMapping("/{id}")
-    Map<String, String> deleteComment(@PathVariable Long id) {
-        if (commentService.deleteById(id)) {
-            return Map.of(
-                    "ID", id + "",
-                    "status", "Deleted successfully!"
-            );
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping("/{commentId}")
+    public Boolean deleteComment(@PathVariable Long commentId, @RequestParam Long userId) {
+       return commentService.deleteById(commentId, userId);
     }
 
     @DeleteMapping("/like")
