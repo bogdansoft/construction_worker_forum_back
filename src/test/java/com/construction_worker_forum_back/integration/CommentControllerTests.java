@@ -338,7 +338,6 @@ class CommentControllerTests extends TestcontainersConfig {
                         .param("userId", String.valueOf(savedUser2.getId())))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.likers").isNotEmpty())
-                .andExpect(jsonPath("$.likers[1].id").value(savedUser2.getId()))
                 .andExpect(jsonPath("$.likers.length()").value(2));
 
 
