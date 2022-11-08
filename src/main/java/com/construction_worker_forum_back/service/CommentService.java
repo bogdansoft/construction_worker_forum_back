@@ -126,6 +126,19 @@ public class CommentService {
         return commentRepository.deleteCommentById(commentId) == 1;
     }
 
+    @Transactional
+    public boolean unlikeComment(Long commentId, Long userId) {
+        Comment commentFromDb = commentRepository
+                .findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User userById = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return commentFromDb.getLikers().remove(userById) && userById.getLikedComments().remove(commentFromDb);
+    }
+
     public List<CommentDto> getCommentsOfPost(Long id) {
         return commentRepository.findByPost_Id(id)
                 .stream()

@@ -80,4 +80,12 @@ public class TopicService {
                 .map(topic -> modelMapper.map(topic, TopicDto.class))
                 .collect(Collectors.toList());
     }
+
+    public List<TopicDto> getDesignatedNumberOfTopics(Integer number, Integer page) {
+        Integer startIndex = (page-1)*number;
+        return topicRepository.getDesignatedNumberOfTopics(number, startIndex)
+                .stream()
+                .map(topic -> modelMapper.map(topic, TopicDto.class))
+                .collect(Collectors.toList());
+    }
 }
