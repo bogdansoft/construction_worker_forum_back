@@ -2,8 +2,6 @@ package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.config.security.JwtTokenUtil;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
-import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
@@ -18,6 +16,7 @@ import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -29,8 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.Instant;
-import java.util.Date;
+import java.lang.reflect.Array;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -342,6 +340,7 @@ class CommentControllerTests extends TestcontainersConfig {
                 .andExpect(jsonPath("$.likers").isNotEmpty())
                 .andExpect(jsonPath("$.likers[1].id").value(savedUser2.getId()))
                 .andExpect(jsonPath("$.likers.length()").value(2));
+
 
     }
 }
