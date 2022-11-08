@@ -81,25 +81,20 @@ public class UserService implements UserDetailsService {
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
-
+    @Transactional
     public byte[] changeAvatar(String username, MultipartFile multipartFile) throws IOException {
-//        User user = userRepository.findByUsername(username).get();
-//        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-//        user.setAvatar("/user-avatar/"+user.getId()+"/"+fileName);
-//
-//        User savedUser = userRepository.save(user);
-//
-//        String uploadDir = "user-avatar/" + user.getId();
-//
-//        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+        User user = userRepository.findByUsername(username).get();
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        user.setAvatar("/user-avatar/"+user.getId()+"/"+fileName);
 
-        InputStream in = getClass().getClassLoader()
-                .getResourceAsStream("cropped-image.jpeg");
-        return IOUtils.toByteArray(in);
+        User savedUser = userRepository.save(user);
 
-//        var fis = new FileInputStream("src/main/resources/cropped-image.jpeg");
-//        return fis.readAllBytes();
-        //return modelMapper.map(savedUser, UserDto.class);
+        String uploadDir = "user-avatar/" + savedUser.getId();
+
+        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
+        var fis = new FileInputStream("user-avatar/"+savedUser.getId()+"/cropped-image.jpeg");
+        return fis.readAllBytes();
     }
 
     @Transactional

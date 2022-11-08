@@ -73,7 +73,6 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE , produces = MediaType.IMAGE_JPEG_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
     public byte[] changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
 
         return userService.changeAvatar(username, multipartFile);
