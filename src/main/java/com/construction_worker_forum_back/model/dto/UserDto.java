@@ -23,6 +23,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String bio;
+    private String avatar;
     private Date createdAt;
     private Date updatedAt;
     private AccountStatus accountStatus;

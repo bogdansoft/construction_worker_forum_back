@@ -43,6 +43,7 @@
             </column>
             <column name="account_status" type="varchar(255)"/>
             <column name="bio" type="varchar(255)"/>
+            <column name="avatar" type="varchar(255)"/>
             <column name="created_at" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
             <column name="email" type="varchar(255)">
                 <constraints unique="true" nullable="false"/>

@@ -6,9 +6,11 @@ import com.construction_worker_forum_back.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ActiveProfiles("dev")
 class UserServiceIntegrationTests extends TestcontainersConfig {
 
     @Autowired
@@ -36,7 +38,6 @@ class UserServiceIntegrationTests extends TestcontainersConfig {
                 .build();
 
         userService.register(userRequestDto);
-
 
         assertTrue(userRepository.existsByUsernameIgnoreCase(userRequestDto.getUsername()));
     }

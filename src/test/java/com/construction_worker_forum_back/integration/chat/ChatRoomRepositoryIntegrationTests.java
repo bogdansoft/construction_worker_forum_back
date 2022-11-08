@@ -5,6 +5,7 @@ import com.construction_worker_forum_back.repository.ChatRoomRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("dev")
 class ChatRoomRepositoryIntegrationTests extends MongoTestcontainersConfig {
 
     @Autowired

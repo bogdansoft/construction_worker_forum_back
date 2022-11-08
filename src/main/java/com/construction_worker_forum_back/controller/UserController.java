@@ -9,17 +9,20 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
-@RequestMapping("/api/user")
+@RequestMapping(path="/api/user")
 @Tag(name = "User", description = "The User API. Contains all the operations that can be performed on a user.")
 @AllArgsConstructor
 public class UserController {
@@ -64,6 +67,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     UserDto changeBio(@PathVariable String username, @Valid @RequestBody BioSimpleDto newBio) {
         return userService.changeBio(username, newBio);
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PutMapping( path="/changeavatar", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @ResponseStatus(HttpStatus.CREATED)
+    public byte[] changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
+
+        return userService.changeAvatar(username, multipartFile);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
