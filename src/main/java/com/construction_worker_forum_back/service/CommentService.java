@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -112,8 +113,17 @@ public class CommentService {
     }
 
     @Transactional
-    public boolean deleteById(Long id) {
-        return commentRepository.deleteCommentById(id) == 1;
+    public boolean deleteById(Long commentId, Long userId) {
+        Comment comment = commentRepository
+                .findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        User owner = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!(Objects.equals(comment.getUser().getId(), owner.getId()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        return commentRepository.deleteCommentById(commentId) == 1;
     }
 
     public List<CommentDto> getCommentsOfPost(Long id) {

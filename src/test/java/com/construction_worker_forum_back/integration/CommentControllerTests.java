@@ -2,6 +2,8 @@ package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.config.security.JwtTokenUtil;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
+import com.construction_worker_forum_back.model.dto.UserRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
@@ -155,25 +157,25 @@ class CommentControllerTests extends TestcontainersConfig {
     void givenAuthenticatedUser_whenDeletingHisOwnComment_thenSuccess() throws Exception {
 
         //given
-        CommentRequestDto comment = CommentRequestDto.builder()
-                .postId(savedPost.getId())
-                .userId(savedUser.getId())
-                .content("Nice post")
+        Comment comment = Comment.builder()
+                .user(savedUser)
+                .post(savedPost)
+                .content("nice post")
                 .build();
-        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+        Comment savedComment = commentRepository.save(comment);
         Long id = savedComment.getId();
 
         //when
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/comment/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
-                .content(objectMapper.writeValueAsString(comment)));
+                .content(objectMapper.writeValueAsString(comment))
+                .param("userId", String.valueOf(savedUser.getId())));
 
         //then
         response
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("Deleted successfully!"));
+                .andExpect(status().isOk());
     }
 
     //TODO ! FIX THIS BEHAVIOUR
@@ -181,12 +183,12 @@ class CommentControllerTests extends TestcontainersConfig {
     void givenAuthenticatedUser_whenDeletingNotHisOwnComment_thenFail() throws Exception {
 
         //given
-        CommentRequestDto comment = CommentRequestDto.builder()
-                .postId(savedPost.getId())
-                .userId(savedUser.getId())
-                .content("Nice post")
+        Comment comment = Comment.builder()
+                .user(savedUser)
+                .post(savedPost)
+                .content("nice post")
                 .build();
-        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+        Comment savedComment = commentRepository.save(comment);
 
         User user = User.builder()
                 .username("user2")
@@ -197,20 +199,21 @@ class CommentControllerTests extends TestcontainersConfig {
                 .build();
         User savedUser2 = userRepository.save(user);
 
-        userDetails = new UserDetailsImpl(savedUser2);
+        UserDetailsImpl userDetails2 = new UserDetailsImpl(savedUser2);
 
         Long id = savedComment.getId();
 
         //when
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders.delete("/api/comment/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
-                .content(objectMapper.writeValueAsString(comment)));
+                .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails2))
+                .content(objectMapper.writeValueAsString(comment))
+                .param("userId", String.valueOf(savedUser2.getId())));
 
         //then
         response
-                .andDo(print());
-
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -242,4 +245,103 @@ class CommentControllerTests extends TestcontainersConfig {
                 .andExpect(jsonPath("$.content").value("Changed title"));
     }
 
+
+    @Test
+    void givenAuthorizedUser_WhenHeLikesAComment_ThenSuccess() throws Exception {
+        CommentRequestDto comment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/comment/like")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
+                .param("commentId", String.valueOf(savedComment.getId()))
+                .param("userId", String.valueOf(savedUser.getId())));
+        response
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.likers").isNotEmpty())
+                .andExpect(jsonPath("$.likers[0].id").value(savedUser.getId()))
+                .andExpect(jsonPath("$.likers.length()").value(1));
+    }
+
+    @Test
+    void givenAuthorizedUser_WhenTheyLikeACommentThatHeAlreadyLiked_ThenReturnConflict() throws Exception {
+        CommentRequestDto comment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+
+        mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/comment/like")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
+                        .param("commentId", String.valueOf(savedComment.getId()))
+                        .param("userId", String.valueOf(savedUser.getId())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.likers").isNotEmpty())
+                .andExpect(jsonPath("$.likers[0].id").value(savedUser.getId()))
+                .andExpect(jsonPath("$.likers.length()").value(1));
+
+        mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/comment/like")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
+                        .param("commentId", String.valueOf(savedComment.getId()))
+                        .param("userId", String.valueOf(savedUser.getId())))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void givenTwoAuthenticatedUsers_WhenTheyLikeAComment_ThenSuccess() throws Exception {
+        CommentRequestDto comment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+
+        User userTwo = User.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .username("johndoe")
+                .password("qwerty12345")
+                .email("email@test.com")
+                .build();
+
+        User savedUser2 = userRepository.save(userTwo);
+
+        UserDetailsImpl userDetails2 = new UserDetailsImpl(userTwo);
+
+        mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/comment/like")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
+                        .param("commentId", String.valueOf(savedComment.getId()))
+                        .param("userId", String.valueOf(savedUser.getId())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.likers").isNotEmpty())
+                .andExpect(jsonPath("$.likers[0].id").value(savedUser.getId()))
+                .andExpect(jsonPath("$.likers.length()").value(1));
+
+        mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/comment/like")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails2))
+                        .param("commentId", String.valueOf(savedComment.getId()))
+                        .param("userId", String.valueOf(savedUser2.getId())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.likers").isNotEmpty())
+                .andExpect(jsonPath("$.likers[1].id").value(savedUser2.getId()))
+                .andExpect(jsonPath("$.likers.length()").value(2));
+
+    }
 }
