@@ -75,4 +75,9 @@ public class TopicController {
         System.out.println(topicService.findAllTopicsByName(name));
         return topicService.findAllTopicsByName(name);
     }
+
+    @GetMapping("/number/{number}/page/{page}")
+    List<TopicDto> getDesignatedNumberOfTopics(@PathVariable("number") Integer number, @PathVariable("page") Integer page) {
+        return topicService.getDesignatedNumberOfTopics(number, page);
+    }
 }
