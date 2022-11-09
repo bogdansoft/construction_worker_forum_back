@@ -1,10 +1,14 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
+import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.TopicDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
+import com.construction_worker_forum_back.repository.TopicRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,13 +35,90 @@ public class PostServiceTest {
     private ModelMapper modelMapper;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private TopicService topicService;
+    @Mock
+    private UserService userService;
     @InjectMocks
     private PostService postService;
 
     @Test
+    void itShouldUpdatePost() {
+        //given
+        Long updatedId = 1L;
+
+        PostRequestDto postRequestDto = new PostRequestDto();
+        postRequestDto.setUserId(1L);
+        postRequestDto.setTitle("update");
+        postRequestDto.setContent("update");
+        postRequestDto.setTopicId(1L);
+
+        Topic topic = new Topic();
+        topic.setId(1L);
+
+        TopicDto topicDto = new TopicDto();
+        topicDto.setId(1L);
+
+        Post post = new Post();
+        post.setId(1L);
+
+        given(topicService.findTopicById(topic.getId())).willReturn(Optional.of(topicDto));
+        given(postRepository.findById(updatedId)).willReturn(Optional.of(post));
+        doNothing().when(modelMapper).map(postRequestDto, post);
+        doNothing().when(modelMapper).map(postRequestDto, topicDto);
+
+        //when
+        postService.updatePostById(updatedId, postRequestDto);
+
+        //then
+        verify(postRepository, atLeastOnce()).findById(any());
+        verify(modelMapper, atLeastOnce()).map(any(), any());
+    }
+
+    @Test
+    void itShouldCreatePost() {
+        //given
+        PostRequestDto postRequestDto = new PostRequestDto();
+        postRequestDto.setUserId(1L);
+        postRequestDto.setTopicId(1L);
+
+        User user = new User();
+        user.setId(1L);
+
+        Topic topic = new Topic();
+        topic.setId(1L);
+
+        TopicDto topicDto = new TopicDto();
+        topicDto.setId(1L);
+
+        Post post = new Post();
+        post.setUser(user);
+        post.setId(1L);
+
+        UserDto userDto = new UserDto();
+        userDto.setId(1L);
+
+        given(modelMapper.map(postRequestDto, Post.class)).willReturn(post);
+        given(modelMapper.map(userDto, User.class)).willReturn(user);
+        given(modelMapper.map(topicDto, Topic.class)).willReturn(topic);
+        given(userService.findById(user.getId())).willReturn(Optional.of(userDto));
+        given(topicService.findTopicById(topic.getId())).willReturn(Optional.of(topicDto));
+        given(postRepository.save(post)).willReturn(post);
+
+        //when
+        postService.createPost(postRequestDto);
+
+        //then
+        verify(postRepository, atLeastOnce()).save(any());
+        verify(modelMapper, atLeastOnce()).map(any(), any());
+    }
+
+    @Test
     void itShouldGetAllPosts() {
         //given
-        List<Post> postList = new ArrayList<>(List.of(new Post()));
+        Post post = new Post();
+        List<Post> postList = new ArrayList<>(List.of(post));
+        given(modelMapper.map(post, PostDto.class)).willReturn(new PostDto());
         given(postRepository.findAll()).willReturn(postList);
 
         //when
@@ -56,6 +137,7 @@ public class PostServiceTest {
         post.setId(1L);
         PostDto postDto = new PostDto();
         postDto.setId(post.getId());
+
         //when
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
         when(modelMapper.map(post, PostDto.class)).thenReturn(postDto);
