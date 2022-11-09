@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 public class LoginRequestDto {
 
     @NotEmpty(message = "Username is required.")
-    @Size(min = 6, message = "Too short for username.")
+    @Size(min = 4, message = "Too short for username.")
     private String username;
 
     @NotEmpty(message = "Password is required.")
