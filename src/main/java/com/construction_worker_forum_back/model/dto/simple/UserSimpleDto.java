@@ -9,6 +9,7 @@ import java.util.Date;
 @Builder
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserSimpleDto {

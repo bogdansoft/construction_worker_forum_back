@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {

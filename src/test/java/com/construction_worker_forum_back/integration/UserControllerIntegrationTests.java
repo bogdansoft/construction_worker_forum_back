@@ -7,11 +7,13 @@ import com.construction_worker_forum_back.model.security.Role;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,26 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerIntegrationTests extends TestcontainersConfig {
 
-    private void setupUser() {
-        User admin = User.builder()
-                .username("admin")
-                .password("password1")
-                .email("admin@example.com")
-                .userRoles(Role.ADMINISTRATOR)
-                .build();
-
-        User user = User.builder()
-                .username("user")
-                .password("password2")
-                .email("userunique@example.com")
-                .userRoles(Role.USER)
-                .accountStatus(AccountStatus.ACTIVE)
-                .build();
-
-        userRepository.save(admin);
-        userRepository.save(user);
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -63,10 +45,53 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private static User admin;
+    private static User support;
+    private static User user;
+
+    private static void setUpAdmin() {
+        admin = User.builder()
+                .username("admin")
+                .password("password")
+                .email("yoda@example.com")
+                .userRoles(Role.ADMINISTRATOR)
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
+    }
+
+    private static void setUpSupport() {
+        support = User.builder()
+                .username("support")
+                .password("password")
+                .email("windu@example.com")
+                .userRoles(Role.SUPPORT)
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
+    }
+
+    private static void setUpUser() {
+        user = User.builder()
+                .username("user")
+                .password("password")
+                .email("padawan@example.com")
+                .userRoles(Role.USER)
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        setUpAdmin();
+        setUpSupport();
+        setUpUser();
+    }
+
     @BeforeEach
-    void setUp() {
+    void setup() {
         removeService.removeAll();
-        setupUser();
+        userRepository.save(admin);
+        userRepository.save(support);
+        userRepository.save(user);
     }
 
     @Test
@@ -140,7 +165,7 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
     }
 
     @Test
-    @WithUserDetails("admin")
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = "admin")
     void givenSavedUser_whenSearchedById_thenReturnFoundUser() throws Exception {
 
         // given
@@ -158,7 +183,8 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
                 .intValue();
 
         // when
-        ResultActions response = mockMvc.perform(get("/api/user/{id}", id));
+        ResultActions response = mockMvc
+                .perform(get("/api/user/{id}", id));
 
         // then
         response.andDo(print())
@@ -180,5 +206,107 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
                         is("ACTIVE")))
                 .andExpect(jsonPath("$.userRoles",
                         is("USER")));
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = "admin")
+    void givenSavedUsers_whenAllRetrievedByAdmin_thenReturnListOfUsers() throws Exception {
+
+        // given
+        UserRequestDto user1 = UserRequestDto.builder()
+                .username("user1")
+                .password("secret")
+                .email("user1@example.com")
+                .firstName("John")
+                .lastName("Doe")
+                .build();
+
+        UserRequestDto user2 = UserRequestDto.builder()
+                .username("user2")
+                .password("secret")
+                .email("user2@example.com")
+                .firstName("Winston")
+                .lastName("Wolf")
+                .build();
+
+        userService.register(user1);
+        userService.register(user2);
+
+        // when
+        ResultActions response = mockMvc.perform(get("/api/user"));
+
+        // then
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()",
+                        is(5)));
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = "support")
+    void givenSavedUsers_whenAllRetrievedBySupport_thenReturnListOfUsers() throws Exception {
+
+        // given
+        UserRequestDto user1 = UserRequestDto.builder()
+                .username("user1")
+                .password("secret")
+                .email("user1@example.com")
+                .firstName("John")
+                .lastName("Doe")
+                .build();
+
+        UserRequestDto user2 = UserRequestDto.builder()
+                .username("user2")
+                .password("secret")
+                .email("user2@example.com")
+                .firstName("Winston")
+                .lastName("Wolf")
+                .build();
+
+        userService.register(user1);
+        userService.register(user2);
+
+        // when
+        ResultActions response = mockMvc.perform(get("/api/user"));
+
+        // then
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()",
+                        is(5)));
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void givenSavedUsers_whenAllRetrievedByUser_thenReturn403() throws Exception {
+
+        // given
+        UserRequestDto user1 = UserRequestDto.builder()
+                .username("user1")
+                .password("secret")
+                .email("user1@example.com")
+                .firstName("John")
+                .lastName("Doe")
+                .build();
+
+        UserRequestDto user2 = UserRequestDto.builder()
+                .username("user2")
+                .password("secret")
+                .email("user2@example.com")
+                .firstName("Winston")
+                .lastName("Wolf")
+                .build();
+
+        userService.register(user1);
+        userService.register(user2);
+
+        // when
+        ResultActions response = mockMvc.perform(get("/api/user"));
+
+        // then
+        response.andDo(print())
+                .andExpect(status().isForbidden());
     }
 }

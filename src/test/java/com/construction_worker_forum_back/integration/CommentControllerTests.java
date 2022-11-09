@@ -2,6 +2,8 @@ package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.config.security.JwtTokenUtil;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
@@ -15,8 +17,6 @@ import com.construction_worker_forum_back.repository.TopicRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -28,15 +28,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.lang.reflect.Array;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-@Slf4j
 class CommentControllerTests extends TestcontainersConfig {
 
     @Autowired
@@ -176,7 +173,6 @@ class CommentControllerTests extends TestcontainersConfig {
                 .andExpect(status().isOk());
     }
 
-    //TODO ! FIX THIS BEHAVIOUR
     @Test
     void givenAuthenticatedUser_whenDeletingNotHisOwnComment_thenFail() throws Exception {
 
@@ -339,7 +335,77 @@ class CommentControllerTests extends TestcontainersConfig {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.likers").isNotEmpty())
                 .andExpect(jsonPath("$.likers.length()").value(2));
+    }
 
+    @Test
+    void givenUserHasRoleAdministrator_whenRequestingAllComments_ThenReturnsListOfAllComments() throws Exception {
+        CommentRequestDto comment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+
+        CommentRequestDto comment2 = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post2")
+                .build();
+
+        Comment savedComment2 = commentRepository.save(modelMapper.map(comment2, Comment.class));
+
+        User admin = User.builder()
+                .firstName("Admin")
+                .lastName("Adminowsky")
+                .email("root@test.com")
+                .username("root")
+                .password("qwerty1234")
+                .userRoles(Role.ADMINISTRATOR)
+                .build();
+        User savedAdmin = userRepository.save(admin);
+        UserDetailsImpl userDetailsAdmin = new UserDetailsImpl(savedAdmin);
+
+        mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/comment/")
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsAdmin)))
+                .andExpect(jsonPath("$[0].content").value(comment.getContent()));
+
+    }
+
+    @Test
+    void givenUserHasRoleUser_whenRequestingAllComments_ThenReturnsNOPE() throws Exception {
+        CommentRequestDto comment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        Comment savedComment = commentRepository.save(modelMapper.map(comment, Comment.class));
+
+        CommentRequestDto comment2 = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post2")
+                .build();
+
+        Comment savedComment2 = commentRepository.save(modelMapper.map(comment2, Comment.class));
+
+        User admin = User.builder()
+                .firstName("Admin")
+                .lastName("Adminowsky")
+                .email("root@test.com")
+                .username("root")
+                .password("qwerty1234")
+                .userRoles(Role.USER)
+                .build();
+        User savedAdmin = userRepository.save(admin);
+        UserDetailsImpl userDetailsAdmin = new UserDetailsImpl(savedAdmin);
+
+        mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/comment/")
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsAdmin)))
+                .andExpect(status().isForbidden());
 
     }
 }
