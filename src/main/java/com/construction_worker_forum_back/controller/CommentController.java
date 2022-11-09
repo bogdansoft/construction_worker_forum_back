@@ -89,6 +89,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
     List<CommentDto> getCommentsOfPost(@PathVariable Long id) {
         return commentService.getCommentsOfPost(id);
     }
