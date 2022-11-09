@@ -20,5 +20,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByTitleContainsIgnoreCaseOrContentContainsIgnoreCase(String title, String content);
 
+    @Query(
+            value = "SELECT * FROM posts WHERE topic_id = ?1 LIMIT ?2 OFFSET ?3",
+            nativeQuery = true
+    )
+    List<Post> getDesignatedNumberOfPostsForTopic(Long topicId, Integer paginationNumber, Integer index);
 
 }

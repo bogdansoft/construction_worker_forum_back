@@ -4,7 +4,6 @@ import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -43,7 +42,6 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/user")
     UserDto getUserByUsername(@RequestParam() String username) {
