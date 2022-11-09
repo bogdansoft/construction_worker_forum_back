@@ -1,6 +1,5 @@
 package com.construction_worker_forum_back.model.dto;
 
-import liquibase.pro.packaged.B;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;

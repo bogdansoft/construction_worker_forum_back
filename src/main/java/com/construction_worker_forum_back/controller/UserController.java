@@ -62,7 +62,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{username}/bio")
     @ResponseStatus(HttpStatus.CREATED)
-    UserDto changeBio(@PathVariable String username, @RequestBody BioSimpleDto newBio) {
+    UserDto changeBio(@PathVariable String username, @Valid @RequestBody BioSimpleDto newBio) {
         return userService.changeBio(username, newBio);
     }
 
