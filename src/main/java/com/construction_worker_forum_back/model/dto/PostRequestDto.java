@@ -12,7 +12,6 @@ import javax.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PostRequestDto {
 
     @NotNull
