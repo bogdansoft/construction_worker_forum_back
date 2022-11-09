@@ -8,6 +8,7 @@
                     <option name="environmentProperties">
                         <map>
                             <entry key="SPRING_DATASOURCE_PASSWORD" value="root"/>
+                            <entry key="SPRING_DATASOURCE_TOKEN" value="secret_key"/>
                             <entry key="SPRING_DATASOURCE_URL"
                                    value="jdbc:mysql://localhost:3306/forum_db?createDatabaseIfNotExist=true&amp;serverTimezone=UTC&amp;useLegacyDatetimeCode=false"/>
                             <entry key="SPRING_DATASOURCE_USERNAME" value="root"/>
