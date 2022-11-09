@@ -103,7 +103,7 @@ public class UserService implements UserDetailsService {
         modelMapper.map(userRequestDto, user);
         user.setUpdatedAt(Date.from(Instant.now()));
 
-        return modelMapper.map(userRepository.save(user), UserDto.class);
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Transactional
