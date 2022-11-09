@@ -4,16 +4,14 @@ import com.construction_worker_forum_back.model.dto.simple.CommentSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.PostSimpleDto;
 import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
