@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
@@ -53,13 +54,15 @@ public class PostServiceTest {
         //given
         Post post = new Post();
         post.setId(1L);
-
+        PostDto postDto = new PostDto();
+        postDto.setId(post.getId());
         //when
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
-        postService.findById(post.getId());
+        when(modelMapper.map(post, PostDto.class)).thenReturn(postDto);
+        var expected = postService.findById(post.getId());
 
         //then
-        assertTrue(post.getId() > 0);
+        assertTrue(expected.isPresent());
 
         verify(postRepository, atLeastOnce()).findById(anyLong());
     }
