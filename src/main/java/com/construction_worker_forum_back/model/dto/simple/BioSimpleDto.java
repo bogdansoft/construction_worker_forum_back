@@ -1,14 +1,14 @@
 package com.construction_worker_forum_back.model.dto.simple;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Builder
+
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class BioSimpleDto {
     private String newBio;
 }
