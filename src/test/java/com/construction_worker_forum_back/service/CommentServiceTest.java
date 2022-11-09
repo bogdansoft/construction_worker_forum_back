@@ -193,7 +193,6 @@ public class CommentServiceTest {
         User user = User.builder().username("adam").id(1L).build();
         Comment comment = Comment.builder().id(1L).likers(new HashSet<>(List.of(user))).build();
         user.setLikedComments(new HashSet<>(List.of(comment)));
-        CommentDto commentDto = CommentDto.builder().id(1L).likers(new ArrayList<>(List.of(LikerSimpleDto.builder().username("adam").id(1L).build()))).build();
 
         given(commentRepository.findById(comment.getId())).willReturn(Optional.of(comment));
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
