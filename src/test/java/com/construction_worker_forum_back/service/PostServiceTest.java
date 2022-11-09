@@ -1,6 +1,9 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
+import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.TopicDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
@@ -31,13 +34,54 @@ public class PostServiceTest {
     private ModelMapper modelMapper;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private TopicService topicService;
+    @Mock
+    private UserService userService;
     @InjectMocks
     private PostService postService;
 
     @Test
+    void itShouldCreatePost() {
+        //given
+        PostRequestDto postRequestDto = new PostRequestDto();
+        User user = new User();
+        user.setId(1L);
+        postRequestDto.setUserId(user.getId());
+        Topic topic = new Topic();
+        topic.setId(1L);
+        postRequestDto.setTopicId(topic.getId());
+        Post post = new Post();
+        post.setUser(user);
+        post.setId(1L);
+        UserDto userDto = new UserDto();
+        //Post post = modelMapper.map(postRequestDto, Post.class);
+        //UserDto userDto = modelMapper.map(user, UserDto.class);
+        //TopicDto topicDto = modelMapper.map(topic, TopicDto.class);
+        /*
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(userDto));
+        given(topicRepository.findTopicById(topic.getId())).willReturn(Optional.of(topicDto));*/
+        given(modelMapper.map(user, UserDto.class)).willReturn(new UserDto());
+        given(modelMapper.map(topic, TopicDto.class)).willReturn(new TopicDto());
+        given(modelMapper.map(postRequestDto, Post.class)).willReturn(new Post());
+        //given(modelMapper.map(userDto, User.class)).willReturn(new User());
+        given(userService.findById(user.getId())).willReturn(Optional.of(new UserDto()));
+        given(topicService.findTopicById(topic.getId())).willReturn(Optional.of(new TopicDto()));
+        given(postRepository.save(post)).willReturn(post);
+
+        //when
+        postService.createPost(postRequestDto);
+
+        //then
+        verify(postRepository, atLeastOnce()).save(any());
+    }
+
+    @Test
     void itShouldGetAllPosts() {
         //given
-        List<Post> postList = new ArrayList<>(List.of(new Post()));
+        Post post = new Post();
+        List<Post> postList = new ArrayList<>(List.of(post));
+        given(modelMapper.map(post, PostDto.class)).willReturn(new PostDto());
         given(postRepository.findAll()).willReturn(postList);
 
         //when
@@ -56,6 +100,7 @@ public class PostServiceTest {
         post.setId(1L);
         PostDto postDto = new PostDto();
         postDto.setId(post.getId());
+
         //when
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
         when(modelMapper.map(post, PostDto.class)).thenReturn(postDto);
