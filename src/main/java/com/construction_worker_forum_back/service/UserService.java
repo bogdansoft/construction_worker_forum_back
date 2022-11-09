@@ -7,7 +7,6 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.transaction.Transactional;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -84,18 +82,16 @@ public class UserService implements UserDetailsService {
     public byte[] changeAvatar(String username, MultipartFile multipartFile) throws IOException {
         User user = userRepository.findByUsername(username).get();
         String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        user.setAvatar("C:/Projects/ForumProjectBackend/construction_worker_forum_back"+ "/user-avatar/"+user.getId()+"/"+fileName);
+        user.setAvatar("/user-avatar/"+user.getId()+"/"+fileName);
 
         User savedUser = userRepository.save(user);
 
-        String uploadDir = "user-avatar/" + user.getId();
+        String uploadDir = "user-avatar/" + savedUser.getId();
 
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-        InputStream in = getClass()
-                .getResourceAsStream("file:///C:/Projects/ForumProjectBackend/construction_worker_forum_back/src/main/resources/user-avatar/1/cropped-image.jpeg");
-        return IOUtils.toByteArray(in);
-        //return modelMapper.map(savedUser, UserDto.class);
+        var fis = new FileInputStream("user-avatar/"+savedUser.getId()+"/cropped-image.jpeg");
+        return fis.readAllBytes();
     }
 
     @Transactional
