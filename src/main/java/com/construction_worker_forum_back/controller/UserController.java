@@ -58,7 +58,6 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{username}/bio")
     @ResponseStatus(HttpStatus.CREATED)
@@ -66,8 +65,6 @@ public class UserController {
         return userService.changeBio(username, newBio);
     }
 
-
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE , produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
@@ -81,7 +78,6 @@ public class UserController {
         return userService.updateUser(id, userRequestDto);
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'USER')")
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     Map<String, String> deleteUser(@PathVariable Long id) {
