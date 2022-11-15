@@ -40,16 +40,16 @@ public class DevSecurityConfig {
                         .mvcMatchers(HttpMethod.OPTIONS, "/users/summaries").permitAll()
                         .mvcMatchers(HttpMethod.OPTIONS, "/messages/**").permitAll()
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
-                        .mvcMatchers(HttpMethod.GET, "/api/post/likers/{id}").authenticated()
-                        .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated()
+                        .mvcMatchers(HttpMethod.GET, "/api/post/likers/{id}").authenticated() //to be removed
+                        .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated() //to be removed
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
-                        .mvcMatchers("/ws").anonymous()
-                        .mvcMatchers("/ws/**").anonymous()
-                        .mvcMatchers(HttpMethod.GET, "/messages/**").authenticated()
-                        .mvcMatchers(HttpMethod.GET, "/users/summaries").authenticated()
-                        .mvcMatchers("/api/post/**").hasAuthority("ACTIVE")
-                        .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE")
+                        .mvcMatchers("/ws").anonymous() //to be removed
+                        .mvcMatchers("/ws/**").anonymous() //to be removed
+                        .mvcMatchers(HttpMethod.GET, "/messages/**").authenticated() //to be removed
+                        .mvcMatchers(HttpMethod.GET, "/users/summaries").authenticated() //to be removed
+                        .mvcMatchers("/api/post/**").hasAuthority("ACTIVE") //move it to controller
+                        .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE") //move it to controller
                         .mvcMatchers("/api/**").authenticated()
                         .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().denyAll())

@@ -41,7 +41,7 @@ public class TopicController {
         return topicService.findTopicByName(name).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,14 +49,14 @@ public class TopicController {
         return topicService.createTopic(topicRequestDto);
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     TopicDto updateTopic(@Valid @RequestBody TopicRequestDto topicRequestDto, @PathVariable("id") Long id) {
         return topicService.updateTopicById(id, topicRequestDto);
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRATOR')")
+    @PreAuthorize("hasAnyRole('ADMINISTRATOR', 'SUPPORT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
     Map<String, String> deleteTopic(@PathVariable("id") Long id) {

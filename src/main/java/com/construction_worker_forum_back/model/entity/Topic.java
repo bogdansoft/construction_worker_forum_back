@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Topic {
+public class Topic implements IEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,10 @@ public class Topic {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = User.class, optional = false)
+    @JoinColumn(name = "last_edited_by", referencedColumnName = "id")
+    private User lastEditor;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = User.class, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
