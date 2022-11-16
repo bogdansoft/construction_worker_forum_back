@@ -1,0 +1,4 @@
+1,ACTIVE,,,2022-11-10 06:01:32,jake@example.com,Jake,Johnson,$2y$10$790tAElGoR.OwefHib1Zp.Ew.NIpBT9i3A6//EhKvzFs3clAQypz2,,ADMINISTRATOR,jake123
+2,ACTIVE,,,2022-11-10 06:01:32,ben@example.com,Ben,Peterson,$2a$10$yaivzREajtcrmdQRwZdPBOlx5o/WJjmHMtSTTmHy2d7i11genkP5y,,SUPPORT,benny123
+3,ACTIVE,,,2022-11-10 06:01:32,den@example.com,Denny,Smith,$2a$10$pr.tOBXEyTcLIkCXhmZobu6ne1AOt8QanF.6o2hc8UAuMeuXyFNHS,,USER,denny123
+4,ACTIVE,,,2022-11-10 06:01:32,john@example.com,John,Smith,$2a$10$A..9tzKsiW.Ng.ECFRaV4eOQprYH8Byl3Sw7P2McBZUmAyipNkLhi,,USER,john123
