@@ -24,7 +24,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -160,7 +159,10 @@ class PostControllerTests extends TestcontainersConfig {
                 .content("New post")
                 .title("Title of new post")
                 .build();
-        Post postFromDb = postRepository.save(modelMapper.map(post, Post.class));
+
+        Post mappedPost = modelMapper.map(post, Post.class);
+        mappedPost.setUser(savedUser);
+        Post savedPost = postRepository.save(mappedPost);
 
 
         PostRequestDto editedPost = PostRequestDto.builder()
@@ -171,7 +173,7 @@ class PostControllerTests extends TestcontainersConfig {
                 .build();
 
         //when + then
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/post/{id}", postFromDb.getId())
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/post/{id}", savedPost.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(editedPost))
                         .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails)))

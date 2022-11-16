@@ -21,7 +21,10 @@ public abstract class TestcontainersConfig {
 
     public static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8");
 
+
     static {
+        mySQLContainer.setCommand("GRANT SUPER ON *.* TO " + mySQLContainer.getUsername() + "@" + mySQLContainer.getDatabaseName());
+        mySQLContainer.setCommand("--log-bin-trust-function-creators=1");
         mySQLContainer.start();
     }
 
