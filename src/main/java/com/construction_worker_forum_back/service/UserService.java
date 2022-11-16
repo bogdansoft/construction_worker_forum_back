@@ -90,8 +90,9 @@ public class UserService implements UserDetailsService {
 
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-        var fis = new FileInputStream("user-avatar/"+savedUser.getId()+"/cropped-image.jpeg");
-        return fis.readAllBytes();
+        try(var fis = new FileInputStream("user-avatar/"+savedUser.getId()+"/cropped-image.jpeg")) {
+            return fis.readAllBytes();
+        }
     }
 
     @Transactional
