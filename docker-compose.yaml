@@ -37,9 +37,21 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: root
       ME_CONFIG_MONGODB_SERVER: mongodb
 
+  cache:
+    image: redis
+    container_name: construction_worker_forum_redis
+    restart: always
+    ports:
+      - "6376:6379"
+    command: redis-server --loglevel warning
+    volumes:
+        - cache:/data
+
 volumes:
   db_data:
   data: { }
+  cache:
+    driver: local
 
 networks:
   default:
