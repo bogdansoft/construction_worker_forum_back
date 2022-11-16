@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 @RequestMapping("/api/post")
 @Tag(name = "Post", description = "The Post API. Contains all the operations that can be performed on a post.")
 @AllArgsConstructor

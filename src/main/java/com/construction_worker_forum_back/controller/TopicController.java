@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 @RequestMapping("/api/topic")
 @Tag(name = "Topic", description = "The Topic API. Contains all the operations that can be performed on a topic.")
 @AllArgsConstructor

@@ -22,6 +22,9 @@ jobs:
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/forum_db?createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false
       SPRING_DATASOURCE_TOKEN: secret_key
+      SERVER_PORT: 443
+      SERVER_KEY_ALIAS: local_ssl
+      SERVER_KEY_PASSWORD: secret123
 
     steps:
     - name: Set up MySQL
