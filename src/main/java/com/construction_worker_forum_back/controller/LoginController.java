@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 @RequestMapping("/api")
 @Tag(name = "Login", description = "The Login API. Contains all the operations that can be performed on a log in.")
 @AllArgsConstructor

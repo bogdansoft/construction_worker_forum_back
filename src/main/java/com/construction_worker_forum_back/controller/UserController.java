@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 @RequestMapping(path="/api/user")
 @Tag(name = "User", description = "The User API. Contains all the operations that can be performed on a user.")
 @AllArgsConstructor

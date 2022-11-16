@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 @RequestMapping("/api/comment")
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Comment", description = "The Comment API. Contains all the operations that can be performed on a comment.")

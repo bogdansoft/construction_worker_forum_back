@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @AllArgsConstructor
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
