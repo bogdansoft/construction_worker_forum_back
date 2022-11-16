@@ -19,7 +19,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class Post implements IEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +39,10 @@ public class Post {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "last_edited_by", referencedColumnName = "id")
+    private User lastEditor;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", referencedColumnName = "id")

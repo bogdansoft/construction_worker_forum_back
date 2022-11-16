@@ -6,6 +6,8 @@ import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.TopicRepository;
+import com.construction_worker_forum_back.repository.UserRepository;
+import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class TopicService {
 
     private final TopicRepository topicRepository;
+    private final UserRepository userRepository;
     private final UserService userService;
     private final ModelMapper modelMapper;
 
@@ -64,14 +67,15 @@ public class TopicService {
 
     @Transactional
     public TopicDto updateTopicById(Long id, TopicRequestDto topicRequestDto) {
-        Topic topic = topicRepository
+        Topic topicFromDb = topicRepository
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        topic.setUpdatedAt(Date.from(Instant.now()));
-        modelMapper.map(topicRequestDto, topic);
+        topicFromDb.setUpdatedAt(Date.from(Instant.now()));
+        EntityUpdateUtil.setEntityLastEditor(userRepository, topicFromDb, topicRequestDto.getUserId());
+        modelMapper.map(topicRequestDto, topicFromDb);
 
-        return modelMapper.map(topic, TopicDto.class);
+        return modelMapper.map(topicFromDb, TopicDto.class);
     }
 
     public List<TopicDto> findAllTopicsByName(String name) {

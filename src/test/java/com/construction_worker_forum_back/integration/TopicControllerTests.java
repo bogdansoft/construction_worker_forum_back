@@ -233,7 +233,9 @@ public class TopicControllerTests extends TestcontainersConfig {
                 .userId(savedAdmin.getId())
                 .build();
 
-        Topic savedTopic = topicRepository.save(modelMapper.map(topicRequestDto, Topic.class));
+        Topic mappedTopic = modelMapper.map(topicRequestDto, Topic.class);
+        mappedTopic.setUser(savedAdmin);
+        Topic savedTopic = topicRepository.save(mappedTopic);
 
         TopicRequestDto editedTopicRequestDto = TopicRequestDto.builder()
                 .name("ChangedName")

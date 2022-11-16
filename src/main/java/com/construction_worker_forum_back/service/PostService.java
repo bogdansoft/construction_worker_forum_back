@@ -10,6 +10,7 @@ import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.PostRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
+import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -113,10 +114,13 @@ public class PostService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        EntityUpdateUtil.throwIfEditorIsUserAndTimeIsExpired(postFromDb);
+
         TopicDto topicById = topicService
                 .findTopicById(postRequestDto.getTopicId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        EntityUpdateUtil.setEntityLastEditor(userRepository, postFromDb, postRequestDto.getUserId());
         modelMapper.map(postRequestDto, postFromDb);
         modelMapper.map(postRequestDto, topicById);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));

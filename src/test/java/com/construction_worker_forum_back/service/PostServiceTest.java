@@ -7,8 +7,8 @@ import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.Role;
 import com.construction_worker_forum_back.repository.PostRepository;
-import com.construction_worker_forum_back.repository.TopicRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +53,12 @@ public class PostServiceTest {
         postRequestDto.setContent("update");
         postRequestDto.setTopicId(1L);
 
+        User editor = User.builder()
+                .id(1L)
+                .userRoles(Role.USER)
+                .username("testUser")
+                .build();
+
         Topic topic = new Topic();
         topic.setId(1L);
 
@@ -61,6 +67,8 @@ public class PostServiceTest {
 
         Post post = new Post();
         post.setId(1L);
+        post.setCreatedAt(new Date());
+        post.setUser(editor);
 
         given(topicService.findTopicById(topic.getId())).willReturn(Optional.of(topicDto));
         given(postRepository.findById(updatedId)).willReturn(Optional.of(post));

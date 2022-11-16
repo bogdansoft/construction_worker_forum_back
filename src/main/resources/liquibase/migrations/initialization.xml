@@ -26,6 +26,7 @@
             <column name="updated_at" type="timestamp"/>
             <column name="topic_id" type="bigint"/>
             <column name="user_id" type="bigint"/>
+            <column name="last_edited_by" type="bigint" />
         </createTable>
         <createTable tableName="topics">
             <column name="id" type="bigint" autoIncrement="true">
@@ -36,6 +37,7 @@
             <column name="description" type="MEDIUMTEXT"/>
             <column name="updated_at" type="timestamp"/>
             <column name="user_id" type="bigint" />
+            <column name="last_edited_by" type="bigint" />
         </createTable>
         <createTable tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
@@ -75,6 +77,26 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <createTable tableName="POST_AUDIT">
+            <column name="audit_id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="id" type="bigint"/>
+            <column name="old_content" type="varchar(1000)"/>
+            <column name="new_content" type="varchar(1000)"/>
+            <column name="old_title" type="varchar(50)"/>
+            <column name="new_title" type="varchar(50)"/>
+            <column name="created_at" type="timestamp"/>
+            <column name="updated_at" type="timestamp"/>
+            <column name="old_last_edited_by_id" type="bigint"/>
+            <column name="new_last_edited_by_id" type="bigint"/>
+            <column name="old_topic_id" type="bigint"/>
+            <column name="new_topic_id" type="bigint"/>
+            <column name="old_user_id" type="bigint"/>
+            <column name="new_user_id" type="bigint"/>
+            <column name="event_date" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
+            <column name="event_type" type="varchar(10)"/>
+        </createTable>
 
         <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_post_id" baseColumnNames="post_id"
                                  referencedTableName="posts" referencedColumnNames="id"/>
@@ -84,7 +106,11 @@
                                  referencedTableName="topics" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_user_id" baseColumnNames="user_id"
                                  referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_last_edited_by" baseColumnNames="last_edited_by"
+                                 referencedTableName="users" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="topics" baseColumnNames="user_id" constraintName="FK_topic_user_id" referencedTableName="users"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="topics" baseColumnNames="last_edited_by" constraintName="FK_topic_last_edited_by" referencedTableName="users"
                                  referencedColumnNames="id" />
         <addForeignKeyConstraint baseTableName="post_like" baseColumnNames="user_id" constraintName="FK_post_liked_by_user_id" referencedTableName="users"
                                  referencedColumnNames="id" />
@@ -94,5 +120,43 @@
                                  referencedColumnNames="id" />
         <addForeignKeyConstraint baseTableName="comment_like" baseColumnNames="comment_id" constraintName="FK_user_liked_comment_id" referencedTableName="comments"
                                  referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="2" author="jakubDudek">
+        <sql dbms="mysql" endDelimiter=";;">
+            CREATE TRIGGER POST_INSERT
+                AFTER INSERT
+                ON posts
+                FOR EACH ROW
+            BEGIN
+                INSERT INTO POST_AUDIT (ID, NEW_CONTENT, NEW_TITLE, CREATED_AT, NEW_TOPIC_ID, NEW_USER_ID,
+                                        EVENT_DATE, EVENT_TYPE)
+                VALUES (NEW.id, NEW.content, NEW.title, NEW.created_at, NEW.topic_id, NEW.user_id, CURRENT_TIMESTAMP(), 'INSERT');
+            END ;;
+
+            CREATE TRIGGER POST_UPDATE
+                AFTER UPDATE
+                ON posts
+                FOR EACH ROW
+            BEGIN
+                INSERT INTO POST_AUDIT (ID, OLD_CONTENT, NEW_CONTENT, OLD_TITLE, NEW_TITLE, CREATED_AT,
+                                        UPDATED_AT,
+                                        OLD_LAST_EDITED_BY_ID, NEW_LAST_EDITED_BY_ID, OLD_TOPIC_ID, NEW_TOPIC_ID,
+                                        OLD_USER_ID, NEW_USER_ID,
+                                        EVENT_DATE, EVENT_TYPE)
+                VALUES (OLD.ID, OLD.content, NEW.content, OLD.title, NEW.title, OLD.created_at, NEW.updated_at,
+                        OLD.last_edited_by, NEW.last_edited_by, OLD.topic_id, NEW.topic_id, OLD.user_id, NEW.user_id,
+                        CURRENT_TIMESTAMP(), 'UPDATE');
+            END ;;
+
+            CREATE TRIGGER POST_DELETE
+                AFTER DELETE
+                ON posts
+                FOR EACH ROW
+            BEGIN
+                INSERT INTO POST_AUDIT (EVENT_DATE, EVENT_TYPE, ID)
+                VALUES (CURRENT_TIMESTAMP(), 'DELETE', OLD.id);
+            END ;;
+        </sql>
     </changeSet>
 </databaseChangeLog>
