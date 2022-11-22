@@ -1,8 +1,10 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -19,6 +21,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Cache(region = "postCache", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Post implements IEntity {
 
     @Id

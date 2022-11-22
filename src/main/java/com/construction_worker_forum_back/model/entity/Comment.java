@@ -1,6 +1,8 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -19,6 +21,7 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Cache(region = "commentCache", usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Comment {
 
     @Id
