@@ -67,7 +67,7 @@ public class UserController {
 
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE , produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
+    public UserDto changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
 
         return userService.changeAvatar(username, multipartFile);
     }

@@ -1,5 +1,10 @@
 package com.construction_worker_forum_back.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
@@ -8,6 +13,8 @@ import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,12 +25,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -31,6 +40,11 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${application.bucket.name}")
+    private String bucketName;
+
+    private AmazonS3Client s3Client;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -79,20 +93,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public byte[] changeAvatar(String username, MultipartFile multipartFile) throws IOException {
+    public UserDto changeAvatar(String username, MultipartFile multipartFile) throws IOException {
         User user = userRepository.findByUsername(username).get();
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        user.setAvatar("/user-avatar/"+user.getId()+"/"+fileName);
+        String fileName = UUID.randomUUID().toString();
+        File file = FileUploadUtil.convertMultiPartFileToFile(multipartFile);
+        s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
+        user.setAvatar(s3Client.getResourceUrl(bucketName, fileName));
+        file.delete();
 
         User savedUser = userRepository.save(user);
 
-        String uploadDir = "user-avatar/" + savedUser.getId();
-
-        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-
-        try(var fis = new FileInputStream("user-avatar/"+savedUser.getId()+"/cropped-image.jpeg")) {
-            return fis.readAllBytes();
-        }
+        return modelMapper.map(savedUser, UserDto.class);
     }
 
     @Transactional
