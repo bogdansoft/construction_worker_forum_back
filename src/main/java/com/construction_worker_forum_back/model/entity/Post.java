@@ -58,11 +58,11 @@ public class Post implements IEntity {
     @ManyToMany(mappedBy = "likedPosts")
     private Set<User> likers = new HashSet<>();
 
-    @ManyToMany(targetEntity = Keyword.class, cascade = CascadeType.MERGE)
+    @ManyToMany(targetEntity = Keyword.class, cascade =  CascadeType.MERGE)
     @JoinTable(
             name = "post_keyword",
             joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "keyword_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "keyword_name", referencedColumnName = "name")
     )
     private Set<Keyword> keywords = new HashSet<>();
 
