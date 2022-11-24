@@ -4,7 +4,7 @@ import com.construction_worker_forum_back.integration.RemoveService;
 import com.construction_worker_forum_back.integration.TestcontainersConfig;
 import com.construction_worker_forum_back.model.dto.TopicRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.repository.TopicRepository;
+import com.construction_worker_forum_back.config.repository.TopicRepository;
 import com.construction_worker_forum_back.service.TopicService;
 import com.construction_worker_forum_back.service.UserService;
 import org.junit.jupiter.api.BeforeEach;

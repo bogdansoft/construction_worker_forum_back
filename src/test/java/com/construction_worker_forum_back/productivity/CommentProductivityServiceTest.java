@@ -6,7 +6,7 @@ import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
-import com.construction_worker_forum_back.repository.CommentRepository;
+import com.construction_worker_forum_back.config.repository.CommentRepository;
 import com.construction_worker_forum_back.service.CommentService;
 import com.construction_worker_forum_back.service.PostService;
 import com.construction_worker_forum_back.service.TopicService;

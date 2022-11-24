@@ -2,7 +2,7 @@ package com.construction_worker_forum_back.integration.chat;
 
 import com.construction_worker_forum_back.exception.MessageNotFoundException;
 import com.construction_worker_forum_back.model.chat.ChatMessage;
-import com.construction_worker_forum_back.repository.ChatMessageRepository;
+import com.construction_worker_forum_back.config.repository.ChatMessageRepository;
 import com.construction_worker_forum_back.service.ChatMessageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

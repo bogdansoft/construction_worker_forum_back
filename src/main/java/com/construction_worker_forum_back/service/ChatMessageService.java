@@ -3,7 +3,7 @@ package com.construction_worker_forum_back.service;
 import com.construction_worker_forum_back.exception.MessageNotFoundException;
 import com.construction_worker_forum_back.model.chat.ChatMessage;
 import com.construction_worker_forum_back.model.chat.MessageStatus;
-import com.construction_worker_forum_back.repository.ChatMessageRepository;
+import com.construction_worker_forum_back.config.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;

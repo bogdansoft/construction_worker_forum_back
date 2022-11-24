@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.entity.Keyword;
-import com.construction_worker_forum_back.repository.KeywordRepository;
+import com.construction_worker_forum_back.config.repository.KeywordRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

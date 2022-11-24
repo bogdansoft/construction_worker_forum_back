@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.model.chat.ChatRoom;
-import com.construction_worker_forum_back.repository.ChatRoomRepository;
+import com.construction_worker_forum_back.config.repository.ChatRoomRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -105,5 +105,17 @@
             <column name="post_id" value="3"/>
             <column name="user_id" value="2"/>
         </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Engineering"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Help"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Cranes"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Offtopic"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

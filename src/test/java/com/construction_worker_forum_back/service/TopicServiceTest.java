@@ -6,7 +6,7 @@ import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
-import com.construction_worker_forum_back.repository.TopicRepository;
+import com.construction_worker_forum_back.config.repository.TopicRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.repository;
+package com.construction_worker_forum_back.config.repository;
 
 import com.construction_worker_forum_back.model.chat.ChatMessage;
 import com.construction_worker_forum_back.model.chat.MessageStatus;
