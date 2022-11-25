@@ -6,6 +6,9 @@ import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.Role;
 import lombok.*;
 
+import org.springframework.cache.annotation.Cacheable;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +18,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+@Cacheable
+public class UserDto implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -6470090944414208496L;
     private Long id;
     private String username;
     private String email;

@@ -12,6 +12,9 @@ import com.construction_worker_forum_back.repository.CommentRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -59,6 +62,7 @@ public class CommentService {
                 .toList();
     }
 
+    @Cacheable(value = "commentCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public Optional<CommentDto> findById(Long id) {
         return commentRepository.findById(id)
                 .map(comment -> modelMapper.map(comment, CommentDto.class));
@@ -101,6 +105,7 @@ public class CommentService {
     }
 
     @Transactional
+    @CachePut(value = "commentCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public CommentDto updateCommentById(Long id, CommentRequestDto commentRequestDto) {
         Comment comment = commentRepository
                 .findById(id)
@@ -113,6 +118,7 @@ public class CommentService {
     }
 
     @Transactional
+    @CacheEvict(value = "commentCache", key = "{#commentId}", cacheManager = "cacheManager1Hour")
     public boolean deleteById(Long commentId, Long userId) {
         Comment comment = commentRepository
                 .findById(commentId)
