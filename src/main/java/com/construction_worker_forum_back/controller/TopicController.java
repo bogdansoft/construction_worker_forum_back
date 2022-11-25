@@ -28,8 +28,12 @@ public class TopicController {
     private TopicService topicService;
 
     @GetMapping
-    List<TopicDto> getAllTopics(@RequestParam(name = "orderby") Optional<String> orderBy) {
-        return topicService.getAllTopics(orderBy);
+    List<TopicDto> getAllTopics(
+            @RequestParam(name = "orderby") Optional<String> orderBy,
+            @RequestParam(name = "limit") Optional<Integer> limit,
+            @RequestParam(name = "page") Optional<Integer> page
+    ) {
+        return topicService.getAllTopics(orderBy, limit, page);
     }
 
     @GetMapping("/{id}")
@@ -76,14 +80,4 @@ public class TopicController {
         System.out.println(topicService.findAllTopicsByName(name));
         return topicService.findAllTopicsByName(name);
     }
-
-    @GetMapping("/number/{number}/page/{page}")
-    List<TopicDto> getDesignatedNumberOfTopics(@PathVariable("number") Integer number, @PathVariable("page") Integer page) {
-        return topicService.getDesignatedNumberOfTopics(number, page);
-    }
-
-//    @GetMapping("/sorting")
-//    List<TopicDto> getSortedTopics(@RequestParam(name = "orderby") String orderBy) {
-//        return topicService.getSortedTopics(orderBy);
-//    }
 }

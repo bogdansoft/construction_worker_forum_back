@@ -45,7 +45,7 @@ public class TopicServiceTest {
         given(topicRepository.findAll()).willReturn(topicList);
 
         //When
-        var expected = topicService.getAllTopics(Optional.empty());
+        var expected = topicService.getAllTopics(Optional.empty(), Optional.empty(), Optional.empty());
 
         //Then
         assertEquals(expected.size(), topicList.size());
@@ -273,7 +273,7 @@ public class TopicServiceTest {
         given(topicRepository.getDesignatedNumberOfTopics(numberOfTopics, startIndex)).willReturn(topics);
 
         //When
-        var expected = topicService.getDesignatedNumberOfTopics(numberOfTopics, page);
+        var expected = topicService.getPaginatedNumberOfTopics(numberOfTopics, page);
 
         //Then
         assertNotNull(expected);

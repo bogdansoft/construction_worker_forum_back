@@ -10,6 +10,8 @@ import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,28 +33,22 @@ public class TopicService {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public List<TopicDto> getAllTopics(Optional<String> orderBy) {
+    public List<TopicDto> getAllTopics(
+            Optional<String> orderBy,
+            Optional<Integer> limit,
+            Optional<Integer> page
+    ) {
+        if(limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
+            return getPaginatedAndSortedNumberOfTopics(limit.get(), page.get(), orderBy.get());
+        }
         if(orderBy.isPresent()) {
             return getSortedTopics(orderBy.get());
         }
+        if(limit.isPresent() && page.isPresent()) {
+            return getPaginatedNumberOfTopics(limit.get(), page.get());
+        }
         return topicRepository
                 .findAll()
-                .stream()
-                .map(topic -> modelMapper.map(topic, TopicDto.class))
-                .collect(Collectors.toList());
-    }
-
-    public List<TopicDto> getSortedTopics(String orderBy) {
-        String[] splitted = orderBy.split("\\.");
-        String sortBy = splitted[0];
-        String direction = splitted[1];
-        if(direction.equalsIgnoreCase("asc")) {
-            return topicRepository.findAll(Sort.by(Sort.Direction.ASC, sortBy))
-                    .stream()
-                    .map(topic -> modelMapper.map(topic, TopicDto.class))
-                    .collect(Collectors.toList());
-        }
-        return topicRepository.findAll(Sort.by(Sort.Direction.DESC, sortBy))
                 .stream()
                 .map(topic -> modelMapper.map(topic, TopicDto.class))
                 .collect(Collectors.toList());
@@ -105,16 +101,51 @@ public class TopicService {
                 .collect(Collectors.toList());
     }
 
-    public List<TopicDto> getDesignatedNumberOfTopics(Integer number, Integer page) {
-        Integer startIndex = (page-1)*number;
-        return topicRepository.getDesignatedNumberOfTopics(number, startIndex)
+    public List<TopicDto> getPaginatedNumberOfTopics(Integer number, Integer page) {
+        Pageable pageWithExactNumberOfElements = PageRequest.of(page-1, number);
+
+        return getListOfTopicsByPageableObject(pageWithExactNumberOfElements);
+    }
+
+    public List<TopicDto> getSortedTopics(String orderBy) {
+        String[] splitted = orderBy.split("\\.");
+        String sortBy = splitted[0];
+        String direction = splitted[1];
+        if(direction.equalsIgnoreCase("asc")) {
+            Sort sortTopicsAscending = Sort.by(Sort.Direction.ASC, sortBy);
+
+            return getListOfTopicsBySort(sortTopicsAscending);
+        }
+        Sort sortTopicsDescending = Sort.by(Sort.Direction.DESC, sortBy);
+
+        return getListOfTopicsBySort(sortTopicsDescending);
+    }
+
+    public List<TopicDto> getListOfTopicsBySort(Sort sort) {
+        return topicRepository.findAll(sort)
                 .stream()
                 .map(topic -> modelMapper.map(topic, TopicDto.class))
                 .collect(Collectors.toList());
     }
 
-//    public List<TopicDto> getSortedTopics(String orderBy) {
-//
-//    }
+    public List<TopicDto> getPaginatedAndSortedNumberOfTopics(Integer number, Integer page, String orderBy) {
+        String[] splitted = orderBy.split("\\.");
+        String sortBy = splitted[0];
+        String direction = splitted[1];
+        if(direction.equalsIgnoreCase("asc")) {
+            Pageable paginatedAndSortedAscending= PageRequest.of(page-1, number, Sort.by(sortBy).ascending());
+            return getListOfTopicsByPageableObject(paginatedAndSortedAscending);
+        }
+        Pageable paginatedAndSortedDescending = PageRequest.of(page-1, number, Sort.by(sortBy).descending());
+
+        return getListOfTopicsByPageableObject(paginatedAndSortedDescending);
+    }
+
+    public List<TopicDto> getListOfTopicsByPageableObject(Pageable pageable) {
+        return topicRepository.findAll(pageable)
+                .stream()
+                .map(topic -> modelMapper.map(topic, TopicDto.class))
+                .collect(Collectors.toList());
+    }
 
 }
