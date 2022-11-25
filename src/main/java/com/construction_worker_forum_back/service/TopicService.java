@@ -31,9 +31,28 @@ public class TopicService {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    public List<TopicDto> getAllTopics() {
+    public List<TopicDto> getAllTopics(Optional<String> orderBy) {
+        if(orderBy.isPresent()) {
+            return getSortedTopics(orderBy.get());
+        }
         return topicRepository
                 .findAll()
+                .stream()
+                .map(topic -> modelMapper.map(topic, TopicDto.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<TopicDto> getSortedTopics(String orderBy) {
+        String[] splitted = orderBy.split("\\.");
+        String sortBy = splitted[0];
+        String direction = splitted[1];
+        if(direction.equalsIgnoreCase("asc")) {
+            return topicRepository.findAll(Sort.by(Sort.Direction.ASC, sortBy))
+                    .stream()
+                    .map(topic -> modelMapper.map(topic, TopicDto.class))
+                    .collect(Collectors.toList());
+        }
+        return topicRepository.findAll(Sort.by(Sort.Direction.DESC, sortBy))
                 .stream()
                 .map(topic -> modelMapper.map(topic, TopicDto.class))
                 .collect(Collectors.toList());
@@ -94,18 +113,8 @@ public class TopicService {
                 .collect(Collectors.toList());
     }
 
-    public List<TopicDto> getSortedTopics(String orderBy) {
-        String[] splitted = orderBy.split("\\.");
-        if(splitted[1].equalsIgnoreCase("asc")) {
-            return topicRepository.findAll(Sort.by(Sort.Direction.ASC, splitted[0]))
-                    .stream()
-                    .map(topic -> modelMapper.map(topic, TopicDto.class))
-                    .collect(Collectors.toList());
-        }
-        return topicRepository.findAll(Sort.by(Sort.Direction.DESC, splitted[0]))
-                .stream()
-                .map(topic -> modelMapper.map(topic, TopicDto.class))
-                .collect(Collectors.toList());
-    }
+//    public List<TopicDto> getSortedTopics(String orderBy) {
+//
+//    }
 
 }

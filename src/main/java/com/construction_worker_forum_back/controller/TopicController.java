@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -27,8 +28,8 @@ public class TopicController {
     private TopicService topicService;
 
     @GetMapping
-    List<TopicDto> getAllTopics() {
-        return topicService.getAllTopics();
+    List<TopicDto> getAllTopics(@RequestParam(name = "orderby") Optional<String> orderBy) {
+        return topicService.getAllTopics(orderBy);
     }
 
     @GetMapping("/{id}")
@@ -81,8 +82,8 @@ public class TopicController {
         return topicService.getDesignatedNumberOfTopics(number, page);
     }
 
-    @GetMapping("/sorting")
-    List<TopicDto> getSortedTopics(@RequestParam(name = "orderby") String orderBy) {
-        return topicService.getSortedTopics(orderBy);
-    }
+//    @GetMapping("/sorting")
+//    List<TopicDto> getSortedTopics(@RequestParam(name = "orderby") String orderBy) {
+//        return topicService.getSortedTopics(orderBy);
+//    }
 }

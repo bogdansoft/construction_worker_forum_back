@@ -45,7 +45,7 @@ public class TopicServiceTest {
         given(topicRepository.findAll()).willReturn(topicList);
 
         //When
-        var expected = topicService.getAllTopics();
+        var expected = topicService.getAllTopics(Optional.empty());
 
         //Then
         assertEquals(expected.size(), topicList.size());
