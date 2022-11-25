@@ -32,7 +32,7 @@ public class TopicController {
     }
 
     @GetMapping("/{id}")
-    TopicDto getTopicById(@PathVariable("id") Long id) {
+    public TopicDto getTopicById(@PathVariable("id") Long id) {
         return topicService.findTopicById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

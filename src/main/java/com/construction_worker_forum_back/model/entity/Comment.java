@@ -8,6 +8,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
@@ -21,8 +23,11 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Cacheable
 @Cache(region = "commentCache", usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Comment {
+public class Comment implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -6470090944414208496L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

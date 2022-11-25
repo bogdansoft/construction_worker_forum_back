@@ -1,33 +1,52 @@
 package com.construction_worker_forum_back.config.redis;
 
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import javax.annotation.PostConstruct;
+import java.time.Duration;
 
 @Profile("dev")
 @Configuration
-@EnableCaching(proxyTargetClass = true)
 public class RedisConfig {
     @Value("${spring.redis.host}")
     private String host;
 
     @Value("${spring.redis.port}")
-    private int port;
+    private Integer port;
 
     @Bean
-    @PostConstruct
-    public RedissonClient redisson() {
-        Config config = new Config();
-        config.useSingleServer()
-                .setAddress("redis://" + host + ":" + port);
+    JedisConnectionFactory jedisConnectionFactory() {
+        return new JedisConnectionFactory(new RedisStandaloneConfiguration(host, port));
+    }
 
-        return Redisson.create(config);
+    @Bean(value = "redisTemplate")
+    public RedisTemplate<String, Object> redisTemplate() {
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        return redisTemplate;
+    }
+
+    @Primary
+    @Bean(name = "cacheManager") // Default cache manager is infinite
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        return RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()).build();
+    }
+
+    @Bean(name = "cacheManager1Hour")
+    public CacheManager cacheManager1Hour(RedisConnectionFactory redisConnectionFactory) {
+        Duration expiration = Duration.ofHours(1);
+        return RedisCacheManager.builder(redisConnectionFactory)
+                .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig().entryTtl(expiration)).build();
     }
 }

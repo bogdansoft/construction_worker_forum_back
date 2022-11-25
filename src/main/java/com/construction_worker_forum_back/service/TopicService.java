@@ -10,6 +10,9 @@ import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,6 +41,7 @@ public class TopicService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public Optional<TopicDto> findTopicById(Long id) {
         return topicRepository.findById(id)
                 .map(topic -> modelMapper.map(topic, TopicDto.class));
@@ -49,6 +53,7 @@ public class TopicService {
     }
 
     @Transactional
+    @CacheEvict(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public boolean deleteTopicById(Long id) {
         return topicRepository.deleteTopicById(id) == 1;
     }
@@ -66,6 +71,7 @@ public class TopicService {
     }
 
     @Transactional
+    @CachePut(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public TopicDto updateTopicById(Long id, TopicRequestDto topicRequestDto) {
         Topic topicFromDb = topicRepository
                 .findById(id)
@@ -86,7 +92,7 @@ public class TopicService {
     }
 
     public List<TopicDto> getDesignatedNumberOfTopics(Integer number, Integer page) {
-        Integer startIndex = (page-1)*number;
+        Integer startIndex = (page - 1) * number;
         return topicRepository.getDesignatedNumberOfTopics(number, startIndex)
                 .stream()
                 .map(topic -> modelMapper.map(topic, TopicDto.class))
