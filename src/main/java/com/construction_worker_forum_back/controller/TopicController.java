@@ -80,4 +80,9 @@ public class TopicController {
     List<TopicDto> getDesignatedNumberOfTopics(@PathVariable("number") Integer number, @PathVariable("page") Integer page) {
         return topicService.getDesignatedNumberOfTopics(number, page);
     }
+
+    @GetMapping("/sorting")
+    List<TopicDto> getSortedTopics(@RequestParam(name = "orderby") String orderBy) {
+        return topicService.getSortedTopics(orderBy);
+    }
 }

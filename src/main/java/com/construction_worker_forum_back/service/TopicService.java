@@ -10,6 +10,7 @@ import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -92,4 +93,19 @@ public class TopicService {
                 .map(topic -> modelMapper.map(topic, TopicDto.class))
                 .collect(Collectors.toList());
     }
+
+    public List<TopicDto> getSortedTopics(String orderBy) {
+        String[] splitted = orderBy.split("\\.");
+        if(splitted[1].equalsIgnoreCase("asc")) {
+            return topicRepository.findAll(Sort.by(Sort.Direction.ASC, splitted[0]))
+                    .stream()
+                    .map(topic -> modelMapper.map(topic, TopicDto.class))
+                    .collect(Collectors.toList());
+        }
+        return topicRepository.findAll(Sort.by(Sort.Direction.DESC, splitted[0]))
+                .stream()
+                .map(topic -> modelMapper.map(topic, TopicDto.class))
+                .collect(Collectors.toList());
+    }
+
 }
