@@ -26,6 +26,30 @@ jobs:
       SERVER_KEY_PASSWORD: secret123
 
     steps:
+    - name: Check test coverage
+      uses: johanvanhelden/gha-clover-test-coverage-check@v1
+      id: coverage
+      with:
+          percentage: "70"
+          filename: "coverage.xml"
+
+    - name: Generate the badge SVG image
+      uses: emibcn/badge-action@v1
+      id: badge
+      with:
+          label: 'Coverage'
+          status: ${{ steps.coverage.outputs.coverage }}
+          path: ./badges/test-coverage.svg
+          color: ${{
+            steps.coverage.outputs.coverage > 90 && 'green'              ||
+            steps.coverage.outputs.coverage > 80 && 'yellow,green'       ||
+            steps.coverage.outputs.coverage > 70 && 'yellow'             ||
+            steps.coverage.outputs.coverage > 60 && 'orange,yellow'      ||
+            steps.coverage.outputs.coverage > 50 && 'orange'             ||
+            steps.coverage.outputs.coverage > 40 && 'red,orange'         ||
+            steps.coverage.outputs.coverage > 30 && 'red,red,orange'     ||
+            steps.coverage.outputs.coverage > 20 && 'red,red,red,orange' ||
+            'red' }}
     - uses: actions/checkout@v2
     - name: Install redis
       run: sudo apt-get install -y redis-tools redis-server
