@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Check test coverage
-      uses: sysoiev/gha-clover-test-coverage-check@v1
+      uses: johanvanhelden/gha-clover-test-coverage-check@v1
       id: coverage
       with:
           percentage: "70"
