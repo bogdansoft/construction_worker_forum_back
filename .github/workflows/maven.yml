@@ -31,8 +31,6 @@ jobs:
       id: coverage
       with:
           percentage: "70"
-          filename: "coverage.xml"
-
     - name: Generate the badge SVG image
       uses: emibcn/badge-action@v1
       id: badge
