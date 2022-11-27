@@ -33,6 +33,7 @@ public class TopicService {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
+    @Cacheable(value = "topicCache", cacheManager = "cacheManager1Hour")
     public List<TopicDto> getAllTopics() {
         return topicRepository
                 .findAll()

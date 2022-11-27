@@ -44,6 +44,8 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found"));
     }
 
+
+    @Cacheable(value = "userCache", cacheManager = "cacheManager1Hour")
     public List<UserDto> getAllUsers() {
         return userRepository
                 .findAll()

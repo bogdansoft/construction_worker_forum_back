@@ -36,6 +36,7 @@ public class PostService {
     private final TopicService topicService;
     private final ModelMapper modelMapper;
 
+    @Cacheable(value = "postCache", cacheManager = "cacheManager1Hour")
     public List<PostDto> getAllPosts() {
         return postRepository
                 .findAll()
