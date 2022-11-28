@@ -10,6 +10,9 @@ import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,6 +57,7 @@ public class TopicService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public Optional<TopicDto> findTopicById(Long id) {
         return topicRepository.findById(id)
                 .map(topic -> modelMapper.map(topic, TopicDto.class));
@@ -65,6 +69,7 @@ public class TopicService {
     }
 
     @Transactional
+    @CacheEvict(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public boolean deleteTopicById(Long id) {
         return topicRepository.deleteTopicById(id) == 1;
     }
@@ -82,6 +87,7 @@ public class TopicService {
     }
 
     @Transactional
+    @CachePut(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public TopicDto updateTopicById(Long id, TopicRequestDto topicRequestDto) {
         Topic topicFromDb = topicRepository
                 .findById(id)

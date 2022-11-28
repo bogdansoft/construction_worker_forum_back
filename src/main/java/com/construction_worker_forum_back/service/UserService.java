@@ -8,6 +8,9 @@ import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
 import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,6 +52,7 @@ public class UserService implements UserDetailsService {
                 .toList();
     }
 
+    @Cacheable(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public Optional<UserDto> findById(Long id) {
         return userRepository.findById(id)
                 .map(user -> modelMapper.map(user, UserDto.class));
@@ -82,7 +87,7 @@ public class UserService implements UserDetailsService {
     public byte[] changeAvatar(String username, MultipartFile multipartFile) throws IOException {
         User user = userRepository.findByUsername(username).get();
         String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        user.setAvatar("/user-avatar/"+user.getId()+"/"+fileName);
+        user.setAvatar("/user-avatar/" + user.getId() + "/" + fileName);
 
         User savedUser = userRepository.save(user);
 
@@ -90,12 +95,13 @@ public class UserService implements UserDetailsService {
 
         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 
-        try(var fis = new FileInputStream("user-avatar/"+savedUser.getId()+"/cropped-image.jpeg")) {
+        try (var fis = new FileInputStream("user-avatar/" + savedUser.getId() + "/cropped-image.jpeg")) {
             return fis.readAllBytes();
         }
     }
 
     @Transactional
+    @CachePut(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public UserDto updateUser(Long id, UserRequestDto userRequestDto) {
         User user = userRepository
                 .findById(id)
@@ -108,6 +114,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @CacheEvict(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public boolean deleteUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;
