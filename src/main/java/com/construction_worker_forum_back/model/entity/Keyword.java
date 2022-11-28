@@ -14,5 +14,8 @@ import javax.persistence.*;
 public class Keyword {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
 }

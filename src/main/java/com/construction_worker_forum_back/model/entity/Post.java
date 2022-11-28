@@ -62,7 +62,7 @@ public class Post implements IEntity {
     @JoinTable(
             name = "post_keyword",
             joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "keyword_name", referencedColumnName = "name")
+            inverseJoinColumns = @JoinColumn(name = "keyword_id", referencedColumnName = "id")
     )
     private Set<Keyword> keywords = new HashSet<>();
 

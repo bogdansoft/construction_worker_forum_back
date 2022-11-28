@@ -97,16 +97,6 @@
             <column name="event_date" type="timestamp" defaultValueDate="CURRENT_TIMESTAMP()"/>
             <column name="event_type" type="varchar(10)"/>
         </createTable>
-        <createTable tableName="keywords">
-            <column name="name" type="varchar(50)">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-        </createTable>
-        <createTable tableName="post_keyword">
-            <column name="post_id" type="bigint" />
-            <column name="keyword_name" type="varchar(50)" />
-        </createTable>
-
         <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_post_id" baseColumnNames="post_id"
                                  referencedTableName="posts" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_user_id" baseColumnNames="user_id"

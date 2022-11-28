@@ -22,6 +22,7 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
+
     private final ChatRoomService chatRoomService;
 
     @SecurityRequirement(name = "Bearer Authentication")
