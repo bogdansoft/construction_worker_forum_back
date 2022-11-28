@@ -3,7 +3,7 @@ package com.construction_worker_forum_back.validation;
 import com.construction_worker_forum_back.model.entity.IEntity;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.Role;
-import com.construction_worker_forum_back.config.repository.UserRepository;
+import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

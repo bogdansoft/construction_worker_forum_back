@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.config.repository;
+package com.construction_worker_forum_back.repository;
 
 import com.construction_worker_forum_back.model.chat.ChatRoom;
 import org.springframework.data.mongodb.repository.MongoRepository;

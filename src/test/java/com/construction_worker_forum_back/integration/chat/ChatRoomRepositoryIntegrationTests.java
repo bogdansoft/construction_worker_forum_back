@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.integration.chat;
 
 import com.construction_worker_forum_back.model.chat.ChatRoom;
-import com.construction_worker_forum_back.config.repository.ChatRoomRepository;
+import com.construction_worker_forum_back.repository.ChatRoomRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
 package com.construction_worker_forum_back.integration;
 
-import com.construction_worker_forum_back.config.repository.CommentRepository;
-import com.construction_worker_forum_back.config.repository.PostRepository;
-import com.construction_worker_forum_back.config.repository.TopicRepository;
-import com.construction_worker_forum_back.config.repository.UserRepository;
+import com.construction_worker_forum_back.repository.CommentRepository;
+import com.construction_worker_forum_back.repository.PostRepository;
+import com.construction_worker_forum_back.repository.TopicRepository;
+import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ActiveProfiles;
