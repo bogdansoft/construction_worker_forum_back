@@ -105,6 +105,40 @@
             <column name="post_id" value="3"/>
             <column name="user_id" value="2"/>
         </insert>
-
+        <insert tableName="keywords">
+            <column name="name" value="Painting"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Brick layering"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Tile layering"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Hydraulics"/>
+        </insert>
+        <insert tableName="keywords">
+            <column name="name" value="Carpentry"/>
+        </insert>
+        <insert tableName="post_keyword">
+            <column name="post_id" value="1"/>
+            <column name="keyword_id" value="1"/>
+        </insert>
+        <insert tableName="post_keyword">
+            <column name="post_id" value="1"/>
+            <column name="keyword_id" value="5"/>
+        </insert>
+        <insert tableName="post_keyword">
+            <column name="post_id" value="2"/>
+            <column name="keyword_id" value="3"/>
+        </insert>
+        <insert tableName="post_keyword">
+            <column name="post_id" value="3"/>
+            <column name="keyword_id" value="2"/>
+        </insert>
+        <insert tableName="post_keyword">
+            <column name="post_id" value="3"/>
+            <column name="keyword_id" value="5"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>
