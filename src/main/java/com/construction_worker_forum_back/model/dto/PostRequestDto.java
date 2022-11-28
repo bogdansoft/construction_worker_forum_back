@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.model.dto;
 
+import com.construction_worker_forum_back.model.entity.Keyword;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Data
 @Builder
@@ -27,4 +29,6 @@ public class PostRequestDto {
 
     @NotNull
     private Long topicId;
+
+    private Set<Keyword> keywords;
 }
