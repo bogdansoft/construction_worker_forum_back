@@ -11,9 +11,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
+
     env:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: forum_db
@@ -27,6 +26,11 @@ jobs:
       SERVER_KEY_PASSWORD: secret123
 
     steps:
+    - uses: actions/checkout@v2
+    - name: Install redis
+      run: sudo apt-get install -y redis-tools redis-server
+    - name: Verify that redis is up
+      run: redis-cli ping
     - name: Set up MySQL
       run: |
         sudo /etc/init.d/mysql start
