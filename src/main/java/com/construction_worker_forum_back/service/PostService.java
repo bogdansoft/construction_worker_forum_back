@@ -120,11 +120,13 @@ public class PostService {
                 .findTopicById(postRequestDto.getTopicId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+
         EntityUpdateUtil.setEntityLastEditor(userRepository, postFromDb, postRequestDto.getUserId());
         modelMapper.map(postRequestDto, postFromDb);
         modelMapper.map(postRequestDto, topicById);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));
         postFromDb.setTopic(modelMapper.map(topicById, Topic.class));
+        postFromDb.setKeywords(postRequestDto.getKeywords());
 
         return modelMapper.map(postFromDb, PostDto.class);
     }
