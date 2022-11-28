@@ -12,9 +12,14 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +42,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
@@ -62,6 +69,7 @@ public class UserService implements UserDetailsService {
                 .toList();
     }
 
+    @Cacheable(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public Optional<UserDto> findById(Long id) {
         return userRepository.findById(id)
                 .map(user -> modelMapper.map(user, UserDto.class));
@@ -95,6 +103,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDto changeAvatar(String username, MultipartFile multipartFile) throws IOException {
         User user = userRepository.findByUsername(username).get();
+
         String fileName = UUID.randomUUID().toString();
         File file = FileUploadUtil.convertMultiPartFileToFile(multipartFile);
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
@@ -107,6 +116,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @CachePut(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public UserDto updateUser(Long id, UserRequestDto userRequestDto) {
         User user = userRepository
                 .findById(id)
@@ -119,6 +129,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    @CacheEvict(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
     public boolean deleteUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;

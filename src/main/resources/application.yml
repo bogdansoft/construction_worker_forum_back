@@ -9,8 +9,8 @@ cloud:
       auto: false
 
 application:
-  bucket:
-    name: bukcketname
+        bucket:
+          name: bucket-name123
 
 spring:
   servlet:

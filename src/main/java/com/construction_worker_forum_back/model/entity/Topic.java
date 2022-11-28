@@ -1,11 +1,15 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +21,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Topic implements IEntity {
+@Cacheable
+@Cache(region = "topicCache", usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Topic implements IEntity, Serializable {
+    @Serial
+    private static final long serialVersionUID = -6470090944414208496L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
