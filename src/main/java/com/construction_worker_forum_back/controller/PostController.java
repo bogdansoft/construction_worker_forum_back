@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("https://localhost:3000")
@@ -36,8 +37,13 @@ public class PostController {
     }
 
     @GetMapping("/all_by_topicid/{topicId}")
-    public List<PostDto> getAllPostsByTopicId(@PathVariable Long topicId) {
-        return postService.getPostsByTopicId(topicId);
+    public List<PostDto> getAllPostsByTopicId(
+            @PathVariable Long topicId,
+            @RequestParam(name = "orderby") Optional<String> orderBy,
+            @RequestParam(name = "limit") Optional<Integer> limit,
+            @RequestParam(name = "page") Optional<Integer> page
+    ) {
+        return postService.getPostsByTopicId(topicId, orderBy, limit, page);
     }
 
     @GetMapping("/{id}")

@@ -1,6 +1,8 @@
 package com.construction_worker_forum_back.repository;
 
 import com.construction_worker_forum_back.model.entity.Post;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
@@ -26,4 +28,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     )
     List<Post> getDesignatedNumberOfPostsForTopic(Long topicId, Integer paginationNumber, Integer index);
 
+    List<Post> findAllPaginatedByTopic_Id(Long id, Pageable pageable);
+
+    List<Post> findAllSortedByTopic_Id(Long id, Sort sort);
 }
