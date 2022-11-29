@@ -181,14 +181,6 @@ public class PostService {
 
     }
 
-    public List<PostDto> getDesignatedNumberOfPostsForTopic(Long topicId, Integer number, Integer page) {
-        Integer startIndex = (page - 1) * number;
-        return postRepository.getDesignatedNumberOfPostsForTopic(topicId, number, startIndex)
-                .stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
-                .toList();
-    }
-
     public List<PostDto> getPaginatedNumberOfPosts(Long topicId, Integer number, Integer page) {
         Pageable pageWithExactNumberOfElements = PageRequest.of(page-1, number);
         return getListOfPostsByPageableObject(topicId, pageWithExactNumberOfElements);

@@ -109,9 +109,4 @@ public class PostController {
         System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
         return postService.findPostByContentOrTitle(contentOrTitle);
     }
-
-    @GetMapping("all_by_topicid/{topicId}/number/{number}/page/{page}")
-    List<PostDto> getDesignatedNumberOfPostsForTopic(@PathVariable("topicId") Long topicId, @PathVariable("number") Integer number, @PathVariable("page") Integer page) {
-        return postService.getDesignatedNumberOfPostsForTopic(topicId, number, page);
-    }
 }
