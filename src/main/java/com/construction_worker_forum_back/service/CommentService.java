@@ -36,7 +36,6 @@ public class CommentService {
     private final UserService userService;
     private final ModelMapper modelMapper;
 
-    @Cacheable(value = "commentCache", cacheManager = "cacheManager1Hour")
     public List<CommentDto> getAllComments() {
         return commentRepository
                 .findAll()
