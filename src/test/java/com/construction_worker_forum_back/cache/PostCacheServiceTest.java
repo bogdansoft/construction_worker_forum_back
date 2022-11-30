@@ -15,12 +15,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import redis.embedded.RedisServer;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,14 +32,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("dev")
-//@TestComponent
-@Import(TestRedisConfiguration.class)
 @ExtendWith(SpringExtension.class)
 @EnableCaching
 @ImportAutoConfiguration(classes = {
         CacheAutoConfiguration.class,
         RedisAutoConfiguration.class
 })
+@SpringBootTest(classes = PostCacheServiceTest.EmbeddedRedisConfiguration.class)
 public class PostCacheServiceTest {
     @Mock
     private PostRepository postRepository;
@@ -51,6 +54,26 @@ public class PostCacheServiceTest {
     private CacheManager cacheManager;
     @InjectMocks
     private PostService postService;
+
+    @TestConfiguration
+    static class EmbeddedRedisConfiguration {
+
+        private final RedisServer redisServer;
+
+        public EmbeddedRedisConfiguration() {
+            this.redisServer = new RedisServer();
+        }
+
+        @PostConstruct
+        public void startRedis() {
+            redisServer.start();
+        }
+
+        @PreDestroy
+        public void stopRedis() {
+            this.redisServer.stop();
+        }
+    }
 
     @Test
     void itShouldGetByIdPost() {
