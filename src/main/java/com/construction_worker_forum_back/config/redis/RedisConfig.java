@@ -1,6 +1,5 @@
 package com.construction_worker_forum_back.config.redis;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
