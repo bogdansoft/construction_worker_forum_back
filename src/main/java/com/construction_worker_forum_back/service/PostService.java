@@ -5,6 +5,7 @@ import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
+import com.construction_worker_forum_back.model.entity.Keyword;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
@@ -23,12 +24,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
@@ -39,6 +41,7 @@ public class PostService {
     private final UserService userService;
     private final TopicService topicService;
     private final ModelMapper modelMapper;
+    private final EntityManager entityManager;
 
     public List<PostDto> getAllPosts() {
         return postRepository
@@ -60,7 +63,8 @@ public class PostService {
             Long topicId,
             Optional<String> orderBy,
             Optional<Integer> limit,
-            Optional<Integer> page
+            Optional<Integer> page,
+            List<String> keywords
             ) {
         if(limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
             return getPaginatedAndSortedNumberOfPosts(topicId, limit.get(), page.get(), orderBy.get());
@@ -70,6 +74,9 @@ public class PostService {
         }
         if(limit.isPresent() && page.isPresent()) {
             return getPaginatedNumberOfPosts(topicId, limit.get(), page.get());
+        }
+        if(keywords != null) {
+            return getPostsSortedByKeywords(topicId, keywords);
         }
         return postRepository
                 .findByTopic_Id(topicId)
@@ -190,7 +197,7 @@ public class PostService {
         return postRepository.findAllPaginatedByTopic_Id(topicId, pageable)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public List<PostDto> getSortedPosts(Long topicId, String orderBy) {
@@ -211,7 +218,7 @@ public class PostService {
         return postRepository.findAllSortedByTopic_Id(topicId, sort)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public List<PostDto> getPaginatedAndSortedNumberOfPosts(Long topicId, Integer number, Integer page, String orderBy) {
@@ -225,5 +232,26 @@ public class PostService {
         Pageable paginatedAndSortedDescending = PageRequest.of(page-1, number, Sort.by(sortBy).descending());
 
         return getListOfPostsByPageableObject(topicId, paginatedAndSortedDescending);
+    }
+
+    public List<PostDto> getPostsSortedByKeywords(Long topicId, List<String> keywords) {
+        Set<Post> sortedPosts = new HashSet<>();
+        Query query = entityManager.createNativeQuery(
+            "select * from posts p" +
+                " inner join post_keyword pk on p.id = pk.post_id " +
+                " inner join keywords k on pk.keyword_id = k.id " +
+                " WHERE p.topic_id = :topicId and k.name in (:keywords) ", Post.class
+        );
+        List<Post> posts = query.setParameter("topicId", topicId).setParameter("keywords", keywords).getResultList();
+        for(Post post : posts) {
+            List<String> postKeywords = post.getKeywords().stream().map(Keyword::getName).toList();
+            if(postKeywords.equals(keywords)) {
+                sortedPosts.add(post);
+            }
+        }
+        return sortedPosts
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
     }
 }
