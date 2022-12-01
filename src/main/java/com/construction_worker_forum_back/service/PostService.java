@@ -70,7 +70,7 @@ public class PostService {
                 .toList();
     }
 
-    @Cacheable(value = "postCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @Cacheable(value = "postCache", key = "{#id}")
     public Optional<PostDto> findById(Long id) {
         return postRepository.findById(id)
                 .map(post -> modelMapper.map(post, PostDto.class));
@@ -113,7 +113,7 @@ public class PostService {
     }
 
     @Transactional
-    @CachePut(value = "postCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CachePut(value = "postCache", key = "{#id}")
     public PostDto updatePostById(Long id, PostRequestDto postRequestDto) {
         Post postFromDb = postRepository
                 .findById(id)
@@ -135,7 +135,7 @@ public class PostService {
     }
 
     @Transactional
-    @CacheEvict(value = "postCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CacheEvict(value = "postCache", key = "{#id}")
     public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
     }
