@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        redis-version: [ 5 ]
 
     env:
       MYSQL_ROOT_PASSWORD: root
@@ -31,6 +34,12 @@ jobs:
       run: sudo apt-get install -y redis-tools redis-server
     - name: Verify that redis is up
       run: redis-cli ping
+    - name: Start Redis v${{ matrix.redis-version }}
+      uses: superchargejs/redis-github-action@1.1.0
+      with:
+         redis-version: ${{ matrix.redis-version }}
+         redis-container-name: redis
+    - run: echo „done“
     - uses: actions/checkout@v2
     - name: Set up MySQL
       run: |
