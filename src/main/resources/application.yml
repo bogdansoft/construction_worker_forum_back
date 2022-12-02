@@ -1,8 +1,8 @@
 cloud:
   aws:
     credentials:
-      access-key: KEY
-      secret-key: SECRET
+      access-key: AKIAQVZ3BLZRLEHYRHPG
+      secret-key: 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
     region:
       static: eu-central-1
     stack:
@@ -10,7 +10,7 @@ cloud:
 
 application:
         bucket:
-          name: bucket-name123
+          name: construction-worker-forum-avatars
 
 spring:
   servlet:

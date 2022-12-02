@@ -13,6 +13,7 @@ import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,12 +37,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -51,7 +50,7 @@ public class UserService implements UserDetailsService {
     @Value("${application.bucket.name}")
     private String bucketName;
 
-    private AmazonS3Client s3Client;
+    private final AmazonS3Client s3Client;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -102,17 +101,29 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDto changeAvatar(String username, MultipartFile multipartFile) throws IOException {
-        User user = userRepository.findByUsername(username).get();
-
-        String fileName = UUID.randomUUID().toString();
-        File file = FileUploadUtil.convertMultiPartFileToFile(multipartFile);
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
-        user.setAvatar(s3Client.getResourceUrl(bucketName, fileName));
-        file.delete();
-
-        User savedUser = userRepository.save(user);
-
-        return modelMapper.map(savedUser, UserDto.class);
+        User savedUser = null;
+        File file = null;
+        String fileName = null;
+        try {
+            User user = userRepository.findByUsername(username).get();
+            log.trace("Teraz jestem w serwisie");
+            fileName = user.getId()+"_"+ UUID.randomUUID();
+            file = FileUploadUtil.convertMultiPartFileToFile(multipartFile);
+            log.trace("Wkladam obiekt");
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
+            log.trace("Obiket wlozony");
+            user.setAvatar(fileName);
+            log.trace("Pobieram adres URL {}", s3Client.getResourceUrl(bucketName, fileName));
+            savedUser = userRepository.save(user);
+            file.delete();
+        } catch (Exception e) {
+            file.delete();
+            log.trace("Jeblo to jeblo na chuj drazyc temat");
+        }
+        UserDto userDto = modelMapper.map(savedUser, UserDto.class);
+        userDto.setAvatarBytes(FileUploadUtil.getAvatarBytes(s3Client, bucketName, fileName));
+        log.trace("Nasze bajty >"+ Arrays.toString(userDto.getAvatarBytes()));
+        return userDto;
     }
 
     @Transactional
