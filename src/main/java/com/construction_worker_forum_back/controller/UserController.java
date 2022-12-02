@@ -70,21 +70,18 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
-        log.trace("Metoda na controlerzee wywolana");
         return userService.changeAvatar(username, multipartFile);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping( path="/getavatar")
     public String getAvatar(@RequestParam("username") String username) throws IOException {
-        log.trace("Metoda na controlerzee wywolana");
         return userService.getAvatar(username);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping( path="/getavatar")
     public String deleteAvatar(@RequestParam("username") String username) throws IOException {
-        log.trace("Metoda na controlerzee wywolana");
         return userService.deleteAvatar(username);
     }
 

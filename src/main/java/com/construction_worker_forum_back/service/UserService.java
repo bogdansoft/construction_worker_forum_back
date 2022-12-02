@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.construction_worker_forum_back.exception.AvatarNotFoundException;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
@@ -105,7 +106,9 @@ public class UserService implements UserDetailsService {
         File file = null;
         String fileName = null;
         try {
-            User user = userRepository.findByUsername(username).get();
+            User user = userRepository
+                    .findByUsername(username)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             fileName = user.getId().toString();
             file = FileUploadUtil.convertMultiPartFileToFile(multipartFile);
             s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
@@ -124,10 +127,12 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public String getAvatar(String username) throws IOException {
-        User user = userRepository.findByUsername(username).get();
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         String fileName = user.getAvatar();
         if(fileName==null) {
-            throw  new RuntimeException();
+            throw  new AvatarNotFoundException("User doesn't have an avatar");
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -137,13 +142,12 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public String deleteAvatar(String username) throws IOException {
-        User user = userRepository.findByUsername(username).get();
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         user.setAvatar(null);
-        String fileName = user.getAvatar();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR, 1);
-        return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
+
+        return "Avatar deleted";
     }
 
     @Transactional
