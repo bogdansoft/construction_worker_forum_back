@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        redis-version: [ 6 ]
 
     env:
       MYSQL_ROOT_PASSWORD: root
@@ -26,9 +29,11 @@ jobs:
       SERVER_KEY_PASSWORD: secret123
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Install redis
-        run: sudo apt-get install -y redis-tools redis-server
+      - name: Redis Server in GitHub Actions
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: ${{ matrix.redis-version }}
+          redis-port: 12345
       - name: Set up MySQL
         run: |
           sudo /etc/init.d/mysql start
