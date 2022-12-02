@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @DeleteMapping( path="/getavatar")
+    @DeleteMapping( path="/deleteavatar")
     public String deleteAvatar(@RequestParam("username") String username) throws IOException {
         return userService.deleteAvatar(username);
     }

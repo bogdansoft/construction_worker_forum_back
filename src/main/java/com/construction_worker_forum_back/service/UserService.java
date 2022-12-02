@@ -132,7 +132,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         String fileName = user.getAvatar();
         if(fileName==null) {
-            throw  new AvatarNotFoundException("User doesn't have an avatar");
+            return "Avatar not found";
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
