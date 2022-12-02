@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.service;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -100,30 +101,35 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto changeAvatar(String username, MultipartFile multipartFile) throws IOException {
-        User savedUser = null;
+    public String changeAvatar(String username, MultipartFile multipartFile) throws IOException {
         File file = null;
         String fileName = null;
         try {
             User user = userRepository.findByUsername(username).get();
-            log.trace("Teraz jestem w serwisie");
-            fileName = user.getId()+"_"+ UUID.randomUUID();
+            fileName = user.getId().toString();
             file = FileUploadUtil.convertMultiPartFileToFile(multipartFile);
-            log.trace("Wkladam obiekt");
             s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
-            log.trace("Obiket wlozony");
             user.setAvatar(fileName);
-            log.trace("Pobieram adres URL {}", s3Client.getResourceUrl(bucketName, fileName));
-            savedUser = userRepository.save(user);
+            userRepository.save(user);
             file.delete();
         } catch (Exception e) {
             file.delete();
             log.trace("Jeblo to jeblo na chuj drazyc temat");
         }
-        UserDto userDto = modelMapper.map(savedUser, UserDto.class);
-        userDto.setAvatarBytes(FileUploadUtil.getAvatarBytes(s3Client, bucketName, fileName));
-        log.trace("Nasze bajty >"+ Arrays.toString(userDto.getAvatarBytes()));
-        return userDto;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.HOUR, 1);
+        return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
+    }
+
+    @Transactional
+    public String getAvatar(String username) throws IOException {
+        User user = userRepository.findByUsername(username).get();
+        String fileName = user.getAvatar();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.HOUR, 1);
+        return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
     }
 
     @Transactional
