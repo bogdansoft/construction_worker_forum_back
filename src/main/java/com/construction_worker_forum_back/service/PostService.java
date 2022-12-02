@@ -69,6 +69,9 @@ public class PostService {
         if(limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
             return getPaginatedAndSortedNumberOfPosts(topicId, limit.get(), page.get(), orderBy.get());
         }
+//        if(limit.isPresent() && page.isPresent() && keywords != null) {
+//            return getPaginatedAndSortedByKeywords(topicId, limit, page);
+//        }
         if(orderBy.isPresent()) {
             return getSortedPosts(topicId, orderBy.get());
         }
@@ -235,23 +238,36 @@ public class PostService {
     }
 
     public List<PostDto> getPostsSortedByKeywords(Long topicId, List<String> keywords) {
-        Set<Post> sortedPosts = new HashSet<>();
-        Query query = entityManager.createNativeQuery(
-            "select * from posts p" +
-                " inner join post_keyword pk on p.id = pk.post_id " +
-                " inner join keywords k on pk.keyword_id = k.id " +
-                " WHERE p.topic_id = :topicId and k.name in (:keywords) ", Post.class
-        );
-        List<Post> posts = query.setParameter("topicId", topicId).setParameter("keywords", keywords).getResultList();
-        for(Post post : posts) {
-            List<String> postKeywords = post.getKeywords().stream().map(Keyword::getName).toList();
-            if(postKeywords.equals(keywords)) {
-                sortedPosts.add(post);
-            }
-        }
-        return sortedPosts
+        return getListOfPostsSortedByKeywords(topicId, keywords)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
                 .toList();
     }
+
+    public Set<Post> getListOfPostsSortedByKeywords(Long topicId, List<String> keywords) {
+        Set<Post> sortedPosts = new HashSet<>();
+        Query query = entityManager.createNativeQuery(
+                "select * from posts p" +
+                        " inner join post_keyword pk on p.id = pk.post_id " +
+                        " inner join keywords k on pk.keyword_id = k.id " +
+                        " WHERE p.topic_id = :topicId and k.name in (:keywords) ", Post.class
+        );
+        List<Post> posts = query.setParameter("topicId", topicId).setParameter("keywords", keywords).getResultList();
+        for(Post post : posts) {
+            List<String> postKeywords = post.getKeywords().stream().map(Keyword::getName).toList();
+            if(postKeywords.containsAll(keywords)) {
+                sortedPosts.add(post);
+            }
+        }
+
+        return sortedPosts;
+    }
+
+//    public List<PostDto> getPaginatedAndSortedByKeywords(Long topicId, String limit, String page, List<String> keywords) {
+//        return getListOfPostsSortedByKeywords(topicId, keywords)
+//                .stream()
+//                .filter()
+//                .map(post -> modelMapper.map(post, PostDto.class))
+//                .toList();
+//    }
 }
