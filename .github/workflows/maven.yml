@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     env:
       MYSQL_ROOT_PASSWORD: root
@@ -26,11 +26,6 @@ jobs:
       SERVER_KEY_PASSWORD: secret123
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Install redis
-      run: sudo apt-get install -y redis-tools redis-server
-    - name: Verify that redis is up
-      run: redis-cli ping
     - uses: actions/checkout@v2
     - name: Set up MySQL
       run: |
@@ -45,3 +40,8 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install
+      runs-on: self-hosted
+    - name: Install redis
+      run: sudo apt-get install -y redis-tools redis-server
+    - name: Verify that redis is up
+      run: redis-cli ping
