@@ -38,7 +38,6 @@ jobs:
       uses: superchargejs/redis-github-action@1.1.0
       with:
          redis-version: ${{ matrix.redis-version }}
-         redis-container-name: redis-auth-token-cache
     - run: echo „done“
     - uses: actions/checkout@v2
     - name: Set up MySQL
