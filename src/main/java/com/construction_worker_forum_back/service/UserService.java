@@ -135,7 +135,16 @@ public class UserService implements UserDetailsService {
         return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
     }
 
-
+    @Transactional
+    public String deleteAvatar(String username) throws IOException {
+        User user = userRepository.findByUsername(username).get();
+        user.setAvatar(null);
+        String fileName = user.getAvatar();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.HOUR, 1);
+        return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
+    }
 
     @Transactional
     @CachePut(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
