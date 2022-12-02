@@ -42,7 +42,6 @@ jobs:
       run: mvn clean install
       test:
         needs: build
-        runs-on: [ self-hosted ]
     - name: Install redis
       run: sudo apt-get install -y redis-tools redis-server
     - name: Verify that redis is up
