@@ -57,7 +57,7 @@ public class TopicService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @Cacheable(value = "topicCache", key = "{#id}")
     public Optional<TopicDto> findTopicById(Long id) {
         return topicRepository.findById(id)
                 .map(topic -> modelMapper.map(topic, TopicDto.class));
@@ -69,7 +69,7 @@ public class TopicService {
     }
 
     @Transactional
-    @CacheEvict(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CacheEvict(value = "topicCache", key = "{#id}")
     public boolean deleteTopicById(Long id) {
         return topicRepository.deleteTopicById(id) == 1;
     }
@@ -87,7 +87,7 @@ public class TopicService {
     }
 
     @Transactional
-    @CachePut(value = "topicCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CachePut(value = "topicCache", key = "{#id}")
     public TopicDto updateTopicById(Long id, TopicRequestDto topicRequestDto) {
         Topic topicFromDb = topicRepository
                 .findById(id)

@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService {
                 .toList();
     }
 
-    @Cacheable(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @Cacheable(value = "userCache", key = "{#id}")
     public Optional<UserDto> findById(Long id) {
         return userRepository.findById(id)
                 .map(user -> modelMapper.map(user, UserDto.class));
@@ -101,7 +101,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    @CachePut(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CachePut(value = "userCache", key = "{#id}")
     public UserDto updateUser(Long id, UserRequestDto userRequestDto) {
         User user = userRepository
                 .findById(id)
@@ -114,7 +114,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    @CacheEvict(value = "userCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CacheEvict(value = "userCache", key = "{#id}")
     public boolean deleteUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;
