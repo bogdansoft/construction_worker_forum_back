@@ -82,6 +82,13 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping( path="/getavatar")
+    public String deleteAvatar(@RequestParam("username") String username) throws IOException {
+        log.trace("Metoda na controlerzee wywolana");
+        return userService.deleteAvatar(username);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     UserDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long id) {
         return userService.updateUser(id, userRequestDto);
