@@ -40,8 +40,6 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install
-      test:
-        needs: build
     - name: Install redis
       run: sudo apt-get install -y redis-tools redis-server
     - name: Verify that redis is up
