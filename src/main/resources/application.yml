@@ -1,0 +1,21 @@
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_KEY_ACCESS:default}
+      secret-key: ${AWS_KEY_SECRET:default}
+    region:
+      static: eu-central-1
+    stack:
+      auto: false
+
+application:
+        bucket:
+          name: construction-worker-forum-avatars
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB

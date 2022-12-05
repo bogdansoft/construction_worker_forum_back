@@ -7,6 +7,7 @@ import com.construction_worker_forum_back.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Slf4j
 @CrossOrigin("https://localhost:3000")
 @RequestMapping(path="/api/user")
 @Tag(name = "User", description = "The User API. Contains all the operations that can be performed on a user.")
@@ -66,10 +68,21 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE , produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
-
+    @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
         return userService.changeAvatar(username, multipartFile);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping( path="/getavatar")
+    public String getAvatar(@RequestParam("username") String username) throws IOException {
+        return userService.getAvatar(username);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping( path="/deleteavatar")
+    public String deleteAvatar(@RequestParam("username") String username) throws IOException {
+        return userService.deleteAvatar(username);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
