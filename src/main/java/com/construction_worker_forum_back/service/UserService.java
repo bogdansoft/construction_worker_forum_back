@@ -111,7 +111,7 @@ public class UserService implements UserDetailsService {
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR, 1);
+        calendar.add(Calendar.SECOND, 5);
         return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
     }
 
@@ -126,7 +126,7 @@ public class UserService implements UserDetailsService {
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR, 1);
+        calendar.add(Calendar.SECOND, 5);
         return s3Client.generatePresignedUrl(bucketName, fileName, calendar.getTime(), HttpMethod.GET).toString();
     }
 
