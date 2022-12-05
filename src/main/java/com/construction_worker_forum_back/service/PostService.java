@@ -24,8 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.*;
@@ -41,7 +39,6 @@ public class PostService {
     private final UserService userService;
     private final TopicService topicService;
     private final ModelMapper modelMapper;
-    private final EntityManager entityManager;
 
     public List<PostDto> getAllPosts() {
         return postRepository
@@ -73,16 +70,10 @@ public class PostService {
             return getPaginatedAndSortedNumberOfPosts(topicId, limit.get(), page.get(), orderBy.get());
         }
         if(limit.isPresent() && page.isPresent() && keywords != null) {
-            return getPaginatedAndSortedByKeywords(topicId, limit.get(), page.get(), keywords);
+            return getPaginatedAndFilteredByKeywords(topicId, limit.get(), page.get(), keywords);
         }
         if(limit.isPresent() && page.isPresent()) {
             return getPaginatedNumberOfPosts(topicId, limit.get(), page.get());
-        }
-        if(orderBy.isPresent()) {
-            return getSortedPosts(topicId, orderBy.get());
-        }
-        if(keywords != null) {
-            return getPostsSortedByKeywords(topicId, keywords);
         }
         return postRepository
                 .findByTopic_Id(topicId)
@@ -206,27 +197,6 @@ public class PostService {
                 .collect(toList());
     }
 
-    public List<PostDto> getSortedPosts(Long topicId, String orderBy) {
-        String[] splitted = orderBy.split("\\.");
-        String sortBy = splitted[0];
-        String direction = splitted[1];
-        if(direction.equalsIgnoreCase("asc")) {
-            Sort sortPostsAscending = Sort.by(Sort.Direction.ASC, sortBy);
-
-            return getListOfPostsBySort(topicId, sortPostsAscending);
-        }
-        Sort sortPostsDescending = Sort.by(Sort.Direction.DESC, sortBy);
-
-        return getListOfPostsBySort(topicId, sortPostsDescending);
-    }
-
-    public List<PostDto> getListOfPostsBySort(Long topicId, Sort sort) {
-        return postRepository.findAllSortedByTopic_Id(topicId, sort)
-                .stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
-                .collect(toList());
-    }
-
     public List<PostDto> getPaginatedAndSortedNumberOfPosts(Long topicId, Integer number, Integer page, String orderBy) {
         String[] splitted = orderBy.split("\\.");
         String sortBy = splitted[0];
@@ -240,25 +210,6 @@ public class PostService {
         return getListOfPostsByPageableObject(topicId, paginatedAndSortedDescending);
     }
 
-    public List<PostDto> getPostsSortedByKeywords(Long topicId, List<String> keywords) {
-        return getListOfPostsSortedByKeywords(topicId, keywords)
-                .stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
-                .toList();
-    }
-
-    public List<Post> getListOfPostsSortedByKeywords(Long topicId, List<String> keywords) {
-        Query query = entityManager.createNativeQuery(
-                "select * from posts p" +
-                    " inner join post_keyword pk on p.id = pk.post_id " +
-                    " inner join keywords k on pk.keyword_id = k.id " +
-                    " WHERE p.topic_id = :topicId and k.name in (:keywords) ", Post.class
-        );
-        List<Post> posts = query.setParameter("topicId", topicId).setParameter("keywords", keywords).getResultList();
-
-        return filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(posts, keywords).stream().toList();
-    }
-
     public Set<Post> filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(List<Post> posts, List<String> keywords) {
         LinkedHashSet<Post> sortedPosts = new LinkedHashSet<>();
         for(Post post : posts) {
@@ -268,15 +219,12 @@ public class PostService {
             }
         }
 
-        for(Post post : sortedPosts) {
-            System.out.println(post.getTitle());
-        }
-
         return sortedPosts;
     }
 
-    public List<PostDto> getPaginatedAndSortedByKeywords(Long topicId, Integer limit, Integer page, List<String> keywords) {
-        List<Post> posts = getListOfPostsSortedByKeywords(topicId, keywords);
+    public List<PostDto> getPaginatedAndFilteredByKeywords(Long topicId, Integer limit, Integer page, List<String> keywords) {
+        List<Post> posts = filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(
+                postRepository.findAllPostsByTopicIdAndKeywords(topicId, new HashSet<>(keywords)), keywords).stream().toList();
         return getPage(posts, page, limit)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
@@ -297,32 +245,27 @@ public class PostService {
     }
 
     public List<PostDto> getPaginatedAndSortedAndFilteredPosts(Long topicId, Integer limit, Integer page, String orderBy, List<String> keywords) {
-        return getListOfPostsSortedByKeywordsOrderByValue(topicId, keywords, orderBy)
+        List<Post> posts;
+        String[] splitted = orderBy.split("\\.");
+
+        String sortBy = splitted[0];
+        String direction = splitted[1];
+
+        if(direction.equalsIgnoreCase("asc")) {
+            Sort sortTopicsAscending = Sort.by(Sort.Direction.ASC, sortBy);
+
+            posts = filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(
+                    postRepository.findAllSortedPostsByTopicIdAndKeywords(topicId, new HashSet<>(keywords), sortTopicsAscending), keywords).stream().toList();
+
+        } else {
+            Sort sortTopicsDescending = Sort.by(Sort.Direction.DESC, sortBy);
+            posts = filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(
+                    postRepository.findAllSortedPostsByTopicIdAndKeywords(topicId, new HashSet<>(keywords), sortTopicsDescending), keywords).stream().toList();
+        }
+
+        return getPage(posts, page, limit)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
                 .toList();
-    }
-
-    public List<Post> getListOfPostsSortedByKeywordsOrderByValue(Long topicId, List<String> keywords, String orderBy) {
-        String[] splitted = orderBy.split("\\.");
-        String sortBy = splitted[0];
-        String direction = splitted[1];
-        Query query = entityManager.createNativeQuery(
-                "select * from posts p" +
-                    " inner join post_keyword pk on p.id = pk.post_id " +
-                    " inner join keywords k on pk.keyword_id = k.id " +
-                    " WHERE p.topic_id = :topicId and k.name in (:keywords) " +
-                    " ORDER BY " + sortBy + " " + direction, Post.class
-        );
-        System.out.println(topicId + "  " + keywords + "  " + sortBy + "  " + direction);
-        List<Post> posts = query
-                .setParameter("topicId", topicId)
-                .setParameter("keywords", keywords)
-                .getResultList();
-        for(Post post : posts) {
-            System.out.println(post.getTitle());
-        }
-
-        return filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(posts, keywords).stream().toList();
     }
 }
