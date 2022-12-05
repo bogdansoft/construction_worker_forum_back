@@ -260,12 +260,16 @@ public class PostService {
     }
 
     public Set<Post> filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(List<Post> posts, List<String> keywords) {
-        Set<Post> sortedPosts = new HashSet<>();
+        LinkedHashSet<Post> sortedPosts = new LinkedHashSet<>();
         for(Post post : posts) {
             List<String> postKeywords = post.getKeywords().stream().map(Keyword::getName).toList();
             if(postKeywords.containsAll(keywords)) {
                 sortedPosts.add(post);
             }
+        }
+
+        for(Post post : sortedPosts) {
+            System.out.println(post.getTitle());
         }
 
         return sortedPosts;
@@ -293,11 +297,10 @@ public class PostService {
     }
 
     public List<PostDto> getPaginatedAndSortedAndFilteredPosts(Long topicId, Integer limit, Integer page, String orderBy, List<String> keywords) {
-        List<Post> posts = getListOfPostsSortedByKeywords(topicId, keywords).stream().toList();
-        posts = getPage(posts, limit, page);
-
-
-        return null;
+        return getListOfPostsSortedByKeywordsOrderByValue(topicId, keywords, orderBy)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
     }
 
     public List<Post> getListOfPostsSortedByKeywordsOrderByValue(Long topicId, List<String> keywords, String orderBy) {
@@ -306,17 +309,19 @@ public class PostService {
         String direction = splitted[1];
         Query query = entityManager.createNativeQuery(
                 "select * from posts p" +
-                        " inner join post_keyword pk on p.id = pk.post_id " +
-                        " inner join keywords k on pk.keyword_id = k.id " +
-                        " WHERE p.topic_id = :topicId and k.name in (:keywords) " +
-                " ORDER BY :orderBy :direction", Post.class
+                    " inner join post_keyword pk on p.id = pk.post_id " +
+                    " inner join keywords k on pk.keyword_id = k.id " +
+                    " WHERE p.topic_id = :topicId and k.name in (:keywords) " +
+                    " ORDER BY " + sortBy + " " + direction, Post.class
         );
+        System.out.println(topicId + "  " + keywords + "  " + sortBy + "  " + direction);
         List<Post> posts = query
                 .setParameter("topicId", topicId)
                 .setParameter("keywords", keywords)
-                .setParameter("sortBy", sortBy)
-                .setParameter("direction", direction)
                 .getResultList();
+        for(Post post : posts) {
+            System.out.println(post.getTitle());
+        }
 
         return filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(posts, keywords).stream().toList();
     }
