@@ -107,7 +107,6 @@ public class UserService implements UserDetailsService {
             file.delete();
         } catch (Exception e) {
             file.delete();
-            log.trace("Jeblo to jeblo na chuj drazyc temat");
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
