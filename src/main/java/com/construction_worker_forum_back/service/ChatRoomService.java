@@ -53,9 +53,10 @@ public class ChatRoomService {
                 });
     }
 
-    public List<UserDto> findAllContacts() {
+    public List<UserDto> findAllContacts(int currentId) {
         return userRepository.findAll().stream()
                 .filter(user -> user.getUserRoles().equals(Role.USER))
+                .filter(user -> user.getId() != currentId)
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .toList();
     }
