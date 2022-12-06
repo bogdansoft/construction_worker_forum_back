@@ -29,6 +29,9 @@ public class ModelMapperConfig {
                         .map(user -> mapper.map(user, LikerSimpleDto.class))
                         .toList();
 
+        Converter<Set<Comment>, Long> subCommentsToTheirQuantity =
+                context -> (long) context.getSource().size();
+
         mapper.createTypeMap(Post.class, PostDto.class)
                 .addMappings(map -> map
                         .using(usersToLikersListConverter)
@@ -37,7 +40,10 @@ public class ModelMapperConfig {
         mapper.createTypeMap(Comment.class, CommentDto.class)
                 .addMappings(map -> map
                         .using(usersToLikersListConverter)
-                        .map(Comment::getLikers, CommentDto::setLikers));
+                        .map(Comment::getLikers, CommentDto::setLikers))
+                .addMappings(map -> map
+                        .using(subCommentsToTheirQuantity)
+                        .map(Comment::getSubComments, CommentDto::setSubCommentsQuantity));
 
         return mapper;
     }

@@ -1,6 +1,9 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.model.dto.*;
+import com.construction_worker_forum_back.model.dto.CommentDto;
+import com.construction_worker_forum_back.model.dto.CommentRequestDto;
+import com.construction_worker_forum_back.model.dto.PostDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.PostSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
@@ -16,10 +19,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ActiveProfiles;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -151,7 +156,7 @@ public class CommentServiceTest {
 
 
         //When
-        var expected = commentService.createComment(commentRequestDto);
+        var expected = commentService.createComment(commentRequestDto, null);
 
         //Then
         assertNotNull(expected);

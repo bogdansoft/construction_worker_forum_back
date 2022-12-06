@@ -15,6 +15,7 @@
             <column name="updated_at" type="timestamp"/>
             <column name="post_id" type="bigint"/>
             <column name="user_id" type="bigint"/>
+            <column name="parent_comment_id" type="bigint" />
         </createTable>
         <createTable tableName="posts">
             <column name="id" type="bigint" autoIncrement="true">
@@ -102,6 +103,8 @@
                                  referencedTableName="posts" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="comments" constraintName="FK_comment_user_id" baseColumnNames="user_id"
                                  referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="comments" constraintName="FK_parent_comment_id" baseColumnNames="parent_comment_id" referencedTableName="comments"
+                                 referencedColumnNames="id" />
         <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_topic_id" baseColumnNames="topic_id"
                                  referencedTableName="topics" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="posts" constraintName="FK_post_user_id" baseColumnNames="user_id"

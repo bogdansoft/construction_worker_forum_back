@@ -16,7 +16,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
@@ -47,6 +46,13 @@ public class Comment {
 
     @ManyToMany(mappedBy= "likedComments")
     private Set<User> likers = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id", referencedColumnName = "id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment")
+    private Set<Comment> subComments = new HashSet<>();
 
     @PrePersist
     private void beforeSaving() {
