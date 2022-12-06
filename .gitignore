@@ -186,5 +186,7 @@ user-avatar/
 
 #application.yml
 src/main/resources/application.yml
+*.yml
+
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij,windows,maven
