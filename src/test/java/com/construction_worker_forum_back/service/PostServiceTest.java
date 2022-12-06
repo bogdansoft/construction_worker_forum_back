@@ -187,7 +187,7 @@ public class PostServiceTest {
         given(postRepository.findByTopic_Id(post.getTopic().getId())).willReturn(postList);
 
         //when
-        var expected = postService.getPostsByTopicId(post.getTopic().getId(), Optional.empty(), Optional.empty(), Optional.empty());
+        var expected = postService.getPostsByTopicId(post.getTopic().getId(), Optional.empty(), Optional.empty(), Optional.empty(), Collections.emptyList());
 
         //then
         assertTrue(expected.size() > 0);
