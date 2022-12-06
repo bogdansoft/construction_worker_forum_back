@@ -45,7 +45,7 @@ public class TopicServiceTest {
         given(topicRepository.findAll()).willReturn(topicList);
 
         //When
-        var expected = topicService.getAllTopics();
+        var expected = topicService.getAllTopics(Optional.empty(), Optional.empty(), Optional.empty());
 
         //Then
         assertEquals(expected.size(), topicList.size());
@@ -243,46 +243,5 @@ public class TopicServiceTest {
         verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
         verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
         verify(topicRepository, atLeastOnce()).findByNameContainsIgnoreCase("foo1");
-    }
-
-    @Test
-    void itShouldGetDesignatedNumberOfTopics() {
-        //Given
-        var numberOfTopics = 3;
-        var page = 2;
-        var startIndex = (page-1)*numberOfTopics;
-
-        List<Topic> topics = new ArrayList<>(List.of(
-                Topic.builder()
-                        .name("foo1")
-                        .description("test description 1")
-                        .build(),
-                Topic.builder()
-                        .name("foo2")
-                        .description("test description 2")
-                        .build()
-        ));
-
-        List<TopicDto> topicDtos = new ArrayList<>(List.of(
-                TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
-                TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build()
-        ));
-
-        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
-        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
-        given(topicRepository.getDesignatedNumberOfTopics(numberOfTopics, startIndex)).willReturn(topics);
-
-        //When
-        var expected = topicService.getDesignatedNumberOfTopics(numberOfTopics, page);
-
-        //Then
-        assertNotNull(expected);
-        assertEquals(expected.size(), 2);
-        assertEquals(expected.get(0), topicDtos.get(0));
-        assertEquals(expected.get(1), topicDtos.get(1));
-
-        verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
-        verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
-        verify(topicRepository, atLeastOnce()).getDesignatedNumberOfTopics(numberOfTopics, startIndex);
     }
 }

@@ -2,8 +2,6 @@ package com.construction_worker_forum_back.integration;
 
 import com.construction_worker_forum_back.config.security.JwtTokenUtil;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
-import com.construction_worker_forum_back.model.dto.UserDto;
-import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;

@@ -16,6 +16,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +28,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -52,7 +56,21 @@ public class PostService {
                 .toList();
     }
 
-    public List<PostDto> getPostsByTopicId(Long topicId) {
+    public List<PostDto> getPostsByTopicId(
+            Long topicId,
+            Optional<String> orderBy,
+            Optional<Integer> limit,
+            Optional<Integer> page
+            ) {
+        if(limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
+            return getPaginatedAndSortedNumberOfPosts(topicId, limit.get(), page.get(), orderBy.get());
+        }
+        if(orderBy.isPresent()) {
+            return getSortedPosts(topicId, orderBy.get());
+        }
+        if(limit.isPresent() && page.isPresent()) {
+            return getPaginatedNumberOfPosts(topicId, limit.get(), page.get());
+        }
         return postRepository
                 .findByTopic_Id(topicId)
                 .stream()
@@ -70,7 +88,7 @@ public class PostService {
                 .toList();
     }
 
-    @Cacheable(value = "postCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @Cacheable(value = "postCache", key = "{#id}")
     public Optional<PostDto> findById(Long id) {
         return postRepository.findById(id)
                 .map(post -> modelMapper.map(post, PostDto.class));
@@ -113,7 +131,7 @@ public class PostService {
     }
 
     @Transactional
-    @CachePut(value = "postCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CachePut(value = "postCache", key = "{#id}")
     public PostDto updatePostById(Long id, PostRequestDto postRequestDto) {
         Post postFromDb = postRepository
                 .findById(id)
@@ -125,17 +143,19 @@ public class PostService {
                 .findTopicById(postRequestDto.getTopicId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+
         EntityUpdateUtil.setEntityLastEditor(userRepository, postFromDb, postRequestDto.getUserId());
         modelMapper.map(postRequestDto, postFromDb);
         modelMapper.map(postRequestDto, topicById);
         postFromDb.setUpdatedAt(Date.from(Instant.now()));
         postFromDb.setTopic(modelMapper.map(topicById, Topic.class));
+        postFromDb.setKeywords(postRequestDto.getKeywords());
 
         return modelMapper.map(postFromDb, PostDto.class);
     }
 
     @Transactional
-    @CacheEvict(value = "postCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CacheEvict(value = "postCache", key = "{#id}")
     public boolean deleteById(Long id) {
         return postRepository.deletePostById(id) == 1;
     }
@@ -161,11 +181,49 @@ public class PostService {
 
     }
 
-    public List<PostDto> getDesignatedNumberOfPostsForTopic(Long topicId, Integer number, Integer page) {
-        Integer startIndex = (page - 1) * number;
-        return postRepository.getDesignatedNumberOfPostsForTopic(topicId, number, startIndex)
+    public List<PostDto> getPaginatedNumberOfPosts(Long topicId, Integer number, Integer page) {
+        Pageable pageWithExactNumberOfElements = PageRequest.of(page-1, number);
+        return getListOfPostsByPageableObject(topicId, pageWithExactNumberOfElements);
+    }
+
+    public List<PostDto> getListOfPostsByPageableObject(Long topicId, Pageable pageable) {
+        return postRepository.findAllPaginatedByTopic_Id(topicId, pageable)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
-                .toList();
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDto> getSortedPosts(Long topicId, String orderBy) {
+        String[] splitted = orderBy.split("\\.");
+        String sortBy = splitted[0];
+        String direction = splitted[1];
+        if(direction.equalsIgnoreCase("asc")) {
+            Sort sortPostsAscending = Sort.by(Sort.Direction.ASC, sortBy);
+
+            return getListOfPostsBySort(topicId, sortPostsAscending);
+        }
+        Sort sortPostsDescending = Sort.by(Sort.Direction.DESC, sortBy);
+
+        return getListOfPostsBySort(topicId, sortPostsDescending);
+    }
+
+    public List<PostDto> getListOfPostsBySort(Long topicId, Sort sort) {
+        return postRepository.findAllSortedByTopic_Id(topicId, sort)
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDto> getPaginatedAndSortedNumberOfPosts(Long topicId, Integer number, Integer page, String orderBy) {
+        String[] splitted = orderBy.split("\\.");
+        String sortBy = splitted[0];
+        String direction = splitted[1];
+        if(direction.equalsIgnoreCase("asc")) {
+            Pageable paginatedAndSortedAscending= PageRequest.of(page-1, number, Sort.by(sortBy).ascending());
+            return getListOfPostsByPageableObject(topicId, paginatedAndSortedAscending);
+        }
+        Pageable paginatedAndSortedDescending = PageRequest.of(page-1, number, Sort.by(sortBy).descending());
+
+        return getListOfPostsByPageableObject(topicId, paginatedAndSortedDescending);
     }
 }

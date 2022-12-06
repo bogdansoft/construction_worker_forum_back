@@ -62,7 +62,7 @@ public class CommentService {
                 .toList();
     }
 
-    @Cacheable(value = "commentCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @Cacheable(value = "commentCache", key = "{#id}")
     public Optional<CommentDto> findById(Long id) {
         return commentRepository.findById(id)
                 .map(comment -> modelMapper.map(comment, CommentDto.class));
@@ -105,7 +105,7 @@ public class CommentService {
     }
 
     @Transactional
-    @CachePut(value = "commentCache", key = "{#id}", cacheManager = "cacheManager1Hour")
+    @CachePut(value = "commentCache", key = "{#id}")
     public CommentDto updateCommentById(Long id, CommentRequestDto commentRequestDto) {
         Comment comment = commentRepository
                 .findById(id)
@@ -118,7 +118,7 @@ public class CommentService {
     }
 
     @Transactional
-    @CacheEvict(value = "commentCache", key = "{#commentId}", cacheManager = "cacheManager1Hour")
+    @CacheEvict(value = "commentCache", key = "{#commentId}")
     public boolean deleteById(Long commentId, Long userId) {
         Comment comment = commentRepository
                 .findById(commentId)

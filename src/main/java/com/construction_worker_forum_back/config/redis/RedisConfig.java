@@ -1,6 +1,5 @@
 package com.construction_worker_forum_back.config.redis;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +25,7 @@ public class RedisConfig {
     private Integer port;
 
     @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
+    public JedisConnectionFactory jedisConnectionFactory() {
         return new JedisConnectionFactory(new RedisStandaloneConfiguration(host, port));
     }
 
@@ -38,15 +37,13 @@ public class RedisConfig {
     }
 
     @Primary
-    @Bean(name = "cacheManager") // Default cache manager is infinite
+    @Bean(name = "cacheManager")
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        return RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(RedisCacheConfiguration.defaultCacheConfig()).build();
-    }
-
-    @Bean(name = "cacheManager1Hour")
-    public CacheManager cacheManager1Hour(RedisConnectionFactory redisConnectionFactory) {
-        Duration expiration = Duration.ofHours(1);
-        return RedisCacheManager.builder(redisConnectionFactory)
-                .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig().entryTtl(expiration)).build();
+        return RedisCacheManager
+                .builder(redisConnectionFactory)
+                .cacheDefaults(RedisCacheConfiguration
+                        .defaultCacheConfig()
+                        .entryTtl(Duration.ofHours(1)))
+                .build();
     }
 }
