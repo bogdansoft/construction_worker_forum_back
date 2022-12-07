@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
     @Value("${application.bucket.name}")
     private String bucketName;
 
-    private AmazonS3Client s3Client;
+    private final AmazonS3Client s3Client;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
