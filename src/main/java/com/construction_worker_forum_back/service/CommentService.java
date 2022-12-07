@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.client.NotificationClient;
+import com.construction_worker_forum_back.model.Notification;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
@@ -11,6 +13,7 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.CommentRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CommentService {
@@ -35,6 +39,7 @@ public class CommentService {
     private final PostService postService;
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final NotificationClient notificationClient;
 
     public List<CommentDto> getAllComments() {
         return commentRepository
@@ -81,6 +86,19 @@ public class CommentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         commentToSave.setUser(modelMapper.map(userById, User.class));
         commentToSave.setPost(modelMapper.map(postById, Post.class));
+
+        notificationClient.sendNotification(
+                        Notification.of(
+                                userById.getUsername(),
+                                postById.getUser().getId().toString(),
+                                "Commented on your post!",
+                                "https://127.0.0.1:3000/post/" + commentRequestDto.getPostId()
+                        )
+                )
+                .doOnNext(notification -> log.info("Notification Response: {}", notification))
+                .doOnError(e -> log.info("Error occurred: {}", e.getMessage()))
+                .subscribe();
+
         return modelMapper.map(commentRepository.save(commentToSave), CommentDto.class);
     }
 
