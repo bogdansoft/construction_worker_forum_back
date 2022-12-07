@@ -7,7 +7,6 @@ import com.construction_worker_forum_back.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Slf4j
 @CrossOrigin("https://localhost:3000")
 @RequestMapping(path="/api/user")
 @Tag(name = "User", description = "The User API. Contains all the operations that can be performed on a user.")

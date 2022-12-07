@@ -10,7 +10,6 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,7 +31,6 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
