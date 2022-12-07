@@ -42,9 +42,10 @@ public class PostController {
             @PathVariable Long topicId,
             @RequestParam(name = "orderby") Optional<String> orderBy,
             @RequestParam(name = "limit") Optional<Integer> limit,
-            @RequestParam(name = "page") Optional<Integer> page
+            @RequestParam(name = "page") Optional<Integer> page,
+            @RequestParam(name = "keywords", required = false) List<String> allParams
     ) {
-        return postService.getPostsByTopicId(topicId, orderBy, limit, page);
+        return postService.getPostsByTopicId(topicId, orderBy, limit, page, allParams);
     }
 
     @GetMapping("/{id}")
