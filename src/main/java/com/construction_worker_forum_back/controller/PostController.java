@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.FollowerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -59,6 +60,12 @@ public class PostController {
         return postService.getPostLikers(id);
     }
 
+    @GetMapping("/followers/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public List<FollowerSimpleDto> getPostFollowers(@PathVariable("id") Long id) {
+        return postService.getPostFollowers(id);
+    }
+
     @PostMapping
     @SecurityRequirement(name = "Bearer Authentication")
     @ResponseStatus(HttpStatus.CREATED)
@@ -71,6 +78,26 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public PostDto likePost(@RequestParam Long postId, @RequestParam Long userId) {
         return postService.likePost(postId, userId);
+    }
+
+    @PostMapping("/follow")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostDto followPost(@RequestParam Long postId, @RequestParam Long userId) {
+        return postService.followPost(postId, userId);
+    }
+
+    @DeleteMapping("/follow")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public Map<String, String> unfollowPost(@RequestParam Long postId, @RequestParam Long userId) {
+        if (postService.unfollowPost(postId, userId)) {
+            return Map.of(
+                    "Post ID", postId + "",
+                    "status", "Post unfollowed successfully!"
+            );
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
@@ -106,7 +133,7 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public List<PostDto> findPostByContentOrTitle(@RequestParam(name ="searchItem") String contentOrTitle){
+    public List<PostDto> findPostByContentOrTitle(@RequestParam(name = "searchItem") String contentOrTitle) {
         System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
         return postService.findPostByContentOrTitle(contentOrTitle);
     }

@@ -37,4 +37,5 @@ public class UserDto implements Serializable {
     private List<PostSimpleDto> userPosts;
     private List<CommentSimpleDto> likedComments;
     private List<PostSimpleDto> likedPosts;
+    private List<PostSimpleDto> followedPosts;
 }

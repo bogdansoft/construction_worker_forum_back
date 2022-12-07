@@ -4,6 +4,7 @@ import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.simple.FollowerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.entity.Keyword;
 import com.construction_worker_forum_back.model.entity.Post;
@@ -72,7 +73,7 @@ public class PostService {
         if(limit.isPresent() && page.isPresent() && keywords != null) {
             return getPaginatedAndFilteredByKeywords(topicId, limit.get(), page.get(), keywords);
         }
-        if(limit.isPresent() && page.isPresent()) {
+        if (limit.isPresent() && page.isPresent()) {
             return getPaginatedNumberOfPosts(topicId, limit.get(), page.get());
         }
         return postRepository
@@ -89,6 +90,16 @@ public class PostService {
                 .getLikers()
                 .stream()
                 .map(user -> modelMapper.map(user, LikerSimpleDto.class))
+                .toList();
+    }
+
+    public List<FollowerSimpleDto> getPostFollowers(Long id) {
+        return postRepository
+                .findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getFollowers()
+                .stream()
+                .map(user -> modelMapper.map(user, FollowerSimpleDto.class))
                 .toList();
     }
 
@@ -112,6 +123,39 @@ public class PostService {
         postToSave.setTopic(modelMapper.map(topicById, Topic.class));
 
         return modelMapper.map(postRepository.save(postToSave), PostDto.class);
+    }
+
+    @Transactional
+    public PostDto followPost(Long postId, Long userId) {
+        Post postFromDb = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User userById = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (postFromDb.getFollowers().contains(userById)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Post already followed by this user!");
+        }
+
+        postFromDb.getFollowers().add(userById);
+        userById.getFollowedPosts().add(postFromDb);
+
+        return modelMapper.map(postFromDb, PostDto.class);
+    }
+
+    @Transactional
+    public boolean unfollowPost(Long postId, Long userId) {
+        Post postFromDb = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        User userById = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return postFromDb.getFollowers().remove(userById) && userById.getFollowedPosts().remove(postFromDb);
     }
 
     @Transactional
@@ -186,7 +230,7 @@ public class PostService {
     }
 
     public List<PostDto> getPaginatedNumberOfPosts(Long topicId, Integer number, Integer page) {
-        Pageable pageWithExactNumberOfElements = PageRequest.of(page-1, number);
+        Pageable pageWithExactNumberOfElements = PageRequest.of(page - 1, number);
         return getListOfPostsByPageableObject(topicId, pageWithExactNumberOfElements);
     }
 
@@ -201,6 +245,7 @@ public class PostService {
         String[] splitted = orderBy.split("\\.");
         String sortBy = splitted[0];
         String direction = splitted[1];
+
         if(direction.equalsIgnoreCase("asc")) {
             Pageable paginatedAndSortedAscending= PageRequest.of(page-1, number, Sort.by(sortBy).ascending());
             return getListOfPostsByPageableObject(topicId, paginatedAndSortedAscending);

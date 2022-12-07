@@ -63,6 +63,9 @@ public class Post implements IEntity, Serializable {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    @ManyToMany(mappedBy = "followedPosts")
+    private Set<User> followers = new HashSet<>();
+
     @ManyToMany(mappedBy = "likedPosts")
     private Set<User> likers = new HashSet<>();
 
