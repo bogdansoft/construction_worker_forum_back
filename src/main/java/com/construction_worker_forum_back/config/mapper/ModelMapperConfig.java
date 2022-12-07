@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.config;
 
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
+import com.construction_worker_forum_back.model.dto.simple.FollowerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.model.entity.Post;
@@ -29,13 +30,22 @@ public class ModelMapperConfig {
                         .map(user -> mapper.map(user, LikerSimpleDto.class))
                         .toList();
 
+        Converter<Set<User>, List<FollowerSimpleDto>> usersToFollowersListConverter =
+                context -> context.getSource()
+                        .stream()
+                        .map(user -> mapper.map(user, FollowerSimpleDto.class))
+                        .toList();
+
         Converter<Set<Comment>, Long> subCommentsToTheirQuantity =
                 context -> (long) context.getSource().size();
 
         mapper.createTypeMap(Post.class, PostDto.class)
                 .addMappings(map -> map
                         .using(usersToLikersListConverter)
-                        .map(Post::getLikers, PostDto::setLikers));
+                        .map(Post::getLikers, PostDto::setLikers))
+                .addMappings(map -> map
+                        .using(usersToFollowersListConverter)
+                        .map(Post::getFollowers, PostDto::setFollowers));
 
         mapper.createTypeMap(Comment.class, CommentDto.class)
                 .addMappings(map -> map

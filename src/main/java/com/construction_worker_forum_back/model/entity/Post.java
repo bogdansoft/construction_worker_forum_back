@@ -1,11 +1,15 @@
 package com.construction_worker_forum_back.model.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
@@ -19,7 +23,11 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post implements IEntity {
+@Cacheable
+@Cache(region = "postCache", usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Post implements IEntity, Serializable {
+    @Serial
+    private static final long serialVersionUID = -6470090944414208496L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,8 +63,19 @@ public class Post implements IEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    @ManyToMany(mappedBy = "followedPosts")
+    private Set<User> followers = new HashSet<>();
+
     @ManyToMany(mappedBy = "likedPosts")
     private Set<User> likers = new HashSet<>();
+
+    @ManyToMany(targetEntity = Keyword.class, cascade =  CascadeType.MERGE)
+    @JoinTable(
+            name = "post_keyword",
+            joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "keyword_id", referencedColumnName = "id")
+    )
+    private Set<Keyword> keywords = new HashSet<>();
 
     @PrePersist
     private void beforeSaving() {

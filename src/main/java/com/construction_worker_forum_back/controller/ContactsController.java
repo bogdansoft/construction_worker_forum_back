@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 public class ContactsController {
 
     private final ChatRoomService chatRoomService;

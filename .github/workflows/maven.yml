@@ -11,9 +11,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
+    strategy:
+      matrix:
+        redis-version: [ 6 ]
+
     env:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: forum_db
@@ -22,18 +24,26 @@ jobs:
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/forum_db?createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false
       SPRING_DATASOURCE_TOKEN: secret_key
+      SERVER_PORT: 443
+      SERVER_KEY_ALIAS: local_ssl
+      SERVER_KEY_PASSWORD: secret123
 
     steps:
-    - name: Set up MySQL
-      run: |
-        sudo /etc/init.d/mysql start
-        mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.MYSQL_USER }} -p${{ env.MYSQL_ROOT_PASSWORD }}
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn clean install
+      - name: Redis Server in GitHub Actions
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: ${{ matrix.redis-version }}
+          redis-port: 12345
+      - name: Set up MySQL
+        run: |
+          sudo /etc/init.d/mysql start
+          mysql -e 'CREATE DATABASE ${{ env.MYSQL_DATABASE }};' -u${{ env.MYSQL_USER }} -p${{ env.MYSQL_ROOT_PASSWORD }}
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install

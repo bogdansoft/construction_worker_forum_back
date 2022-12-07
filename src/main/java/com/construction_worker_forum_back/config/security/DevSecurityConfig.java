@@ -42,6 +42,7 @@ public class DevSecurityConfig {
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/likers/{id}").authenticated() //to be removed
                         .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated() //to be removed
+                        .mvcMatchers(HttpMethod.GET, "/api/post/followers/{id}").authenticated() //to be removed
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
                         .mvcMatchers("/ws").anonymous() //to be removed

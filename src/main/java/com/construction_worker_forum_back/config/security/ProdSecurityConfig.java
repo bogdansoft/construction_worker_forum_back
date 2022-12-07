@@ -42,6 +42,7 @@ public class ProdSecurityConfig {
                         .mvcMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/post/likers/{id}").authenticated()
                         .mvcMatchers(HttpMethod.GET, "/api/comment/likers/{id}").authenticated()
+                        .mvcMatchers(HttpMethod.GET, "/api/post/followers/{id}").authenticated()
                         .mvcMatchers(HttpMethod.GET, "/api/post/**").permitAll()
                         .mvcMatchers(HttpMethod.GET, "/api/topic/**").permitAll()
                         .mvcMatchers("/ws").anonymous()

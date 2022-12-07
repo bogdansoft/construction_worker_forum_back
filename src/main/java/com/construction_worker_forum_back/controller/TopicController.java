@@ -15,10 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("https://localhost:3000")
 @RequestMapping("/api/topic")
 @Tag(name = "Topic", description = "The Topic API. Contains all the operations that can be performed on a topic.")
 @AllArgsConstructor
@@ -27,12 +28,16 @@ public class TopicController {
     private TopicService topicService;
 
     @GetMapping
-    List<TopicDto> getAllTopics() {
-        return topicService.getAllTopics();
+    List<TopicDto> getAllTopics(
+            @RequestParam(name = "orderby") Optional<String> orderBy,
+            @RequestParam(name = "limit") Optional<Integer> limit,
+            @RequestParam(name = "page") Optional<Integer> page
+    ) {
+        return topicService.getAllTopics(orderBy, limit, page);
     }
 
     @GetMapping("/{id}")
-    TopicDto getTopicById(@PathVariable("id") Long id) {
+    public TopicDto getTopicById(@PathVariable("id") Long id) {
         return topicService.findTopicById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -74,10 +79,5 @@ public class TopicController {
     public List<TopicDto> findTopicByContentOrTitle(@RequestParam(name = "searchItem") String name) {
         System.out.println(topicService.findAllTopicsByName(name));
         return topicService.findAllTopicsByName(name);
-    }
-
-    @GetMapping("/number/{number}/page/{page}")
-    List<TopicDto> getDesignatedNumberOfTopics(@PathVariable("number") Integer number, @PathVariable("page") Integer page) {
-        return topicService.getDesignatedNumberOfTopics(number, page);
     }
 }

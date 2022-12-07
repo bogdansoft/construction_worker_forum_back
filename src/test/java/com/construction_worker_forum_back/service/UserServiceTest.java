@@ -136,6 +136,7 @@ public class UserServiceTest {
         verify(modelMapper, atLeastOnce()).map(user, UserDto.class);
     }
 
+
     @Test
     void itShouldDeleteUser() {
         //Given
