@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.cache;
 
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.construction_worker_forum_back.config.redis.RedisConfig;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.entity.User;
@@ -34,9 +35,9 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
         RedisAutoConfiguration.class,
         EmbeddedRedisConfiguration.class
 })
-@EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableCaching
-@TestExecutionListeners(listeners = { EmbeddedRedisConfiguration.class }, mergeMode = MERGE_WITH_DEFAULTS)
+@TestExecutionListeners(listeners = {EmbeddedRedisConfiguration.class}, mergeMode = MERGE_WITH_DEFAULTS)
 public class UserServiceCacheTest {
     @MockBean
     private UserRepository userRepository;
@@ -44,6 +45,8 @@ public class UserServiceCacheTest {
     private ModelMapper modelMapper;
     @MockBean
     private PasswordEncoder passwordEncoder;
+    @MockBean
+    private AmazonS3Client s3Client;
     @Autowired
     private UserService userService;
     @Autowired
