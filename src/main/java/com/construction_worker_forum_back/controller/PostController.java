@@ -90,7 +90,12 @@ public class PostController {
     @DeleteMapping("/follow")
     @SecurityRequirement(name = "Bearer Authentication")
     public Map<String, String> unfollowPost(@RequestParam Long postId, @RequestParam Long userId) {
-        if (postService.unfollowPost(postId, userId)) {
+        var unFollowed = postService.unfollowPost(postId, userId)
+                .getFollowers()
+                .stream()
+                .noneMatch(follower -> follower.getId().equals(userId));
+
+        if (unFollowed) {
             return Map.of(
                     "Post ID", postId + "",
                     "status", "Post unfollowed successfully!"
@@ -122,7 +127,12 @@ public class PostController {
     @DeleteMapping("/like")
     @SecurityRequirement(name = "Bearer Authentication")
     public Map<String, String> unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
-        if (postService.unlikePost(postId, userId)) {
+        var unLiked = postService.unlikePost(postId, userId)
+                .getLikers()
+                .stream()
+                .noneMatch(liker -> liker.getId().equals(userId));
+
+        if (unLiked) {
             return Map.of(
                     "Post ID", postId + "",
                     "status", "Post unliked successfully!"
@@ -134,7 +144,6 @@ public class PostController {
 
     @GetMapping("/search")
     public List<PostDto> findPostByContentOrTitle(@RequestParam(name = "searchItem") String contentOrTitle) {
-        System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
         return postService.findPostByContentOrTitle(contentOrTitle);
     }
 }

@@ -63,14 +63,14 @@ public class PostService {
             Optional<Integer> limit,
             Optional<Integer> page,
             List<String> keywords
-            ) {
-        if(limit.isPresent() && page.isPresent() && orderBy.isPresent() && keywords != null) {
+    ) {
+        if (limit.isPresent() && page.isPresent() && orderBy.isPresent() && keywords != null) {
             return getPaginatedAndSortedAndFilteredPosts(topicId, limit.get(), page.get(), orderBy.get(), keywords);
         }
-        if(limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
+        if (limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
             return getPaginatedAndSortedNumberOfPosts(topicId, limit.get(), page.get(), orderBy.get());
         }
-        if(limit.isPresent() && page.isPresent() && keywords != null) {
+        if (limit.isPresent() && page.isPresent() && keywords != null) {
             return getPaginatedAndFilteredByKeywords(topicId, limit.get(), page.get(), keywords);
         }
         if (limit.isPresent() && page.isPresent()) {
@@ -126,6 +126,7 @@ public class PostService {
     }
 
     @Transactional
+    @CachePut(value = "postCache", key = "{#postId}")
     public PostDto followPost(Long postId, Long userId) {
         Post postFromDb = postRepository
                 .findById(postId)
@@ -146,7 +147,8 @@ public class PostService {
     }
 
     @Transactional
-    public boolean unfollowPost(Long postId, Long userId) {
+    @CachePut(value = "postCache", key = "{#postId}")
+    public PostDto unfollowPost(Long postId, Long userId) {
         Post postFromDb = postRepository
                 .findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -155,10 +157,14 @@ public class PostService {
                 .findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return postFromDb.getFollowers().remove(userById) && userById.getFollowedPosts().remove(postFromDb);
+        postFromDb.getFollowers().remove(userById);
+        userById.getFollowedPosts().remove(postFromDb);
+
+        return modelMapper.map(postFromDb, PostDto.class);
     }
 
     @Transactional
+    @CachePut(value = "postCache", key = "{#postId}")
     public PostDto likePost(Long postId, Long userId) {
         Post postFromDb = postRepository
                 .findById(postId)
@@ -209,7 +215,8 @@ public class PostService {
     }
 
     @Transactional
-    public boolean unlikePost(Long postId, Long userId) {
+    @CachePut(value = "postCache", key = "{#postId}")
+    public PostDto unlikePost(Long postId, Long userId) {
         Post postFromDb = postRepository
                 .findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -218,7 +225,10 @@ public class PostService {
                 .findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return postFromDb.getLikers().remove(userById) && userById.getLikedPosts().remove(postFromDb);
+        postFromDb.getLikers().remove(userById);
+        userById.getLikedPosts().remove(postFromDb);
+
+        return modelMapper.map(postFromDb, PostDto.class);
     }
 
     public List<PostDto> findPostByContentOrTitle(String contentOrTitle) {
@@ -246,20 +256,20 @@ public class PostService {
         String sortBy = splitted[0];
         String direction = splitted[1];
 
-        if(direction.equalsIgnoreCase("asc")) {
-            Pageable paginatedAndSortedAscending= PageRequest.of(page-1, number, Sort.by(sortBy).ascending());
+        if (direction.equalsIgnoreCase("asc")) {
+            Pageable paginatedAndSortedAscending = PageRequest.of(page - 1, number, Sort.by(sortBy).ascending());
             return getListOfPostsByPageableObject(topicId, paginatedAndSortedAscending);
         }
-        Pageable paginatedAndSortedDescending = PageRequest.of(page-1, number, Sort.by(sortBy).descending());
+        Pageable paginatedAndSortedDescending = PageRequest.of(page - 1, number, Sort.by(sortBy).descending());
 
         return getListOfPostsByPageableObject(topicId, paginatedAndSortedDescending);
     }
 
     public Set<Post> filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(List<Post> posts, List<String> keywords) {
         LinkedHashSet<Post> sortedPosts = new LinkedHashSet<>();
-        for(Post post : posts) {
+        for (Post post : posts) {
             List<String> postKeywords = post.getKeywords().stream().map(Keyword::getName).toList();
-            if(postKeywords.containsAll(keywords)) {
+            if (postKeywords.containsAll(keywords)) {
                 sortedPosts.add(post);
             }
         }
@@ -277,12 +287,12 @@ public class PostService {
     }
 
     public List<Post> getPage(List<Post> sourceList, int page, int pageSize) {
-        if(pageSize <= 0 || page <= 0) {
+        if (pageSize <= 0 || page <= 0) {
             throw new IllegalArgumentException("invalid page size: " + pageSize);
         }
 
         int fromIndex = (page - 1) * pageSize;
-        if(sourceList == null || sourceList.size() <= fromIndex){
+        if (sourceList == null || sourceList.size() <= fromIndex) {
             return Collections.emptyList();
         }
 
@@ -296,7 +306,7 @@ public class PostService {
         String sortBy = splitted[0];
         String direction = splitted[1];
 
-        if(direction.equalsIgnoreCase("asc")) {
+        if (direction.equalsIgnoreCase("asc")) {
             Sort sortTopicsAscending = Sort.by(Sort.Direction.ASC, sortBy);
 
             posts = filterRecordsFromDatabaseByKeywordsToRetrieveOnlyPostsWhichHaveAllNecessaryKeywords(
