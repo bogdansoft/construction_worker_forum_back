@@ -92,7 +92,8 @@ public class CommentService {
                                 userById.getUsername(),
                                 postById.getUser().getId().toString(),
                                 "Commented on your post!",
-                                "https://127.0.0.1:3000/post/" + commentRequestDto.getPostId()
+                                "https://127.0.0.1:3000/post/" + commentRequestDto.getPostId(),
+                                false
                         )
                 )
                 .doOnNext(notification -> log.info("Notification Response: {}", notification))

@@ -15,8 +15,9 @@ public class Notification {
     private String to;
     private String message;
     private String redirectTo;
+    private Boolean isRead;
 
-    public static Notification of(String senderUsername, String recipientId, String message, String redirect) {
-        return new Notification(senderUsername, recipientId, message, redirect);
+    public static Notification of(String senderUsername, String recipientId, String message, String redirect, Boolean isRead) {
+        return new Notification(senderUsername, recipientId, message, redirect, isRead);
     }
 }

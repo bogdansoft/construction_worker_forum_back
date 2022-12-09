@@ -62,7 +62,8 @@ public class ChatController {
                                 senderName,
                                 recipientId,
                                 "Sent you a message",
-                                "https://127.0.0.1:3000/chat"
+                                "https://127.0.0.1:3000/chat",
+                                false
                         )
                 )
                 .doOnNext(notification -> log.info("Notification Response: {}", notification))
