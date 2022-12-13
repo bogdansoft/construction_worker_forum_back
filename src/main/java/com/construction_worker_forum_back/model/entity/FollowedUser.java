@@ -13,15 +13,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FollowedUsers {
+public class FollowedUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "followed_user_id")
-    private Long followedUserId;
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "followed_user_id", referencedColumnName = "id")
+    private User followedUsers;
 
-    @Column(name = "following_user_id")
-    private Long followingUserId;
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "following_user_id", referencedColumnName = "id")
+    private User followingUser;
 }
