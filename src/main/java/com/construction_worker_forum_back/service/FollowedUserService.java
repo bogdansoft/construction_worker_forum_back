@@ -3,7 +3,7 @@ package com.construction_worker_forum_back.service;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
 import com.construction_worker_forum_back.model.entity.FollowedUser;
 import com.construction_worker_forum_back.model.entity.User;
-import com.construction_worker_forum_back.repository.FollowedUsersRepository;
+import com.construction_worker_forum_back.repository.FollowedUserRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,43 +17,45 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FollowedUsersService {
+public class FollowedUserService {
 
-    private final FollowedUsersRepository followedUsersRepository;
+    private final FollowedUserRepository followedUserRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
-    public List<UserSimpleDto> getFollowedUsersByUserId(Long id) {
-        return followedUsersRepository.findAllFollowedUsersByUserId(id)
+    public List<UserSimpleDto> getFollowedUsersByUsername(String username) {
+        return followedUserRepository.findAllFollowedUsersByUsername(username)
                 .stream()
                 .map(user -> modelMapper.map(user.getFollowedUsers(), UserSimpleDto.class))
                 .toList();
     }
 
-    public List<UserSimpleDto> getFollowersByUserId(Long id) {
-        return followedUsersRepository.findAllFollowersByUserId(id)
+    public List<UserSimpleDto> getFollowersByUsername(String username) {
+        return followedUserRepository.findAllFollowersByUsername(username)
                 .stream()
                 .map(user -> modelMapper.map(user.getFollowingUser(), UserSimpleDto.class))
                 .toList();
     }
 
     @Transactional
-    public UserSimpleDto createFollowedUser(Long followedUserId, Long followerId) {
+    public Optional<UserSimpleDto> createFollowedUser(Long followedUserId, Long followerId) {
+        Optional<FollowedUser> existFollowing = followedUserRepository.findByFollowedUserIdAndFollowerId(followedUserId, followerId);
+        if (existFollowing.isPresent()) return Optional.empty();
         User followedUser = userRepository.findById(followedUserId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         User followingUser = userRepository.findById(followerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        followedUsersRepository.save(
+        followedUserRepository.save(
                 FollowedUser.builder()
                         .followedUsers(followedUser)
                         .followingUser(followingUser)
                         .build());
-        return modelMapper.map(followedUser, UserSimpleDto.class);
+        return Optional.of(modelMapper.map(followedUser, UserSimpleDto.class));
     }
 
     @Transactional
     public boolean unfollowUser(Long followedUserId, Long followerId) {
-        Optional<FollowedUser> followedUser = followedUsersRepository.findByFollowedUsersIdAndFollowerId(followedUserId, followerId);
+        Optional<FollowedUser> followedUser = followedUserRepository.findByFollowedUserIdAndFollowerId(followedUserId, followerId);
         if (followedUser.isEmpty()) return false;
-        return followedUsersRepository.deleteByFollowedUsers_IdAndFollowingUser_Id(followedUserId, followerId) == 1;
+        return followedUserRepository.deleteByFollowedUsers_IdAndFollowingUser_Id(followedUserId, followerId) == 1;
     }
 }

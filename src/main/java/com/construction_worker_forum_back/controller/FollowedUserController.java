@@ -1,7 +1,7 @@
 package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
-import com.construction_worker_forum_back.service.FollowedUsersService;
+import com.construction_worker_forum_back.service.FollowedUserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -18,31 +18,32 @@ import java.util.Map;
 @SecurityRequirement(name = "Bearer Authentication")
 @Tag(name = "Post", description = "The Followed Users API. Contains all the operations that can be performed on a followed users.")
 @AllArgsConstructor
-public class FollowedUsersController {
+public class FollowedUserController {
 
-    private final FollowedUsersService followedUsersService;
+    private final FollowedUserService followedUserService;
 
-    @GetMapping("/followed/{id}")
-    public List<UserSimpleDto> getFollowedUsersByUserId(@PathVariable(name = "id") Long id) {
-        return followedUsersService.getFollowedUsersByUserId(id);
+    @GetMapping("/followed/{username}")
+    public List<UserSimpleDto> getFollowedUsersByUsername(@PathVariable(name = "username") String username) {
+        return followedUserService.getFollowedUsersByUsername(username);
     }
 
-    @GetMapping("/followers/{id}")
-    public List<UserSimpleDto> getFollowersByUserId(@PathVariable(name = "id") Long id) {
-        return followedUsersService.getFollowersByUserId(id);
+    @GetMapping("/followers/{username}")
+    public List<UserSimpleDto> getFollowersByUsername(@PathVariable(name = "username") String username) {
+        return followedUserService.getFollowersByUsername(username);
     }
 
     @PostMapping("/{id}")
     public UserSimpleDto followUser(
             @PathVariable(name = "id") Long followedUserId,
             @RequestParam(name = "followerId") Long followerId) {
-        return followedUsersService.createFollowedUser(followedUserId, followerId);
+        return followedUserService.createFollowedUser(followedUserId, followerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
     @DeleteMapping("/{id}")
     Map<String, String> unfollowUser(@PathVariable(name = "id") Long followedUserId,
                                      @RequestParam(name = "followerId") Long followerId) {
-        if (followedUsersService.unfollowUser(followedUserId, followerId)) {
+        if (followedUserService.unfollowUser(followedUserId, followerId)) {
             return Map.of(
                     "Follower ID: ", followerId + "",
                     "Followed ID: ", followedUserId + "",
