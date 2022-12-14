@@ -38,10 +38,10 @@ public class FollowedUserService {
     }
 
     @Transactional
-    public Optional<UserSimpleDto> createFollowedUser(Long followedUserId, Long followerId) {
-        Optional<FollowedUser> existFollowing = followedUserRepository.findByFollowedUserIdAndFollowerId(followedUserId, followerId);
+    public Optional<UserSimpleDto> createFollowedUser(String followedUserUsername, Long followerId) {
+        Optional<FollowedUser> existFollowing = followedUserRepository.findByFollowedUserUsernameAndFollowerId(followedUserUsername, followerId);
         if (existFollowing.isPresent()) return Optional.empty();
-        User followedUser = userRepository.findById(followedUserId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        User followedUser = userRepository.findByUsername(followedUserUsername).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         User followingUser = userRepository.findById(followerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         followedUserRepository.save(

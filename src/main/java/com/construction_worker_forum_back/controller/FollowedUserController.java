@@ -32,11 +32,11 @@ public class FollowedUserController {
         return followedUserService.getFollowersByUsername(username);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{username}")
     public UserSimpleDto followUser(
-            @PathVariable(name = "id") Long followedUserId,
+            @PathVariable(name = "username") String followedUserUsername,
             @RequestParam(name = "followerId") Long followerId) {
-        return followedUserService.createFollowedUser(followedUserId, followerId)
+        return followedUserService.createFollowedUser(followedUserUsername, followerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
