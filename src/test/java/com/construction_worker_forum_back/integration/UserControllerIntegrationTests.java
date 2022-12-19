@@ -1,15 +1,22 @@
 package com.construction_worker_forum_back.integration;
 
+import com.construction_worker_forum_back.config.security.JwtTokenUtil;
+import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
+import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.Role;
+import com.construction_worker_forum_back.model.security.UserDetailsImpl;
+import com.construction_worker_forum_back.repository.PostRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
+import com.construction_worker_forum_back.service.PostService;
 import com.construction_worker_forum_back.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -18,6 +25,7 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -37,10 +45,22 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
     UserRepository userRepository;
 
     @Autowired
+    PostRepository postRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    @Autowired
     RemoveService removeService;
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    JwtTokenUtil tokenUtil;
+
+    @Autowired
+    PostService postService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -308,5 +328,41 @@ class UserControllerIntegrationTests extends TestcontainersConfig {
         // then
         response.andDo(print())
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void givenSavedPosts_whenFollowingPostsByUser_thenReturnAllFollowingPostsByUserWithUserId() throws Exception {
+
+        //given
+        PostRequestDto post = PostRequestDto.builder()
+                .userId(user.getId())
+                .topicId(user.getId())
+                .content("New post")
+                .title("Title of new post")
+                .build();
+        Post postFromDb = postRepository.save(modelMapper.map(post, Post.class));
+
+        User user = User.builder()
+                .username("toot")
+                .password("toot1234")
+                .email("toot@test.com")
+                .firstName("Doe")
+                .lastName("John")
+                .build();
+        User userToFollow = userRepository.save(user);
+        UserDetailsImpl userDetailsFollower = new UserDetailsImpl(userToFollow);
+
+        //when
+        postService.followPost(postFromDb.getId(), userToFollow.getId());
+
+        //then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/user/following_posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("userId", String.valueOf(userToFollow.getId()))
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsFollower)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.size()", is(1)));
     }
 }
