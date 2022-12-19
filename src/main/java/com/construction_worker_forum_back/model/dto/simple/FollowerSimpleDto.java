@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Cacheable
-public class LikerSimpleDto implements Serializable {
+public class FollowerSimpleDto implements Serializable {
     @Serial
     private static final long serialVersionUID = -6470090944414208496L;
 

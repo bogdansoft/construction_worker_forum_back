@@ -84,6 +84,14 @@ public class User implements Serializable {
 
     @ManyToMany(targetEntity = Post.class, cascade = CascadeType.MERGE)
     @JoinTable(
+            name = "post_follow",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id")
+    )
+    private Set<Post> followedPosts = new HashSet<>();
+
+    @ManyToMany(targetEntity = Post.class, cascade = CascadeType.MERGE)
+    @JoinTable(
             name = "post_like",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id")

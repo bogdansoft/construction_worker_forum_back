@@ -2,6 +2,7 @@ package com.construction_worker_forum_back.controller;
 
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
+import com.construction_worker_forum_back.model.dto.simple.FollowerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -41,9 +42,10 @@ public class PostController {
             @PathVariable Long topicId,
             @RequestParam(name = "orderby") Optional<String> orderBy,
             @RequestParam(name = "limit") Optional<Integer> limit,
-            @RequestParam(name = "page") Optional<Integer> page
+            @RequestParam(name = "page") Optional<Integer> page,
+            @RequestParam(name = "keywords", required = false) List<String> allParams
     ) {
-        return postService.getPostsByTopicId(topicId, orderBy, limit, page);
+        return postService.getPostsByTopicId(topicId, orderBy, limit, page, allParams);
     }
 
     @GetMapping("/{id}")
@@ -58,6 +60,12 @@ public class PostController {
         return postService.getPostLikers(id);
     }
 
+    @GetMapping("/followers/{id}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public List<FollowerSimpleDto> getPostFollowers(@PathVariable("id") Long id) {
+        return postService.getPostFollowers(id);
+    }
+
     @PostMapping
     @SecurityRequirement(name = "Bearer Authentication")
     @ResponseStatus(HttpStatus.CREATED)
@@ -70,6 +78,31 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     public PostDto likePost(@RequestParam Long postId, @RequestParam Long userId) {
         return postService.likePost(postId, userId);
+    }
+
+    @PostMapping("/follow")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostDto followPost(@RequestParam Long postId, @RequestParam Long userId) {
+        return postService.followPost(postId, userId);
+    }
+
+    @DeleteMapping("/follow")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public Map<String, String> unfollowPost(@RequestParam Long postId, @RequestParam Long userId) {
+        var unFollowed = postService.unfollowPost(postId, userId)
+                .getFollowers()
+                .stream()
+                .noneMatch(follower -> follower.getId().equals(userId));
+
+        if (unFollowed) {
+            return Map.of(
+                    "Post ID", postId + "",
+                    "status", "Post unfollowed successfully!"
+            );
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
@@ -94,7 +127,12 @@ public class PostController {
     @DeleteMapping("/like")
     @SecurityRequirement(name = "Bearer Authentication")
     public Map<String, String> unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
-        if (postService.unlikePost(postId, userId)) {
+        var unLiked = postService.unlikePost(postId, userId)
+                .getLikers()
+                .stream()
+                .noneMatch(liker -> liker.getId().equals(userId));
+
+        if (unLiked) {
             return Map.of(
                     "Post ID", postId + "",
                     "status", "Post unliked successfully!"
@@ -105,8 +143,7 @@ public class PostController {
     }
 
     @GetMapping("/search")
-    public List<PostDto> findPostByContentOrTitle(@RequestParam(name ="searchItem") String contentOrTitle){
-        System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
+    public List<PostDto> findPostByContentOrTitle(@RequestParam(name = "searchItem") String contentOrTitle) {
         return postService.findPostByContentOrTitle(contentOrTitle);
     }
 }

@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.controller;
 
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin("https://localhost:3000")
-@RequestMapping(path="/api/user")
+@RequestMapping(path = "/api/user")
 @Tag(name = "User", description = "The User API. Contains all the operations that can be performed on a user.")
 @AllArgsConstructor
 public class UserController {
@@ -32,6 +33,12 @@ public class UserController {
     @GetMapping
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/following_posts")
+    public List<PostDto> getAllFollowingPostsByUserId(@RequestParam Long userId) {
+        return userService.getAllFollowingPostsByUserWithUserId(userId);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
@@ -66,10 +73,21 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping( path="/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE , produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
-
+    @PutMapping(path = "/changeavatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String changeAvatar(@RequestParam(value = "file") MultipartFile multipartFile, @RequestParam("username") String username) throws IOException {
         return userService.changeAvatar(username, multipartFile);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping(path = "/getavatar")
+    public String getAvatar(@RequestParam("username") String username) throws IOException {
+        return userService.getAvatar(username);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping(path = "/deleteavatar")
+    public String deleteAvatar(@RequestParam("username") String username) throws IOException {
+        return userService.deleteAvatar(username);
     }
 
     @SecurityRequirement(name = "Bearer Authentication")

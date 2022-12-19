@@ -176,6 +176,24 @@ public class PostServiceTest {
     }
 
     @Test
+    void itShouldGetAllPostFollowers() {
+        //given
+        Set<User> followers = new HashSet<>(Set.of(new User()));
+        Post post = new Post();
+        post.setId(1L);
+        post.setFollowers(followers);
+        given(postRepository.findById(post.getId())).willReturn(Optional.of(post));
+
+        //when
+        var expected = postService.getPostFollowers(post.getId());
+
+        //then
+        assertTrue(expected.size() > 0);
+
+        verify(postRepository, atLeastOnce()).findById(anyLong());
+    }
+
+    @Test
     void itShouldGetPostByTopicId() {
         //given
         Post post = new Post();
@@ -187,7 +205,7 @@ public class PostServiceTest {
         given(postRepository.findByTopic_Id(post.getTopic().getId())).willReturn(postList);
 
         //when
-        var expected = postService.getPostsByTopicId(post.getTopic().getId(), Optional.empty(), Optional.empty(), Optional.empty());
+        var expected = postService.getPostsByTopicId(post.getTopic().getId(), Optional.empty(), Optional.empty(), Optional.empty(), Collections.emptyList());
 
         //then
         assertTrue(expected.size() > 0);
@@ -236,6 +254,25 @@ public class PostServiceTest {
     }
 
     @Test
+    void itShouldUnfollowPost() {
+        //given
+        Post post = new Post();
+        post.setId(1L);
+        User user = new User();
+        user.setId(1L);
+        post.setUser(user);
+        given(postRepository.findById(post.getId())).willReturn(Optional.of(post));
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+        //when
+        postService.unfollowPost(post.getId(), user.getId());
+
+        //then
+        verify(postRepository, atLeastOnce()).findById(anyLong());
+        verify(userRepository, atLeastOnce()).findById(anyLong());
+    }
+
+    @Test
     void itShouldLikePost() {
         //given
         Post post = new Post();
@@ -248,6 +285,25 @@ public class PostServiceTest {
 
         //when
         postService.likePost(post.getId(), user.getId());
+
+        //then
+        verify(postRepository, atLeastOnce()).findById(anyLong());
+        verify(userRepository, atLeastOnce()).findById(anyLong());
+    }
+
+    @Test
+    void itShouldFollowPost() {
+        //given
+        Post post = new Post();
+        post.setId(1L);
+        User user = new User();
+        user.setId(1L);
+        post.setUser(user);
+        given(postRepository.findById(post.getId())).willReturn(Optional.of(post));
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+        //when
+        postService.followPost(post.getId(), user.getId());
 
         //then
         verify(postRepository, atLeastOnce()).findById(anyLong());

@@ -7,4 +7,5 @@
 
     <include file="migrations/initialization.xml" relativeToChangelogFile="true"/>
     <include file="migrations/population.xml" relativeToChangelogFile="true"/>
+    <include file="migrations/followingPosts.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
