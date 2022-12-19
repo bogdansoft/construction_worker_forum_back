@@ -32,8 +32,6 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
-
 @Slf4j
 @Service
 @AllArgsConstructor
@@ -266,13 +264,13 @@ public class PostService {
         return postRepository.findAllPaginatedByTopic_Id(topicId, pageable)
                 .stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
-                .collect(toList());
+                .toList();
     }
 
     public List<PostDto> getPaginatedAndSortedNumberOfPosts(Long topicId, Integer number, Integer page, String orderBy) {
-        String[] splitted = orderBy.split("\\.");
-        String sortBy = splitted[0];
-        String direction = splitted[1];
+        String[] split = orderBy.split("\\.");
+        String sortBy = split[0];
+        String direction = split[1];
 
         if (direction.equalsIgnoreCase("asc")) {
             Pageable paginatedAndSortedAscending = PageRequest.of(page - 1, number, Sort.by(sortBy).ascending());
@@ -287,7 +285,7 @@ public class PostService {
         LinkedHashSet<Post> sortedPosts = new LinkedHashSet<>();
         for (Post post : posts) {
             List<String> postKeywords = post.getKeywords().stream().map(Keyword::getName).toList();
-            if (postKeywords.containsAll(keywords)) {
+            if (new HashSet<>(postKeywords).containsAll(keywords)) {
                 sortedPosts.add(post);
             }
         }
@@ -319,10 +317,10 @@ public class PostService {
 
     public List<PostDto> getPaginatedAndSortedAndFilteredPosts(Long topicId, Integer limit, Integer page, String orderBy, List<String> keywords) {
         List<Post> posts;
-        String[] splitted = orderBy.split("\\.");
+        String[] split = orderBy.split("\\.");
 
-        String sortBy = splitted[0];
-        String direction = splitted[1];
+        String sortBy = split[0];
+        String direction = split[1];
 
         if (direction.equalsIgnoreCase("asc")) {
             Sort sortTopicsAscending = Sort.by(Sort.Direction.ASC, sortBy);
