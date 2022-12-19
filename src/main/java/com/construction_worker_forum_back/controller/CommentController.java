@@ -74,16 +74,22 @@ public class CommentController {
     CommentDto updateComment(@Valid @RequestBody CommentRequestDto userRequest, @PathVariable Long id) {
         return commentService.updateCommentById(id, userRequest);
     }
+
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{commentId}")
     public Boolean deleteComment(@PathVariable Long commentId, @RequestParam Long userId) {
-       return commentService.deleteById(commentId, userId);
+        return commentService.deleteById(commentId, userId);
     }
 
     @DeleteMapping("/like")
     @SecurityRequirement(name = "Bearer Authentication")
     public Map<String, String> unlikeComment(@RequestParam Long commentId, @RequestParam Long userId) {
-        if (commentService.unlikeComment(commentId, userId)) {
+        var unLiked = commentService.unlikeComment(commentId, userId)
+                .getLikers()
+                .stream()
+                .noneMatch(liker -> liker.getId().equals(userId));
+
+        if (unLiked) {
             return Map.of(
                     "Comment ID", commentId + "",
                     "status", "Comment unliked successfully!"

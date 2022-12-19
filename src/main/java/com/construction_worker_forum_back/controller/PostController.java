@@ -8,7 +8,6 @@ import com.construction_worker_forum_back.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j
 @RestController
 @CrossOrigin("https://localhost:3000")
 @RequestMapping("/api/post")
@@ -92,7 +90,12 @@ public class PostController {
     @DeleteMapping("/follow")
     @SecurityRequirement(name = "Bearer Authentication")
     public Map<String, String> unfollowPost(@RequestParam Long postId, @RequestParam Long userId) {
-        if (postService.unfollowPost(postId, userId)) {
+        var unFollowed = postService.unfollowPost(postId, userId)
+                .getFollowers()
+                .stream()
+                .noneMatch(follower -> follower.getId().equals(userId));
+
+        if (unFollowed) {
             return Map.of(
                     "Post ID", postId + "",
                     "status", "Post unfollowed successfully!"
@@ -123,8 +126,20 @@ public class PostController {
 
     @DeleteMapping("/like")
     @SecurityRequirement(name = "Bearer Authentication")
-    public PostDto unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
-        return postService.unlikePost(postId, userId);
+    public Map<String, String> unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
+        var unLiked = postService.unlikePost(postId, userId)
+                .getLikers()
+                .stream()
+                .noneMatch(liker -> liker.getId().equals(userId));
+
+        if (unLiked) {
+            return Map.of(
+                    "Post ID", postId + "",
+                    "status", "Post unliked successfully!"
+            );
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/search")

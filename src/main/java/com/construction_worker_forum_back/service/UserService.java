@@ -3,6 +3,7 @@ package com.construction_worker_forum_back.service;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
@@ -28,7 +29,10 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +59,14 @@ public class UserService implements UserDetailsService {
                 .findAll()
                 .stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
+                .toList();
+    }
+
+    public List<PostDto> getAllFollowingPostsByUserWithUserId(Long userId) {
+        return userRepository.findById(userId).orElseThrow()
+                .getFollowedPosts()
+                .stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
                 .toList();
     }
 
@@ -118,7 +130,7 @@ public class UserService implements UserDetailsService {
                 .findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         String fileName = user.getAvatar();
-        if(fileName==null) {
+        if (fileName == null) {
             return "Avatar not found";
         }
         Calendar calendar = Calendar.getInstance();

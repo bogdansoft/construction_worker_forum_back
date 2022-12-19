@@ -53,7 +53,6 @@ public class CommentServiceTest {
     private CommentService commentService;
 
 
-
     @Test
     void itShouldGetAllComments() {
         //Given
@@ -128,7 +127,7 @@ public class CommentServiceTest {
     @Test
     void itShouldCreateComment() {
         //Given
-        CommentRequestDto commentRequestDto =  CommentRequestDto.builder().content("good").userId(1L).postId(1L).build();
+        CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("good").userId(1L).postId(1L).build();
 
         CommentDto commentDto = CommentDto.builder().content("good")
                 .user(UserSimpleDto.builder().id(1L).username("adam").build())
@@ -191,7 +190,6 @@ public class CommentServiceTest {
         verify(modelMapper, atLeastOnce()).map(comment, CommentDto.class);
     }
 
-
     @Test
     void itShouldDislikeComment() {
         //Given
@@ -204,11 +202,9 @@ public class CommentServiceTest {
 
 
         //When
-        var expected = commentService.unlikeComment(comment.getId(), user.getId());
+        commentService.unlikeComment(comment.getId(), user.getId());
 
         //Then
-        assertTrue(expected);
-
         verify(userRepository, atLeastOnce()).findById(user.getId());
         verify(commentRepository, atLeastOnce()).findById(comment.getId());
     }
