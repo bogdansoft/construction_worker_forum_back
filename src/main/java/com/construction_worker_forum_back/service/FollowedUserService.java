@@ -37,6 +37,10 @@ public class FollowedUserService {
                 .toList();
     }
 
+    public Boolean isUserFollowedByUserWithId(String followedUserUsername, Long followingUserId) {
+        return followedUserRepository.findByFollowedUserUsernameAndFollowerId(followedUserUsername, followingUserId).isPresent();
+    }
+
     @Transactional
     public Optional<UserSimpleDto> createFollowedUser(String followedUserUsername, Long followerId) {
         Optional<FollowedUser> existFollowing = followedUserRepository.findByFollowedUserUsernameAndFollowerId(followedUserUsername, followerId);
@@ -53,9 +57,9 @@ public class FollowedUserService {
     }
 
     @Transactional
-    public boolean unfollowUser(Long followedUserId, Long followerId) {
-        Optional<FollowedUser> followedUser = followedUserRepository.findByFollowedUserIdAndFollowerId(followedUserId, followerId);
+    public boolean unfollowUser(String followedUserUsername, Long followerId) {
+        Optional<FollowedUser> followedUser = followedUserRepository.findByFollowedUserUsernameAndFollowerId(followedUserUsername, followerId);
         if (followedUser.isEmpty()) return false;
-        return followedUserRepository.deleteByFollowedUsers_IdAndFollowingUser_Id(followedUserId, followerId) == 1;
+        return followedUserRepository.deleteByFollowedUsers_UsernameAndFollowingUser_Id(followedUserUsername, followerId) == 1;
     }
 }

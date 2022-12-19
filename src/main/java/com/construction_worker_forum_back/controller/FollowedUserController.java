@@ -32,6 +32,13 @@ public class FollowedUserController {
         return followedUserService.getFollowersByUsername(username);
     }
 
+    @GetMapping("/{username}")
+    public boolean isUserFollowed(
+            @PathVariable(name = "username") String username,
+            @RequestParam(name = "followerId") Long followerId) {
+        return followedUserService.isUserFollowedByUserWithId(username, followerId);
+    }
+
     @PostMapping("/{username}")
     public UserSimpleDto followUser(
             @PathVariable(name = "username") String followedUserUsername,
@@ -40,13 +47,13 @@ public class FollowedUserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT));
     }
 
-    @DeleteMapping("/{id}")
-    Map<String, String> unfollowUser(@PathVariable(name = "id") Long followedUserId,
+    @DeleteMapping("/{username}")
+    Map<String, String> unfollowUser(@PathVariable(name = "username") String followedUserUsername,
                                      @RequestParam(name = "followerId") Long followerId) {
-        if (followedUserService.unfollowUser(followedUserId, followerId)) {
+        if (followedUserService.unfollowUser(followedUserUsername, followerId)) {
             return Map.of(
                     "Follower ID: ", followerId + "",
-                    "Followed ID: ", followedUserId + "",
+                    "Followed username: ", followedUserUsername + "",
                     "status", "Unfollowed successfully!"
             );
         } else {

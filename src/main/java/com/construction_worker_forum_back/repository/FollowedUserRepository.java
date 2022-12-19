@@ -15,12 +15,10 @@ public interface FollowedUserRepository extends JpaRepository<FollowedUser, Long
     @Query("select f from FollowedUser f inner join fetch f.followingUser where f.followedUsers.username = ?1")
     List<FollowedUser> findAllFollowersByUsername(String username);
 
-    @Query("select f from FollowedUser f where f.followedUsers.id = ?1 and  f.followingUser.id = ?2")
-    Optional<FollowedUser> findByFollowedUserIdAndFollowerId(Long followedUserId, Long followerId);
-
     @Query("select f from FollowedUser f where f.followedUsers.username = ?1 and  f.followingUser.id = ?2")
     Optional<FollowedUser> findByFollowedUserUsernameAndFollowerId(String username, Long followerId);
 
-    int deleteByFollowedUsers_IdAndFollowingUser_Id(Long followedUserId, Long followerId);
+    int deleteByFollowedUsers_UsernameAndFollowingUser_Id(String followedUserUsername, Long followerId);
+
 
 }
