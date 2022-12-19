@@ -33,7 +33,6 @@ public class CommentController {
         return commentService.getAllComments();
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/all_by_username/{username}")
     public List<CommentDto> getAllCommentsByUsername(@PathVariable String username) {
         return commentService.getCommentsByUsername(username);
@@ -45,7 +44,6 @@ public class CommentController {
     }
 
     @GetMapping("/likers/{id}")
-    @SecurityRequirement(name = "Bearer Authentication")
     public List<LikerSimpleDto> getCommentLikers(@PathVariable("id") Long id) {
         return commentService.getCommentLikers(id);
     }
@@ -58,26 +56,21 @@ public class CommentController {
     }
 
     @PostMapping("/like")
-    @SecurityRequirement(name = "Bearer Authentication")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto likeComment(@RequestParam Long commentId, @RequestParam Long userId) {
         return commentService.likeComment(commentId, userId);
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/{id}")
     CommentDto updateComment(@Valid @RequestBody CommentRequestDto userRequest, @PathVariable Long id) {
         return commentService.updateCommentById(id, userRequest);
     }
-
-    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{commentId}")
     public Boolean deleteComment(@PathVariable Long commentId, @RequestParam Long userId) {
         return commentService.deleteById(commentId, userId);
     }
 
     @DeleteMapping("/like")
-    @SecurityRequirement(name = "Bearer Authentication")
     public Map<String, String> unlikeComment(@RequestParam Long commentId, @RequestParam Long userId) {
         var unLiked = commentService.unlikeComment(commentId, userId)
                 .getLikers()
@@ -95,7 +88,6 @@ public class CommentController {
     }
 
     @GetMapping("/post/{id}")
-    @SecurityRequirement(name = "Bearer Authentication")
     List<CommentDto> getCommentsOfPost(@PathVariable Long id) {
         return commentService.getCommentsOfPost(id);
     }
