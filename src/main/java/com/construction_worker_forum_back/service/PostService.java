@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.client.NotificationClient;
+import com.construction_worker_forum_back.model.Notification;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicDto;
@@ -12,6 +14,7 @@ import com.construction_worker_forum_back.repository.PostRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -30,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class PostService {
@@ -39,6 +43,7 @@ public class PostService {
     private final UserService userService;
     private final TopicService topicService;
     private final ModelMapper modelMapper;
+    private final NotificationClient notificationClient;
 
     public List<PostDto> getAllPosts() {
         return postRepository
@@ -61,14 +66,14 @@ public class PostService {
             Optional<String> orderBy,
             Optional<Integer> limit,
             Optional<Integer> page
-            ) {
-        if(limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
+    ) {
+        if (limit.isPresent() && page.isPresent() && orderBy.isPresent()) {
             return getPaginatedAndSortedNumberOfPosts(topicId, limit.get(), page.get(), orderBy.get());
         }
-        if(orderBy.isPresent()) {
+        if (orderBy.isPresent()) {
             return getSortedPosts(topicId, orderBy.get());
         }
-        if(limit.isPresent() && page.isPresent()) {
+        if (limit.isPresent() && page.isPresent()) {
             return getPaginatedNumberOfPosts(topicId, limit.get(), page.get());
         }
         return postRepository
@@ -127,6 +132,19 @@ public class PostService {
         postFromDb.getLikers().add(userById);
         userById.getLikedPosts().add(postFromDb);
 
+        notificationClient.sendNotification(
+                        Notification.of(
+                                userById.getUsername(),
+                                postFromDb.getUser().getId().toString(),
+                                "Liked yor post!",
+                                "https://127.0.0.1:3000/post/" + postFromDb.getId(),
+                                false
+                        )
+                )
+                .doOnNext(notification -> log.info("Notification Response: {}", notification))
+                .doOnError(e -> log.info("Error occurred: {}", e.getMessage()))
+                .subscribe();
+
         return modelMapper.map(postFromDb, PostDto.class);
     }
 
@@ -182,7 +200,7 @@ public class PostService {
     }
 
     public List<PostDto> getPaginatedNumberOfPosts(Long topicId, Integer number, Integer page) {
-        Pageable pageWithExactNumberOfElements = PageRequest.of(page-1, number);
+        Pageable pageWithExactNumberOfElements = PageRequest.of(page - 1, number);
         return getListOfPostsByPageableObject(topicId, pageWithExactNumberOfElements);
     }
 
@@ -197,7 +215,7 @@ public class PostService {
         String[] splitted = orderBy.split("\\.");
         String sortBy = splitted[0];
         String direction = splitted[1];
-        if(direction.equalsIgnoreCase("asc")) {
+        if (direction.equalsIgnoreCase("asc")) {
             Sort sortPostsAscending = Sort.by(Sort.Direction.ASC, sortBy);
 
             return getListOfPostsBySort(topicId, sortPostsAscending);
@@ -218,11 +236,11 @@ public class PostService {
         String[] splitted = orderBy.split("\\.");
         String sortBy = splitted[0];
         String direction = splitted[1];
-        if(direction.equalsIgnoreCase("asc")) {
-            Pageable paginatedAndSortedAscending= PageRequest.of(page-1, number, Sort.by(sortBy).ascending());
+        if (direction.equalsIgnoreCase("asc")) {
+            Pageable paginatedAndSortedAscending = PageRequest.of(page - 1, number, Sort.by(sortBy).ascending());
             return getListOfPostsByPageableObject(topicId, paginatedAndSortedAscending);
         }
-        Pageable paginatedAndSortedDescending = PageRequest.of(page-1, number, Sort.by(sortBy).descending());
+        Pageable paginatedAndSortedDescending = PageRequest.of(page - 1, number, Sort.by(sortBy).descending());
 
         return getListOfPostsByPageableObject(topicId, paginatedAndSortedDescending);
     }
