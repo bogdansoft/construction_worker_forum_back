@@ -85,6 +85,7 @@ public class CommentService {
     }
 
     @Transactional
+    @CachePut(value = "commentCache", key = "{#commentId}")
     public CommentDto likeComment(Long commentId, Long userId) {
         Comment commentFromDb = commentRepository
                 .findById(commentId)
@@ -133,7 +134,8 @@ public class CommentService {
     }
 
     @Transactional
-    public boolean unlikeComment(Long commentId, Long userId) {
+    @CachePut(value = "commentCache", key = "{#commentId}")
+    public CommentDto unlikeComment(Long commentId, Long userId) {
         Comment commentFromDb = commentRepository
                 .findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -142,7 +144,10 @@ public class CommentService {
                 .findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return commentFromDb.getLikers().remove(userById) && userById.getLikedComments().remove(commentFromDb);
+        commentFromDb.getLikers().remove(userById);
+        userById.getLikedComments().remove(commentFromDb);
+
+        return modelMapper.map(commentFromDb, CommentDto.class);
     }
 
     public List<CommentDto> getCommentsOfPost(Long id) {

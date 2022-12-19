@@ -16,10 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ActiveProfiles;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -46,7 +48,6 @@ public class CommentServiceTest {
 
     @InjectMocks
     private CommentService commentService;
-
 
 
     @Test
@@ -123,7 +124,7 @@ public class CommentServiceTest {
     @Test
     void itShouldCreateComment() {
         //Given
-        CommentRequestDto commentRequestDto =  CommentRequestDto.builder().content("good").userId(1L).postId(1L).build();
+        CommentRequestDto commentRequestDto = CommentRequestDto.builder().content("good").userId(1L).postId(1L).build();
 
         CommentDto commentDto = CommentDto.builder().content("good")
                 .user(UserSimpleDto.builder().id(1L).username("adam").build())
@@ -186,7 +187,6 @@ public class CommentServiceTest {
         verify(modelMapper, atLeastOnce()).map(comment, CommentDto.class);
     }
 
-
     @Test
     void itShouldDislikeComment() {
         //Given
@@ -199,11 +199,9 @@ public class CommentServiceTest {
 
 
         //When
-        var expected = commentService.unlikeComment(comment.getId(), user.getId());
+        commentService.unlikeComment(comment.getId(), user.getId());
 
         //Then
-        assertTrue(expected);
-
         verify(userRepository, atLeastOnce()).findById(user.getId());
         verify(commentRepository, atLeastOnce()).findById(comment.getId());
     }
