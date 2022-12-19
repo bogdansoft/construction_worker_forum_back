@@ -232,6 +232,38 @@ class PostControllerTests extends TestcontainersConfig {
     }
 
     @Test
+    void givenAuthorizedUser_WhenFollowingPost_ThenReturnCreatedAndPostDto() throws Exception {
+        //given
+        PostRequestDto post = PostRequestDto.builder()
+                .userId(savedUser.getId())
+                .topicId(savedTopic.getId())
+                .content("New post")
+                .title("Title of new post")
+                .build();
+        Post postFromDb = postRepository.save(modelMapper.map(post, Post.class));
+
+        User user = User.builder()
+                .username("toot")
+                .password("toot1234")
+                .email("toot@test.com")
+                .firstName("Doe")
+                .lastName("John")
+                .build();
+        User userToFollow = userRepository.save(user);
+        UserDetailsImpl userDetailsFollower = new UserDetailsImpl(userToFollow);
+
+        //when + then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/post/follow")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("postId", String.valueOf(postFromDb.getId()))
+                        .param("userId", String.valueOf(userToFollow.getId()))
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsFollower)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.followers.length()").value(1))
+                .andExpect(jsonPath("$.followers[0].username").value(userToFollow.getUsername()));
+    }
+
+    @Test
     void givenAuthorizedUserAlreadyLikedAPost_whenDislikingPost_thenReturnSuccess() throws Exception {
         PostRequestDto post = PostRequestDto.builder()
                 .userId(savedUser.getId())
@@ -264,5 +296,40 @@ class PostControllerTests extends TestcontainersConfig {
                         .param("userId", String.valueOf(userToLike.getId()))
                         .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsLiker)))
                 .andExpect(jsonPath("$.status").value("Post unliked successfully!"));
+    }
+
+    @Test
+    void givenAuthorizedUserAlreadyFollowedAPost_whenUnfollowingPost_thenReturnSuccess() throws Exception {
+        PostRequestDto post = PostRequestDto.builder()
+                .userId(savedUser.getId())
+                .topicId(savedTopic.getId())
+                .content("New post")
+                .title("Title of new post")
+                .build();
+        Post postFromDb = postRepository.save(modelMapper.map(post, Post.class));
+
+        User user = User.builder()
+                .username("toot")
+                .password("toot1234")
+                .email("toot@test.com")
+                .firstName("Doe")
+                .lastName("John")
+                .build();
+        User userToFollow = userRepository.save(user);
+        UserDetailsImpl userDetailsFollower = new UserDetailsImpl(userToFollow);
+
+        //when + then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/post/follow")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("postId", String.valueOf(postFromDb.getId()))
+                .param("userId", String.valueOf(userToFollow.getId()))
+                .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsFollower)));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/post/follow")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("postId", String.valueOf(postFromDb.getId()))
+                        .param("userId", String.valueOf(userToFollow.getId()))
+                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsFollower)))
+                .andExpect(jsonPath("$.status").value("Post unfollowed successfully!"));
     }
 }
