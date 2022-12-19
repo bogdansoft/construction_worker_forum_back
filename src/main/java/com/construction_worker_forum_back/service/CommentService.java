@@ -144,6 +144,12 @@ public class CommentService {
         if (!(Objects.equals(comment.getUser().getId(), owner.getId()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        for (User usersWhoLikedIt : comment.getLikers()) {
+            usersWhoLikedIt.getLikedComments().remove(comment);
+        }
+        for (Comment subComment : comment.getSubComments()) {
+            subComment.setParentComment(null);
+        }
         return commentRepository.deleteCommentById(commentId) == 1;
     }
 

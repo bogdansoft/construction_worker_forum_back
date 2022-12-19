@@ -8,6 +8,7 @@ import com.construction_worker_forum_back.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @CrossOrigin("https://localhost:3000")
 @RequestMapping("/api/post")
@@ -121,20 +123,12 @@ public class PostController {
 
     @DeleteMapping("/like")
     @SecurityRequirement(name = "Bearer Authentication")
-    public Map<String, String> unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
-        if (postService.unlikePost(postId, userId)) {
-            return Map.of(
-                    "Post ID", postId + "",
-                    "status", "Post unliked successfully!"
-            );
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+    public PostDto unlikePost(@RequestParam Long postId, @RequestParam Long userId) {
+        return postService.unlikePost(postId, userId);
     }
 
     @GetMapping("/search")
     public List<PostDto> findPostByContentOrTitle(@RequestParam(name = "searchItem") String contentOrTitle) {
-        System.out.println(postService.findPostByContentOrTitle(contentOrTitle));
         return postService.findPostByContentOrTitle(contentOrTitle);
     }
 }

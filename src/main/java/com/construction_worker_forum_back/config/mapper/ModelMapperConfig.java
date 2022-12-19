@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.config;
+package com.construction_worker_forum_back.config.mapper;
 
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
