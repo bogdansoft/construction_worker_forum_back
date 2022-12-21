@@ -189,7 +189,7 @@ public class PostService {
                                 userById.getUsername(),
                                 postFromDb.getUser().getId().toString(),
                                 "Liked yor post!",
-                                "https://127.0.0.1:3000/post/" + postFromDb.getId(),
+                                "/post/" + postFromDb.getId(),
                                 false
                         )
                 )

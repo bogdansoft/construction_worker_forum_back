@@ -62,7 +62,7 @@ public class ChatController {
                                 senderName,
                                 recipientId,
                                 "Sent you a message",
-                                "https://127.0.0.1:3000/chat",
+                                "/chat",
                                 false
                         )
                 )

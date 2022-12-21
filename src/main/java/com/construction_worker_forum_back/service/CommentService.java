@@ -92,7 +92,7 @@ public class CommentService {
                                 userById.getUsername(),
                                 postById.getUser().getId().toString(),
                                 "Commented on your post!",
-                                "https://127.0.0.1:3000/post/" + commentRequestDto.getPostId(),
+                                "/post/" + commentRequestDto.getPostId(),
                                 false
                         )
                 )
