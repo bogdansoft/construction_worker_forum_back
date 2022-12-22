@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.cache;
+package com.construction_worker_forum_back.cache.embedded;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.test.context.TestContext;

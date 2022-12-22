@@ -52,7 +52,7 @@ public class DevSecurityConfig {
                         .mvcMatchers("/api/post/**").hasAuthority("ACTIVE") //move it to controller
                         .mvcMatchers("/api/comment/**").hasAuthority("ACTIVE") //move it to controller
                         .mvcMatchers("/api/**").authenticated()
-                        .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() //changed it Admin view only
                         .anyRequest().denyAll())
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint()).and()
                 .sessionManagement(configurer -> configurer

@@ -8,6 +8,7 @@ import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.model.security.UserDetailsImpl;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -164,9 +165,19 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     @CacheEvict(value = "userCache", key = "{#id}")
-    public boolean deleteUser(Long id) {
+    public boolean deleteUserPermanently(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty()) return false;
         return userRepository.deleteByUsernameIgnoreCase(user.get().getUsername()) == 1;
+    }
+
+    @Transactional
+    @CacheEvict(value = "userCache", key = "{#id}")
+    public UserDto deleteUser(String username) {
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        user.setAccountStatus(AccountStatus.DELETED);
+        return modelMapper.map(user, UserDto.class);
     }
 }

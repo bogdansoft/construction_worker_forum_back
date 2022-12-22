@@ -1,10 +1,12 @@
-package com.construction_worker_forum_back.cache;
+package com.construction_worker_forum_back.cache.embedded;
 
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.construction_worker_forum_back.config.redis.RedisConfig;
-import com.construction_worker_forum_back.model.dto.UserDto;
-import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.dto.PostDto;
+import com.construction_worker_forum_back.model.entity.Post;
+import com.construction_worker_forum_back.repository.PostRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
+import com.construction_worker_forum_back.service.PostService;
+import com.construction_worker_forum_back.service.TopicService;
 import com.construction_worker_forum_back.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,9 +18,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -28,44 +28,46 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
-@Import({RedisConfig.class, UserService.class})
+@Import({RedisConfig.class, PostService.class})
 @ExtendWith(SpringExtension.class)
 @ImportAutoConfiguration(classes = {
         CacheAutoConfiguration.class,
         RedisAutoConfiguration.class,
         EmbeddedRedisConfiguration.class
 })
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableCaching
-@TestExecutionListeners(listeners = {EmbeddedRedisConfiguration.class}, mergeMode = MERGE_WITH_DEFAULTS)
-public class UserServiceCacheTest {
+@TestExecutionListeners(listeners = { EmbeddedRedisConfiguration.class }, mergeMode = MERGE_WITH_DEFAULTS)
+class PostServiceCacheTest {
+
     @MockBean
-    private UserRepository userRepository;
+    private PostRepository postRepository;
     @MockBean
     private ModelMapper modelMapper;
     @MockBean
-    private PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
     @MockBean
-    private AmazonS3Client s3Client;
-    @Autowired
+    private TopicService topicService;
+    @MockBean
     private UserService userService;
+    @Autowired
+    private PostService postService;
     @Autowired
     private CacheManager cacheManager;
 
     @Test
-    void givenRedisCaching_whenFindUserById_thenUserReturnedFromCache() {
-        //Given
-        User user = new User();
-        user.setId(100L);
+    void givenRedisCaching_whenFindPostById_thenPostReturnedFromCache() {
+        Post post = new Post();
+        post.setId(100L);
+        PostDto postDto = new PostDto();
+        postDto.setId(post.getId());
 
-        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        given(modelMapper.map(user, UserDto.class)).willReturn(any());
+        given(postRepository.findById(100L)).willReturn(Optional.of(post));
+        given(modelMapper.map(post, PostDto.class)).willReturn(postDto);
 
-        //When
-        userService.findById(user.getId());
-        userService.findById(user.getId());
+        //when
+        postService.findById(post.getId()).orElseThrow();
+        postService.findById(post.getId()).orElseThrow();
 
-        //Then
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(postRepository, times(1)).findById(anyLong());
     }
 }
