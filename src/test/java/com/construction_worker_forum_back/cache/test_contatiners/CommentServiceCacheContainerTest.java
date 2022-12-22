@@ -1,6 +1,5 @@
 package com.construction_worker_forum_back.cache.test_contatiners;
 
-import com.construction_worker_forum_back.config.redis.RedisConfig;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.repository.CommentRepository;
@@ -9,16 +8,11 @@ import com.construction_worker_forum_back.service.CommentService;
 import com.construction_worker_forum_back.service.PostService;
 import com.construction_worker_forum_back.service.UserService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -27,10 +21,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@Import({RedisConfig.class, CommentService.class})
-@ExtendWith(SpringExtension.class)
-@ImportAutoConfiguration(classes = CacheAutoConfiguration.class)
-@EnableCaching
+@Import(CommentService.class)
 public class CommentServiceCacheContainerTest extends AbstractTestContainerSetUpClass {
     @MockBean
     private CommentRepository commentRepository;
