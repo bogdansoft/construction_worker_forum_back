@@ -244,4 +244,53 @@ public class TopicServiceTest {
         verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
         verify(topicRepository, atLeastOnce()).findByNameContainsIgnoreCase("foo1");
     }
+    @Test
+    void itShouldFindPaginatedNumberOfTopics() {
+        //Given
+        List<Topic> topics = new ArrayList<>(List.of(
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 1")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 2")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 3")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 4")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 5")
+                        .build()
+        ));
+
+        List<TopicDto> topicDtos = new ArrayList<>(List.of(
+                TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
+                TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(2).getDescription()).build(),
+                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(3).getDescription()).build(),
+                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(4).getDescription()).build()
+        ));
+
+//        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
+//        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
+//        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
+//        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
+//        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
+        given(topicService.getPaginatedNumberOfTopics(5, 1)).willReturn(topicDtos);
+
+        //When
+        var expected = topicService.getPaginatedNumberOfTopics(5, 1);
+
+        //Then
+        assertEquals(expected, topicDtos);
+
+        verify(topicService, atLeastOnce()).getPaginatedNumberOfTopics(5, 1);
+    }
 }
