@@ -6,6 +6,7 @@ import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -160,16 +161,16 @@ public class UserServiceTest {
     @Test
     void itShouldDeleteUser() {
         //Given
-        User user = User.builder().username("Darek").id(1L).build();
-        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        given(userRepository.deleteByUsernameIgnoreCase(user.getUsername())).willReturn(1);
+        User user = User.builder().username("Darek").id(1L).accountStatus(AccountStatus.ACTIVE).build();
+        UserDto userDto = UserDto.builder().username("Darek").id(1L).accountStatus(AccountStatus.DELETED).build();
+        given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
+        given(modelMapper.map(user, UserDto.class)).willReturn(userDto);
 
         //When
-        var expected = userService.deleteUser(user.getId());
+        var expected = userService.deleteUser(user.getUsername());
 
         //Then
-        assertTrue(expected);
-        verify(userRepository, atLeastOnce()).findById(user.getId());
-        verify(userRepository, atLeastOnce()).deleteByUsernameIgnoreCase(user.getUsername());
+        assertEquals(AccountStatus.DELETED, expected.getAccountStatus());
+        verify(userRepository, atLeastOnce()).findByUsername(user.getUsername());
     }
 }
