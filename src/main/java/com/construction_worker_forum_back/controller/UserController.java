@@ -97,9 +97,15 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping("/delete")
+    UserDto deleteUser(@RequestParam() String username) {
+        return userService.deleteUser(username);
+    }
+
+    @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/{id}")
-    Map<String, String> deleteUser(@PathVariable Long id) {
-        if (userService.deleteUser(id)) {
+    Map<String, String> deleteUserPermanently(@PathVariable Long id) {
+        if (userService.deleteUserPermanently(id)) {
             return Map.of(
                     "ID", id + "",
                     "status", "Deleted successfully!"
