@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.cache;
+package com.construction_worker_forum_back.cache.embedded;
 
 import com.construction_worker_forum_back.config.redis.RedisConfig;
 import com.construction_worker_forum_back.model.dto.PostDto;

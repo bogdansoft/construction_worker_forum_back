@@ -1,4 +1,4 @@
-package com.construction_worker_forum_back.cache;
+package com.construction_worker_forum_back.cache.test_contatiners;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.construction_worker_forum_back.config.redis.RedisConfig;
@@ -12,33 +12,28 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @Import({RedisConfig.class, UserService.class})
 @ExtendWith(SpringExtension.class)
-@ImportAutoConfiguration(classes = {
-        CacheAutoConfiguration.class,
-        RedisAutoConfiguration.class,
-        EmbeddedRedisConfiguration.class
-})
+@ImportAutoConfiguration(classes = CacheAutoConfiguration.class)
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableCaching
-@TestExecutionListeners(listeners = {EmbeddedRedisConfiguration.class}, mergeMode = MERGE_WITH_DEFAULTS)
-public class UserServiceCacheTest {
+public class UserServiceCacheContainerTest extends AbstractTestContainerSetUpClass {
     @MockBean
     private UserRepository userRepository;
     @MockBean
