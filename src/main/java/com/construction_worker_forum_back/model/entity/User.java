@@ -82,6 +82,12 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> userPosts;
 
+    @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
+    private List<FollowedUser> followedUsers;
+
+    @OneToMany(mappedBy = "followedUsers", cascade = CascadeType.ALL)
+    private List<FollowedUser> followedUser;
+
     @ManyToMany(targetEntity = Post.class, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "post_follow",

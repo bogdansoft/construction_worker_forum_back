@@ -1,12 +1,11 @@
-package com.construction_worker_forum_back.cache;
+package com.construction_worker_forum_back.cache.embedded;
 
 import com.construction_worker_forum_back.config.redis.RedisConfig;
-import com.construction_worker_forum_back.model.dto.CommentDto;
-import com.construction_worker_forum_back.model.entity.Comment;
-import com.construction_worker_forum_back.repository.CommentRepository;
+import com.construction_worker_forum_back.model.dto.TopicDto;
+import com.construction_worker_forum_back.model.entity.Topic;
+import com.construction_worker_forum_back.repository.TopicRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
-import com.construction_worker_forum_back.service.CommentService;
-import com.construction_worker_forum_back.service.PostService;
+import com.construction_worker_forum_back.service.TopicService;
 import com.construction_worker_forum_back.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 
-@Import({RedisConfig.class, CommentService.class})
+@Import({RedisConfig.class, TopicService.class})
 @ExtendWith(SpringExtension.class)
 @ImportAutoConfiguration(classes = {
         CacheAutoConfiguration.class,
@@ -37,36 +36,35 @@ import static org.springframework.test.context.TestExecutionListeners.MergeMode.
 })
 @EnableCaching
 @TestExecutionListeners(listeners = { EmbeddedRedisConfiguration.class }, mergeMode = MERGE_WITH_DEFAULTS)
-public class CommentServiceCacheTest {
+public class TopicServiceCacheTest {
+
     @MockBean
-    private CommentRepository commentRepository;
+    private TopicRepository topicRepository;
     @MockBean
     private UserRepository userRepository;
     @MockBean
     private UserService userService;
     @MockBean
-    private PostService postService;
-    @MockBean
     private ModelMapper modelMapper;
     @Autowired
-    private CommentService commentService;
+    private TopicService topicService;
     @Autowired
     private CacheManager cacheManager;
 
     @Test
-    void givenRedisCaching_whenFindCommentById_thenCommentReturnedFromCache() {
+    void itShouldGetByIdTopic() {
         //Given
-        Comment comment = new Comment();
-        comment.setId(100L);
+        Topic topic = new Topic();
+        topic.setId(100L);
 
-        given(commentRepository.findById(comment.getId())).willReturn(Optional.of(comment));
-        given(modelMapper.map(comment, CommentDto.class)).willReturn(CommentDto.builder().id(100L).build());
+        given(topicRepository.findById(topic.getId())).willReturn(Optional.of(topic));
+        given(modelMapper.map(topic, TopicDto.class)).willReturn(TopicDto.builder().id(100L).build());
 
         //When
-        commentService.findById(comment.getId());
-        commentService.findById(comment.getId());
+        topicService.findTopicById(topic.getId());
+        topicService.findTopicById(topic.getId());
 
         //Then
-        verify(commentRepository, times(1)).findById(anyLong());
+        verify(topicRepository, times(1)).findById(anyLong());
     }
 }
