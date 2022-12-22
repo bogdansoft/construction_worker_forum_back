@@ -150,6 +150,10 @@ public class CommentService {
         }
         for (Comment subComment : comment.getSubComments()) {
             subComment.setParentComment(null);
+            for (User usersWhoLikedSubComment : subComment.getLikers()) {
+                usersWhoLikedSubComment.getLikedComments().remove(subComment);
+            }
+            subComment.getLikers().clear();
         }
         return commentRepository.deleteCommentById(commentId) == 1;
     }

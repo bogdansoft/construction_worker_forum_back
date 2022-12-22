@@ -52,14 +52,14 @@ public class Comment implements Serializable {
     @JoinColumn(name = "post_id", referencedColumnName = "id")
     private Post post;
 
-    @ManyToMany(mappedBy= "likedComments")
+    @ManyToMany(mappedBy = "likedComments")
     private Set<User> likers = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "parent_comment_id", referencedColumnName = "id")
     private Comment parentComment;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.REMOVE)
     private Set<Comment> subComments = new HashSet<>();
 
     @PrePersist
