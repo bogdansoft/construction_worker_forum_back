@@ -27,6 +27,7 @@ public class FollowedUserService {
         return followedUserRepository.findAllFollowedUsersByUsername(username)
                 .stream()
                 .map(user -> modelMapper.map(user.getFollowedUsers(), UserSimpleDto.class))
+                .filter(user -> !user.getAccountStatus().toString().equals("DELETED"))
                 .toList();
     }
 
@@ -34,6 +35,7 @@ public class FollowedUserService {
         return followedUserRepository.findAllFollowersByUsername(username)
                 .stream()
                 .map(user -> modelMapper.map(user.getFollowingUser(), UserSimpleDto.class))
+                .filter(user -> !user.getAccountStatus().toString().equals("DELETED"))
                 .toList();
     }
 
