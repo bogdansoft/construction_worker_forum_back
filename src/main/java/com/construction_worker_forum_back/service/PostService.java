@@ -113,7 +113,7 @@ public class PostService {
     }
 
     @Transactional
-    @CachePut(value = "pageCache", key = "{postRequestDto}")
+    @CachePut(value = "pageCache", key = "{#postRequestDto}")
     public PostDto createPost(PostRequestDto postRequestDto) {
         Post postToSave = modelMapper.map(postRequestDto, Post.class);
         UserDto userById = userService

@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.client.NotificationClient;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Date;
@@ -48,6 +50,9 @@ public class CommentServiceTest {
 
     @Mock
     private PostService postService;
+
+    @Mock
+    private NotificationClient notificationClient;
 
     @Mock
     private ModelMapper modelMapper;
