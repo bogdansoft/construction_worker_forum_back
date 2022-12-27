@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.cache.test_contatiners;
 
+import com.construction_worker_forum_back.client.NotificationClient;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.entity.Comment;
 import com.construction_worker_forum_back.repository.CommentRepository;
@@ -33,6 +34,8 @@ public class CommentServiceCacheContainerTest extends AbstractTestContainerSetUp
     private PostService postService;
     @MockBean
     private ModelMapper modelMapper;
+    @MockBean
+    private NotificationClient notificationClient;
     @Autowired
     private CommentService commentService;
     @Autowired

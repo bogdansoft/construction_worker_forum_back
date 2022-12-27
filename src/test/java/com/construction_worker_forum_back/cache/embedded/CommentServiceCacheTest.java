@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.cache.embedded;
 
+import com.construction_worker_forum_back.client.NotificationClient;
 import com.construction_worker_forum_back.config.redis.RedisConfig;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.entity.Comment;
@@ -48,6 +49,8 @@ public class CommentServiceCacheTest {
     private PostService postService;
     @MockBean
     private ModelMapper modelMapper;
+    @MockBean
+    private NotificationClient notificationClient;
     @Autowired
     private CommentService commentService;
     @Autowired

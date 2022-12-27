@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.cache.test_contatiners;
 
+import com.construction_worker_forum_back.client.NotificationClient;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.repository.PostRepository;
@@ -33,6 +34,8 @@ public class PostServiceCacheContainerTest extends AbstractTestContainerSetUpCla
     private TopicService topicService;
     @MockBean
     private UserService userService;
+    @MockBean
+    private NotificationClient notificationClient;
     @Autowired
     private PostService postService;
     @Autowired

@@ -1,5 +1,6 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.client.NotificationClient;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicDto;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -42,6 +44,8 @@ public class PostServiceTest {
     private UserRepository userRepository;
     @Mock
     private TopicService topicService;
+    @Mock
+    private NotificationClient notificationClient;
     @Mock
     private UserService userService;
     @InjectMocks
