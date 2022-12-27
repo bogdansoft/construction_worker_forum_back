@@ -4,6 +4,7 @@ import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.simple.CommentSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.PostSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
@@ -20,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -153,7 +156,6 @@ public class CommentServiceTest {
         given(postService.findById(commentRequestDto.getPostId())).willReturn(Optional.of(postDto));
         given(commentRepository.save(comment)).willReturn(comment);
 
-
         //When
         var expected = commentService.createComment(commentRequestDto, null);
 
@@ -164,6 +166,110 @@ public class CommentServiceTest {
         assertEquals(expected.getPost().getId(), postDto.getId());
 
         verify(commentRepository, atLeastOnce()).save(comment);
+    }
+
+    @Test
+    void itShouldCreateSubComment() {
+        //Given
+        CommentRequestDto primaryCommentRequestDto = CommentRequestDto.builder()
+                .content("good")
+                .userId(1L)
+                .postId(1L)
+                .build();
+
+        CommentRequestDto subCommentRequestDto = CommentRequestDto.builder()
+                .content("sub-comment test")
+                .userId(1L)
+                .postId(1L)
+                .build();
+
+        User userFromRequestDto = User.builder()
+                .id(1L)
+                .username("adam")
+                .build();
+
+        UserDto userDto = UserDto.builder()
+                .id(userFromRequestDto.getId())
+                .username(userFromRequestDto.getUsername())
+                .build();
+
+        UserSimpleDto userSimpleDto = UserSimpleDto.builder()
+                .id(userDto.getId()).username(userDto.getUsername())
+                .build();
+
+        Post postFromRequestDto = Post.builder()
+                .id(1L)
+                .content("post")
+                .build();
+
+        PostDto postDto = PostDto.builder()
+                .id(postFromRequestDto.getId())
+                .content(postFromRequestDto.getContent())
+                .build();
+
+        PostSimpleDto postSimpleDto = PostSimpleDto.builder()
+                .id(postDto.getId()).content(postDto.getContent())
+                .build();
+
+        Comment primaryComment = Comment.builder()
+                .id(1L)
+                .content(primaryCommentRequestDto.getContent())
+                .user(userFromRequestDto)
+                .post(postFromRequestDto)
+                .parentComment(null)
+                .subComments(new HashSet<>())
+                .createdAt(Date.from(Instant.now()))
+                .build();
+
+        Comment subComment = Comment.builder()
+               .id(2L)
+                .content(subCommentRequestDto.getContent())
+                .user(userFromRequestDto)
+                .post(postFromRequestDto)
+                .parentComment(primaryComment)
+                .subComments(new HashSet<>())
+                .createdAt(Date.from(Instant.now()))
+                .build();
+
+        CommentSimpleDto parentCommentSimpleDto = CommentSimpleDto.builder()
+                .id(primaryComment.getId())
+                .build();
+
+        CommentDto subCommentDto = CommentDto.builder()
+                .id(subComment.getId())
+                .content(subComment.getContent())
+                .user(userSimpleDto)
+                .post(postSimpleDto)
+                .parentComment(parentCommentSimpleDto)
+                .build();
+
+        Long commentForReplyId = primaryComment.getId();
+
+        //sub-comment
+        given(commentRepository.findById(commentForReplyId)).willReturn(Optional.of(primaryComment));
+        given(commentRepository.save(primaryComment)).willReturn(primaryComment);
+        given(commentRepository.save(subComment)).willReturn(subComment);
+        given(modelMapper.map(subCommentRequestDto, Comment.class)).willReturn(subComment);
+        given(modelMapper.map(subComment, CommentDto.class)).willReturn(subCommentDto);
+
+        //user & post
+        given(userService.findById(primaryCommentRequestDto.getUserId())).willReturn(Optional.of(userDto));
+        given(postService.findById(primaryCommentRequestDto.getPostId())).willReturn(Optional.of(postDto));
+        given(modelMapper.map(userDto, User.class)).willReturn(userFromRequestDto);
+        given(modelMapper.map(postDto, Post.class)).willReturn(postFromRequestDto);
+
+        //When
+        var expectedSubComment = commentService.createComment(subCommentRequestDto, commentForReplyId);
+
+        //Then
+        assertNotNull(expectedSubComment);
+        assertEquals(expectedSubComment.getContent(), subCommentDto.getContent());
+        assertEquals(expectedSubComment.getUser().getId(), userDto.getId());
+        assertEquals(expectedSubComment.getPost().getId(), postDto.getId());
+        assertEquals(expectedSubComment.getParentComment().getId(), primaryComment.getId());
+
+        verify(commentRepository, atLeastOnce()).save(primaryComment);
+        verify(commentRepository, atLeastOnce()).save(subComment);
     }
 
 
