@@ -1,9 +1,12 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
 import com.construction_worker_forum_back.model.dto.simple.BioSimpleDto;
+import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.User;
+import com.construction_worker_forum_back.model.security.AccountStatus;
 import com.construction_worker_forum_back.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -35,7 +38,6 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
-
 
 
     @Test
@@ -89,9 +91,9 @@ public class UserServiceTest {
     @Test
     void itShouldRegisterUser() {
         //Given
-        UserRequestDto userRequestDto =  UserRequestDto.builder().username("adam").build();
+        UserRequestDto userRequestDto = UserRequestDto.builder().username("adam").build();
 
-        UserDto userDto =  UserDto.builder().username("adam").id(1L).build();
+        UserDto userDto = UserDto.builder().username("adam").id(1L).build();
 
         User user = User.builder().username("adam").id(1L).build();
 
@@ -113,12 +115,31 @@ public class UserServiceTest {
         verify(modelMapper, atLeastOnce()).map(userRequestDto, User.class);
     }
 
+    @Test
+    void itShouldGetAllFollowingPostsByUserWithUserId() {
+        //Given
+        Post post = Post.builder().id(1L).content("test").build();
+        PostDto postDto = PostDto.builder().id(post.getId()).build();
+        Set<Post> posts = new HashSet<>(List.of(post));
+        User user = User.builder().username("adam").id(1L).bio("old bio").followedPosts(posts).build();
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        given(modelMapper.map(post, PostDto.class)).willReturn(postDto);
+
+        //When
+        var expected = userService.getAllFollowingPostsByUserWithUserId(user.getId());
+
+        //Then
+        assertEquals(expected.size(), posts.size());
+        verify(userRepository, times(1)).findById(user.getId());
+        verify(modelMapper, times(1)).map(post, PostDto.class);
+    }
 
     @Test
     void itShouldChangeBio() {
         //Given
         User user = User.builder().username("adam").id(1L).bio("old bio").build();
-        UserDto userDto =  UserDto.builder().username("adam").id(1L).bio("new bio").build();
+        UserDto userDto = UserDto.builder().username("adam").id(1L).bio("new bio").build();
         BioSimpleDto bioSimpleDto = BioSimpleDto.builder().newBio("new bio").build();
 
         given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
@@ -140,18 +161,16 @@ public class UserServiceTest {
     @Test
     void itShouldDeleteUser() {
         //Given
-        User user = User.builder().username("Darek").id(1L).build();
-        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        given(userRepository.deleteByUsernameIgnoreCase(user.getUsername())).willReturn(1);
+        User user = User.builder().username("Darek").id(1L).accountStatus(AccountStatus.ACTIVE).build();
+        UserDto userDto = UserDto.builder().username("Darek").id(1L).accountStatus(AccountStatus.DELETED).build();
+        given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
+        given(modelMapper.map(user, UserDto.class)).willReturn(userDto);
 
         //When
-        var expected = userService.deleteUser(user.getId());
+        var expected = userService.deleteUser(user.getUsername());
 
         //Then
-        assertTrue(expected);
-        verify(userRepository, atLeastOnce()).findById(user.getId());
-        verify(userRepository, atLeastOnce()).deleteByUsernameIgnoreCase(user.getUsername());
+        assertEquals(AccountStatus.DELETED, expected.getAccountStatus());
+        verify(userRepository, atLeastOnce()).findByUsername(user.getUsername());
     }
-
-
 }
