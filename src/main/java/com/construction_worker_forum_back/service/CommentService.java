@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.service;
 
+import com.construction_worker_forum_back.client.NotificationClient;
+import com.construction_worker_forum_back.model.Notification;
 import com.construction_worker_forum_back.model.dto.CommentDto;
 import com.construction_worker_forum_back.model.dto.CommentRequestDto;
 import com.construction_worker_forum_back.model.dto.PostDto;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -37,6 +40,7 @@ public class CommentService {
     private final PostService postService;
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final NotificationClient notificationClient;
 
     public List<CommentDto> getAllComments() {
         return commentRepository
@@ -85,17 +89,19 @@ public class CommentService {
         commentToSave.setUser(modelMapper.map(userById, User.class));
         commentToSave.setPost(modelMapper.map(postById, Post.class));
 
-        if (commentForReplyId != null) {
-            Comment commentForReplyById = commentRepository.findById(commentForReplyId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        notificationClient.sendNotification(
+                        Notification.of(
+                                userById.getUsername(),
+                                postById.getUser().getId().toString(),
+                                "Commented on your post!",
+                                "/post/" + commentRequestDto.getPostId(),
+                                false
+                        )
+                )
+                .doOnNext(notification -> log.info("Notification Response: {}", notification))
+                .doOnError(e -> log.info("Error occurred: {}", e.getMessage()))
+                .subscribe();
 
-            commentToSave.setParentComment(commentForReplyById);
-            Comment savedComment = commentRepository.save(commentToSave);
-            commentForReplyById.getSubComments().add(savedComment);
-            commentRepository.save(commentForReplyById);
-
-            return modelMapper.map(savedComment, CommentDto.class);
-        }
         return modelMapper.map(commentRepository.save(commentToSave), CommentDto.class);
     }
 
