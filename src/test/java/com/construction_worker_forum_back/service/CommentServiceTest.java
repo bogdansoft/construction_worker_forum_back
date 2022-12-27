@@ -1,6 +1,9 @@
 package com.construction_worker_forum_back.service;
 
-import com.construction_worker_forum_back.model.dto.*;
+import com.construction_worker_forum_back.model.dto.CommentDto;
+import com.construction_worker_forum_back.model.dto.CommentRequestDto;
+import com.construction_worker_forum_back.model.dto.PostDto;
+import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.simple.LikerSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.PostSimpleDto;
 import com.construction_worker_forum_back.model.dto.simple.UserSimpleDto;
@@ -152,7 +155,7 @@ public class CommentServiceTest {
 
 
         //When
-        var expected = commentService.createComment(commentRequestDto);
+        var expected = commentService.createComment(commentRequestDto, null);
 
         //Then
         assertNotNull(expected);

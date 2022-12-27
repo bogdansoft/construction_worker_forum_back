@@ -14,6 +14,7 @@ import com.construction_worker_forum_back.repository.PostRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import com.construction_worker_forum_back.validation.EntityUpdateUtil;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -33,6 +34,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -110,6 +112,7 @@ public class PostService {
     }
 
     @Transactional
+    @CachePut(value = "pageCache", key = "{postRequestDto}")
     public PostDto createPost(PostRequestDto postRequestDto) {
         Post postToSave = modelMapper.map(postRequestDto, Post.class);
         UserDto userById = userService

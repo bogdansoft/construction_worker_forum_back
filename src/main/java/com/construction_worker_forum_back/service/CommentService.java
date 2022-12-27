@@ -11,6 +11,7 @@ import com.construction_worker_forum_back.model.entity.User;
 import com.construction_worker_forum_back.repository.CommentRepository;
 import com.construction_worker_forum_back.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class CommentService {
 
@@ -69,7 +71,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDto createComment(CommentRequestDto commentRequestDto) {
+    public CommentDto createComment(CommentRequestDto commentRequestDto, Long commentForReplyId) {
         Comment commentToSave = modelMapper.map(commentRequestDto, Comment.class);
 
         UserDto userById = userService
@@ -79,8 +81,21 @@ public class CommentService {
         PostDto postById = postService
                 .findById(commentRequestDto.getPostId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         commentToSave.setUser(modelMapper.map(userById, User.class));
         commentToSave.setPost(modelMapper.map(postById, Post.class));
+
+        if (commentForReplyId != null) {
+            Comment commentForReplyById = commentRepository.findById(commentForReplyId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+            commentToSave.setParentComment(commentForReplyById);
+            Comment savedComment = commentRepository.save(commentToSave);
+            commentForReplyById.getSubComments().add(savedComment);
+            commentRepository.save(commentForReplyById);
+
+            return modelMapper.map(savedComment, CommentDto.class);
+        }
         return modelMapper.map(commentRepository.save(commentToSave), CommentDto.class);
     }
 
@@ -130,6 +145,16 @@ public class CommentService {
         if (!(Objects.equals(comment.getUser().getId(), owner.getId()))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        for (User usersWhoLikedIt : comment.getLikers()) {
+            usersWhoLikedIt.getLikedComments().remove(comment);
+        }
+        for (Comment subComment : comment.getSubComments()) {
+            subComment.setParentComment(null);
+            for (User usersWhoLikedSubComment : subComment.getLikers()) {
+                usersWhoLikedSubComment.getLikedComments().remove(subComment);
+            }
+            subComment.getLikers().clear();
+        }
         return commentRepository.deleteCommentById(commentId) == 1;
     }
 
@@ -152,6 +177,13 @@ public class CommentService {
 
     public List<CommentDto> getCommentsOfPost(Long id) {
         return commentRepository.findByPost_Id(id)
+                .stream()
+                .map(comment -> modelMapper.map(comment, CommentDto.class))
+                .toList();
+    }
+
+    public List<CommentDto> getCommentsOfParentComment(Long id) {
+        return commentRepository.findByParentComment_Id(id)
                 .stream()
                 .map(comment -> modelMapper.map(comment, CommentDto.class))
                 .toList();
