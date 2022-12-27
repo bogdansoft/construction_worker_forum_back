@@ -101,6 +101,18 @@ public class CommentService {
                 .doOnError(e -> log.info("Error occurred: {}", e.getMessage()))
                 .subscribe();
 
+        if (commentForReplyId != null) {
+            Comment commentForReplyById = commentRepository.findById(commentForReplyId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+            commentToSave.setParentComment(commentForReplyById);
+            Comment savedComment = commentRepository.save(commentToSave);
+            commentForReplyById.getSubComments().add(savedComment);
+            commentRepository.save(commentForReplyById);
+
+            return modelMapper.map(savedComment, CommentDto.class);
+        }
+
         return modelMapper.map(commentRepository.save(commentToSave), CommentDto.class);
     }
 
