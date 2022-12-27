@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
@@ -270,27 +271,271 @@ public class TopicServiceTest {
                         .build()
         ));
 
+        Page<Topic> topicsPage = new PageImpl<>(topics);
+        Pageable pageable = PageRequest.of(0, 5);
+
         List<TopicDto> topicDtos = new ArrayList<>(List.of(
                 TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
                 TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build(),
-                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(2).getDescription()).build(),
-                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(3).getDescription()).build(),
-                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(4).getDescription()).build()
+                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(1).getDescription()).build()
         ));
 
-//        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
-//        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
-//        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
-//        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
-//        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
-        given(topicService.getPaginatedNumberOfTopics(5, 1)).willReturn(topicDtos);
+        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
+        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
+        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
+        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
+        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
+        given(topicRepository.findAll(pageable)).willReturn(topicsPage);
 
         //When
         var expected = topicService.getPaginatedNumberOfTopics(5, 1);
 
         //Then
         assertEquals(expected, topicDtos);
+        assertTrue(topicDtos.size() > 0);
+        assertNotNull(expected);
 
-        verify(topicService, atLeastOnce()).getPaginatedNumberOfTopics(5, 1);
+        verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(2), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(3), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(4), TopicDto.class);
+        verify(topicRepository, only()).findAll(pageable);
+    }
+
+    @Test
+    void itShouldFindSortedAscendingNumberOfTopics() {
+        //Given
+        List<Topic> topics = new ArrayList<>(List.of(
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 1")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 2")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 3")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 4")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 5")
+                        .build()
+        ));
+
+        Sort sortTopicsAscending = Sort.by(Sort.Direction.ASC, "description");
+
+        List<TopicDto> topicDtos = new ArrayList<>(List.of(
+                TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
+                TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(1).getDescription()).build()
+        ));
+        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
+        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
+        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
+        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
+        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
+        given(topicRepository.findAll(sortTopicsAscending)).willReturn(topics);
+
+        //When
+        var expected = topicService.getSortedTopics("description.asc");
+
+        //Then
+        assertEquals(expected, topicDtos);
+        assertTrue(topicDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(2), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(3), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(4), TopicDto.class);
+        verify(topicRepository, only()).findAll(sortTopicsAscending);
+    }
+
+    @Test
+    void itShouldFindSortedDescendingNumberOfTopics() {
+        //Given
+        List<Topic> topics = new ArrayList<>(List.of(
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 5")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 4")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 3")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 2")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 1")
+                        .build()
+        ));
+
+        Sort sortTopicsDescending = Sort.by(Sort.Direction.DESC, "description");
+
+        List<TopicDto> topicDtos = new ArrayList<>(List.of(
+                TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
+                TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(1).getDescription()).build()
+        ));
+        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
+        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
+        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
+        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
+        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
+        given(topicRepository.findAll(sortTopicsDescending)).willReturn(topics);
+
+        //When
+        var expected = topicService.getSortedTopics("description.desc");
+
+        //Then
+        assertEquals(expected, topicDtos);
+        assertTrue(topicDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(2), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(3), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(4), TopicDto.class);
+        verify(topicRepository, only()).findAll(sortTopicsDescending);
+    }
+
+    @Test
+    void itShouldFindPaginatedAndSortedDescendingNumberOfTopics() {
+        //Given
+        List<Topic> topics = new ArrayList<>(List.of(
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 5")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 4")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 3")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 2")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 1")
+                        .build()
+        ));
+
+        Page<Topic> topicsPage = new PageImpl<>(topics);
+        Pageable paginatedAndSortedTopicsDescending = PageRequest.of(0, 5, Sort.by("description").descending());
+
+        List<TopicDto> topicDtos = new ArrayList<>(List.of(
+                TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
+                TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(1).getDescription()).build()
+        ));
+        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
+        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
+        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
+        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
+        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
+        given(topicRepository.findAll(paginatedAndSortedTopicsDescending)).willReturn(topicsPage);
+
+        //When
+        var expected = topicService.getPaginatedAndSortedNumberOfTopics(5, 1, "description.desc");
+
+        //Then
+        assertEquals(expected, topicDtos);
+        assertTrue(topicDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(2), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(3), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(4), TopicDto.class);
+        verify(topicRepository, only()).findAll(paginatedAndSortedTopicsDescending);
+    }
+
+    @Test
+    void itShouldFindPaginatedAndSortedAscendingNumberOfTopics() {
+        //Given
+        List<Topic> topics = new ArrayList<>(List.of(
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 5")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 4")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 3")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 2")
+                        .build(),
+                Topic.builder()
+                        .name("foo1")
+                        .description("test description 1")
+                        .build()
+        ));
+
+        Page<Topic> topicsPage = new PageImpl<>(topics);
+        Pageable paginatedAndSortedTopicsAscending = PageRequest.of(0, 5, Sort.by("description").ascending());
+
+        List<TopicDto> topicDtos = new ArrayList<>(List.of(
+                TopicDto.builder().name(topics.get(0).getName()).description(topics.get(0).getDescription()).build(),
+                TopicDto.builder().name(topics.get(1).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(2).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(3).getName()).description(topics.get(1).getDescription()).build(),
+                TopicDto.builder().name(topics.get(4).getName()).description(topics.get(1).getDescription()).build()
+        ));
+        given(modelMapper.map(topics.get(0), TopicDto.class)).willReturn(topicDtos.get(0));
+        given(modelMapper.map(topics.get(1), TopicDto.class)).willReturn(topicDtos.get(1));
+        given(modelMapper.map(topics.get(2), TopicDto.class)).willReturn(topicDtos.get(2));
+        given(modelMapper.map(topics.get(3), TopicDto.class)).willReturn(topicDtos.get(3));
+        given(modelMapper.map(topics.get(4), TopicDto.class)).willReturn(topicDtos.get(4));
+        given(topicRepository.findAll(paginatedAndSortedTopicsAscending)).willReturn(topicsPage);
+
+        //When
+        var expected = topicService.getPaginatedAndSortedNumberOfTopics(5, 1, "description.asc");
+
+        //Then
+        assertEquals(expected, topicDtos);
+        assertTrue(topicDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(topics.get(0), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(1), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(2), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(3), TopicDto.class);
+        verify(modelMapper, atLeastOnce()).map(topics.get(4), TopicDto.class);
+        verify(topicRepository, only()).findAll(paginatedAndSortedTopicsAscending);
     }
 }
