@@ -32,7 +32,6 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.*;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 @Slf4j
