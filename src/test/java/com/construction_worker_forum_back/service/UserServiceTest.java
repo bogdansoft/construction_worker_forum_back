@@ -1,5 +1,7 @@
 package com.construction_worker_forum_back.service;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
 import com.construction_worker_forum_back.model.dto.UserRequestDto;
@@ -14,9 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +40,12 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private AmazonS3Client s3Client;
+
+    @Value("${application.bucket.name}")
+    private String bucketName;
 
     @InjectMocks
     private UserService userService;
@@ -159,6 +170,34 @@ public class UserServiceTest {
 
 
     @Test
+    void itShouldNotReturnAvatar() throws IOException {
+        //Given
+        User user = User.builder().username("Darek").id(1L).build();
+        given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
+
+        //When
+        var expected = userService.getAvatar(user.getUsername());
+
+        //Then
+        assertEquals("Avatar not found", expected);
+        verify(userRepository, atLeastOnce()).findByUsername(user.getUsername());
+    }
+
+    @Test
+    void itShouldDeleteAvatar() throws IOException {
+        //Given
+        User user = User.builder().username("Darek").id(1L).build();
+        given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.of(user));
+
+        //When
+        var expected = userService.deleteAvatar(user.getUsername());
+
+        //Then
+        assertEquals("Avatar deleted", expected);
+        verify(userRepository, atLeastOnce()).findByUsername(user.getUsername());
+    }
+
+    @Test
     void itShouldDeleteUser() {
         //Given
         User user = User.builder().username("Darek").id(1L).accountStatus(AccountStatus.ACTIVE).build();
@@ -173,4 +212,21 @@ public class UserServiceTest {
         assertEquals(AccountStatus.DELETED, expected.getAccountStatus());
         verify(userRepository, atLeastOnce()).findByUsername(user.getUsername());
     }
+
+    @Test
+    void itShouldDeleteUserPermanently() {
+        //Given
+        User user = User.builder().username("Darek").id(1L).accountStatus(AccountStatus.ACTIVE).build();
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+        given(userRepository.deleteByUsernameIgnoreCase(user.getUsername())).willReturn(1);
+
+        //When
+        var expected = userService.deleteUserPermanently(user.getId());
+
+        //Then
+        assertEquals(true, expected);
+        verify(userRepository, atLeastOnce()).findById(user.getId());
+    }
+
+
 }
