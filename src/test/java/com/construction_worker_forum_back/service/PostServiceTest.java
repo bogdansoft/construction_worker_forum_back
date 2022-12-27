@@ -4,6 +4,8 @@ import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
 import com.construction_worker_forum_back.model.dto.TopicDto;
 import com.construction_worker_forum_back.model.dto.UserDto;
+import com.construction_worker_forum_back.model.dto.simple.TopicSimpleDto;
+import com.construction_worker_forum_back.model.entity.Keyword;
 import com.construction_worker_forum_back.model.entity.Post;
 import com.construction_worker_forum_back.model.entity.Topic;
 import com.construction_worker_forum_back.model.entity.User;
@@ -16,11 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -339,5 +344,512 @@ public class PostServiceTest {
 
         //then
         verify(postRepository, atLeastOnce()).deletePostById(anyLong());
+    }
+
+    @Test
+    void itShouldFindPaginatedNumberOfPosts() {
+        //Given
+        Topic topic = Topic.builder()
+                .id(1L)
+                .build();
+
+        List<Post> posts = new ArrayList<>(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 1")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 2")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 3")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 4")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 5")
+                        .topic(topic)
+                        .build()
+        ));
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        List<PostDto> postsDtos = new ArrayList<>(List.of(
+                PostDto.builder()
+                        .title(posts.get(0).getTitle())
+                        .content(posts.get(0).getContent())
+                        .topic(modelMapper.map(posts.get(0).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(1).getTitle())
+                        .content(posts.get(1).getContent())
+                        .topic(modelMapper.map(posts.get(1).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(2).getTitle())
+                        .content(posts.get(2).getContent())
+                        .topic(modelMapper.map(posts.get(2).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(3).getTitle())
+                        .content(posts.get(3).getContent())
+                        .topic(modelMapper.map(posts.get(3).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(4).getTitle())
+                        .content(posts.get(4).getContent())
+                        .topic(modelMapper.map(posts.get(4).getTopic(), TopicSimpleDto.class))
+                        .build()
+        ));
+
+        given(modelMapper.map(posts.get(0), PostDto.class)).willReturn(postsDtos.get(0));
+        given(modelMapper.map(posts.get(1), PostDto.class)).willReturn(postsDtos.get(1));
+        given(modelMapper.map(posts.get(2), PostDto.class)).willReturn(postsDtos.get(2));
+        given(modelMapper.map(posts.get(3), PostDto.class)).willReturn(postsDtos.get(3));
+        given(modelMapper.map(posts.get(4), PostDto.class)).willReturn(postsDtos.get(4));
+        given(postRepository.findAllPaginatedByTopic_Id(1L, pageable)).willReturn(posts);
+
+        //When
+        var expected = postService.getListOfPostsByPageableObject(1L, pageable);
+
+        //Then
+        assertEquals(expected, postsDtos);
+        assertTrue(postsDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(posts.get(0), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(1), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(2), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(3), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(4), PostDto.class);
+        verify(postRepository, only()).findAllPaginatedByTopic_Id(1L, pageable);
+    }
+
+    @Test
+    void itShouldFindPaginatedAndFilteredByKeywordsNumberOfPosts() {
+        //Given
+        Topic topic = Topic.builder()
+                .id(1L)
+                .build();
+
+        Set<Keyword> keywords = new HashSet<>(List.of(
+            Keyword.builder()
+                    .name("test1")
+                    .build(),
+            Keyword.builder()
+                    .name("test2")
+                    .build()
+        ));
+
+        List<String> keywordsNames = keywords.stream().map(Keyword::getName).toList();
+
+        List<Post> posts = new ArrayList<>(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 1")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 2")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 3")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 4")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 5")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build()
+        ));
+
+        List<PostDto> postsDtos = new ArrayList<>(List.of(
+                PostDto.builder()
+                        .title(posts.get(0).getTitle())
+                        .content(posts.get(0).getContent())
+                        .topic(modelMapper.map(posts.get(0).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(1).getTitle())
+                        .content(posts.get(1).getContent())
+                        .topic(modelMapper.map(posts.get(1).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(2).getTitle())
+                        .content(posts.get(2).getContent())
+                        .topic(modelMapper.map(posts.get(2).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(3).getTitle())
+                        .content(posts.get(3).getContent())
+                        .topic(modelMapper.map(posts.get(3).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(4).getTitle())
+                        .content(posts.get(4).getContent())
+                        .topic(modelMapper.map(posts.get(4).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build()
+        ));
+
+        given(modelMapper.map(posts.get(0), PostDto.class)).willReturn(postsDtos.get(0));
+        given(modelMapper.map(posts.get(1), PostDto.class)).willReturn(postsDtos.get(1));
+        given(modelMapper.map(posts.get(2), PostDto.class)).willReturn(postsDtos.get(2));
+        given(modelMapper.map(posts.get(3), PostDto.class)).willReturn(postsDtos.get(3));
+        given(modelMapper.map(posts.get(4), PostDto.class)).willReturn(postsDtos.get(4));
+        given(postRepository.findAllPostsByTopicIdAndKeywords(1L, new HashSet<>(keywordsNames))).willReturn(posts);
+
+        //When
+        var expected = postService.getPaginatedAndFilteredByKeywords(1L, 5, 1, keywordsNames);
+
+        //Then
+        assertEquals(expected, postsDtos);
+        assertTrue(postsDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(posts.get(0), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(1), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(2), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(3), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(4), PostDto.class);
+        verify(postRepository, only()).findAllPostsByTopicIdAndKeywords(1L, new HashSet<>(keywordsNames));
+    }
+
+    @Test
+    void itShouldFindPaginatedAndSortedAscendingNumberOfPosts() {
+        //Given
+        Topic topic = Topic.builder()
+                .id(1L)
+                .build();
+
+        List<Post> posts = new ArrayList<>(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 1")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 2")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 3")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 4")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 5")
+                        .topic(topic)
+                        .build()
+        ));
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("title").ascending());
+
+        List<PostDto> postsDtos = new ArrayList<>(List.of(
+                PostDto.builder()
+                        .title(posts.get(0).getTitle())
+                        .content(posts.get(0).getContent())
+                        .topic(modelMapper.map(posts.get(0).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(1).getTitle())
+                        .content(posts.get(1).getContent())
+                        .topic(modelMapper.map(posts.get(1).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(2).getTitle())
+                        .content(posts.get(2).getContent())
+                        .topic(modelMapper.map(posts.get(2).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(3).getTitle())
+                        .content(posts.get(3).getContent())
+                        .topic(modelMapper.map(posts.get(3).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(4).getTitle())
+                        .content(posts.get(4).getContent())
+                        .topic(modelMapper.map(posts.get(4).getTopic(), TopicSimpleDto.class))
+                        .build()
+        ));
+
+        given(modelMapper.map(posts.get(0), PostDto.class)).willReturn(postsDtos.get(0));
+        given(modelMapper.map(posts.get(1), PostDto.class)).willReturn(postsDtos.get(1));
+        given(modelMapper.map(posts.get(2), PostDto.class)).willReturn(postsDtos.get(2));
+        given(modelMapper.map(posts.get(3), PostDto.class)).willReturn(postsDtos.get(3));
+        given(modelMapper.map(posts.get(4), PostDto.class)).willReturn(postsDtos.get(4));
+        given(postRepository.findAllPaginatedByTopic_Id(1L, pageable)).willReturn(posts);
+
+        //When
+        var expected = postService.getListOfPostsByPageableObject(1L, pageable);
+
+        //Then
+        assertEquals(expected, postsDtos);
+        assertTrue(postsDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(posts.get(0), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(1), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(2), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(3), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(4), PostDto.class);
+        verify(postRepository, only()).findAllPaginatedByTopic_Id(1L, pageable);
+    }
+
+    @Test
+    void itShouldFindPaginatedAndSortedDescendingNumberOfPosts() {
+        //Given
+        Topic topic = Topic.builder()
+                .id(1L)
+                .build();
+
+        List<Post> posts = new ArrayList<>(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 1")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 2")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 3")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 4")
+                        .topic(topic)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 5")
+                        .topic(topic)
+                        .build()
+        ));
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("title").descending());
+
+        List<PostDto> postsDtos = new ArrayList<>(List.of(
+                PostDto.builder()
+                        .title(posts.get(0).getTitle())
+                        .content(posts.get(0).getContent())
+                        .topic(modelMapper.map(posts.get(0).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(1).getTitle())
+                        .content(posts.get(1).getContent())
+                        .topic(modelMapper.map(posts.get(1).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(2).getTitle())
+                        .content(posts.get(2).getContent())
+                        .topic(modelMapper.map(posts.get(2).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(3).getTitle())
+                        .content(posts.get(3).getContent())
+                        .topic(modelMapper.map(posts.get(3).getTopic(), TopicSimpleDto.class))
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(4).getTitle())
+                        .content(posts.get(4).getContent())
+                        .topic(modelMapper.map(posts.get(4).getTopic(), TopicSimpleDto.class))
+                        .build()
+        ));
+
+        given(modelMapper.map(posts.get(0), PostDto.class)).willReturn(postsDtos.get(0));
+        given(modelMapper.map(posts.get(1), PostDto.class)).willReturn(postsDtos.get(1));
+        given(modelMapper.map(posts.get(2), PostDto.class)).willReturn(postsDtos.get(2));
+        given(modelMapper.map(posts.get(3), PostDto.class)).willReturn(postsDtos.get(3));
+        given(modelMapper.map(posts.get(4), PostDto.class)).willReturn(postsDtos.get(4));
+        given(postRepository.findAllPaginatedByTopic_Id(1L, pageable)).willReturn(posts);
+
+        //When
+        var expected = postService.getListOfPostsByPageableObject(1L, pageable);
+
+        //Then
+        assertEquals(expected, postsDtos);
+        assertTrue(postsDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(posts.get(0), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(1), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(2), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(3), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(4), PostDto.class);
+        verify(postRepository, only()).findAllPaginatedByTopic_Id(1L, pageable);
+    }
+
+    @Test
+    void itShouldFindPaginatedAndSortedAscendingAndFilteredNumberOfPosts() {
+        //Given
+        Topic topic = Topic.builder()
+                .id(1L)
+                .build();
+
+        Set<Keyword> keywords = new HashSet<>(List.of(
+                Keyword.builder()
+                        .name("test1")
+                        .build(),
+                Keyword.builder()
+                        .name("test2")
+                        .build()
+        ));
+
+        List<String> keywordsNames = keywords.stream().map(Keyword::getName).toList();
+
+        List<Post> posts = new ArrayList<>(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 1")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 2")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 3")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 4")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 5")
+                        .topic(topic)
+                        .keywords(keywords)
+                        .build()
+        ));
+
+        List<PostDto> postsDtos = new ArrayList<>(List.of(
+                PostDto.builder()
+                        .title(posts.get(0).getTitle())
+                        .content(posts.get(0).getContent())
+                        .topic(modelMapper.map(posts.get(0).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(1).getTitle())
+                        .content(posts.get(1).getContent())
+                        .topic(modelMapper.map(posts.get(1).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(2).getTitle())
+                        .content(posts.get(2).getContent())
+                        .topic(modelMapper.map(posts.get(2).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(3).getTitle())
+                        .content(posts.get(3).getContent())
+                        .topic(modelMapper.map(posts.get(3).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build(),
+                PostDto.builder()
+                        .title(posts.get(4).getTitle())
+                        .content(posts.get(4).getContent())
+                        .topic(modelMapper.map(posts.get(4).getTopic(), TopicSimpleDto.class))
+                        .keywords(keywords)
+                        .build()
+        ));
+
+        Sort sortTopicsAscending = Sort.by(Sort.Direction.ASC, "content");
+
+        given(modelMapper.map(posts.get(0), PostDto.class)).willReturn(postsDtos.get(0));
+        given(modelMapper.map(posts.get(1), PostDto.class)).willReturn(postsDtos.get(1));
+        given(modelMapper.map(posts.get(2), PostDto.class)).willReturn(postsDtos.get(2));
+        given(modelMapper.map(posts.get(3), PostDto.class)).willReturn(postsDtos.get(3));
+        given(modelMapper.map(posts.get(4), PostDto.class)).willReturn(postsDtos.get(4));
+        given(postRepository.findAllSortedPostsByTopicIdAndKeywords(1L, new HashSet<>(keywordsNames), sortTopicsAscending)).willReturn(posts);
+
+        //When
+        var expected = postService.getPaginatedAndSortedAndFilteredPosts(1L, 5, 1, "content.asc", keywordsNames);
+
+        //Then
+        assertEquals(expected, postsDtos);
+        assertTrue(postsDtos.size() > 0);
+        assertNotNull(expected);
+
+        verify(modelMapper, atLeastOnce()).map(posts.get(0), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(1), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(2), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(3), PostDto.class);
+        verify(modelMapper, atLeastOnce()).map(posts.get(4), PostDto.class);
+        verify(postRepository, only()).findAllSortedPostsByTopicIdAndKeywords(1L, new HashSet<>(keywordsNames), sortTopicsAscending);
+    }
+
+    @Test
+    void itShouldPaginatedList() {
+        //Given
+        List<Post> posts = new ArrayList<>(List.of(
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 1")
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 2")
+                        .build(),
+                Post.builder()
+                        .title("foo1")
+                        .content("test description 3")
+                        .build()
+        ));
+
+        //When
+        var expected = postService.getPage(posts, 1, 3);
+
+        //Then
+        assertEquals(expected, posts);
+        assertEquals(3, posts.size());
+        assertNotNull(expected);
     }
 }

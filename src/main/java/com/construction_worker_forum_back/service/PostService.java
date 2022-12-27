@@ -35,6 +35,7 @@ import java.util.*;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -113,6 +114,7 @@ public class PostService {
     }
 
     @Transactional
+    @CachePut(value = "pageCache", key = "{postRequestDto}")
     public PostDto createPost(PostRequestDto postRequestDto) {
         Post postToSave = modelMapper.map(postRequestDto, Post.class);
         UserDto userById = userService

@@ -83,7 +83,7 @@ public class CommentProductivityServiceTest extends TestcontainersConfig {
                     .build();
 
             //when
-            commentService.createComment(commentRequestDto);
+            commentService.createComment(commentRequestDto, null);
         }
 
         //then

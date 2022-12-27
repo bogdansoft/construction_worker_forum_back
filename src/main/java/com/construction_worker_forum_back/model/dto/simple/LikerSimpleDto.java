@@ -1,8 +1,8 @@
 package com.construction_worker_forum_back.model.dto.simple;
 
 import lombok.*;
+import org.springframework.cache.annotation.Cacheable;
 
-import javax.persistence.Cacheable;
 import java.io.Serial;
 import java.io.Serializable;
 

@@ -143,7 +143,64 @@ class CommentControllerTests extends TestcontainersConfig {
         //then
         response.andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
 
+    @Test
+    void givenAuthenticatedUser_whenCreatingSubComment_thenReturnStatusCreated() throws Exception {
+        //given
+        Comment primaryComment = Comment.builder()
+                .user(savedUser)
+                .post(savedPost)
+                .content("nice post")
+                .build();
+        Comment savedComment = commentRepository.save(primaryComment);
+        Long primaryCommentId = savedComment.getId();
+
+        CommentRequestDto subComment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        //when
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/comment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetails))
+                .param("commentForReplyId", String.valueOf(primaryCommentId))
+                .content(objectMapper.writeValueAsString(subComment)));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    void givenUnauthenticatedUser_whenCreatingSubComment_thenReturnStatusUnauthorized() throws Exception {
+        //given
+        Comment primaryComment = Comment.builder()
+                .user(savedUser)
+                .post(savedPost)
+                .content("nice post")
+                .build();
+        Comment savedComment = commentRepository.save(primaryComment);
+        Long primaryCommentId = savedComment.getId();
+
+        CommentRequestDto subComment = CommentRequestDto.builder()
+                .postId(savedPost.getId())
+                .userId(savedUser.getId())
+                .content("Nice post")
+                .build();
+
+        //when
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/comment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("commentForReplyId", String.valueOf(primaryCommentId))
+                .content(objectMapper.writeValueAsString(subComment)));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

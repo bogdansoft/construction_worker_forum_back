@@ -38,6 +38,12 @@ public class CommentController {
         return commentService.getCommentsByUsername(username);
     }
 
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/all_by_parent_id/{parentId}")
+    public List<CommentDto> getAllCommentsByParentId(@PathVariable Long parentId) {
+        return commentService.getCommentsOfParentComment(parentId);
+    }
+
     @GetMapping("/{id}")
     CommentDto getComment(@PathVariable Long id) {
         return commentService.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -50,9 +56,8 @@ public class CommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    CommentDto createComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
-        log.info(String.valueOf(commentRequestDto));
-        return commentService.createComment(commentRequestDto);
+    CommentDto createComment(@Valid @RequestBody CommentRequestDto commentRequestDto, @RequestParam(required = false) Long commentForReplyId) {
+        return commentService.createComment(commentRequestDto, commentForReplyId);
     }
 
     @PostMapping("/like")
