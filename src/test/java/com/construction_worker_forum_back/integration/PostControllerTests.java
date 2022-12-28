@@ -200,38 +200,6 @@ class PostControllerTests extends TestcontainersConfig {
     }
 
     @Test
-    void givenAuthorizedUser_WhenLikingPost_ThenReturnCreatedAndPostDto() throws Exception {
-        //given
-        PostRequestDto post = PostRequestDto.builder()
-                .userId(savedUser.getId())
-                .topicId(savedTopic.getId())
-                .content("New post")
-                .title("Title of new post")
-                .build();
-        Post postFromDb = postRepository.save(modelMapper.map(post, Post.class));
-
-        User user = User.builder()
-                .username("toot")
-                .password("toot1234")
-                .email("toot@test.com")
-                .firstName("Doe")
-                .lastName("John")
-                .build();
-        User userToLike = userRepository.save(user);
-        UserDetailsImpl userDetailsLiker = new UserDetailsImpl(userToLike);
-
-        //when + then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/post/like")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("postId", String.valueOf(postFromDb.getId()))
-                        .param("userId", String.valueOf(userToLike.getId()))
-                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsLiker)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.likers.length()").value(1))
-                .andExpect(jsonPath("$.likers[0].username").value(userToLike.getUsername()));
-    }
-
-    @Test
     void givenAuthorizedUser_WhenFollowingPost_ThenReturnCreatedAndPostDto() throws Exception {
         //given
         PostRequestDto post = PostRequestDto.builder()
@@ -261,41 +229,6 @@ class PostControllerTests extends TestcontainersConfig {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.followers.length()").value(1))
                 .andExpect(jsonPath("$.followers[0].username").value(userToFollow.getUsername()));
-    }
-
-    @Test
-    void givenAuthorizedUserAlreadyLikedAPost_whenDislikingPost_thenReturnSuccess() throws Exception {
-        PostRequestDto post = PostRequestDto.builder()
-                .userId(savedUser.getId())
-                .topicId(savedTopic.getId())
-                .content("New post")
-                .title("Title of new post")
-                .build();
-        Post postFromDb = postRepository.save(modelMapper.map(post, Post.class));
-
-        User user = User.builder()
-                .username("toot")
-                .password("toot1234")
-                .email("toot@test.com")
-                .firstName("Doe")
-                .lastName("John")
-                .build();
-        User userToLike = userRepository.save(user);
-        UserDetailsImpl userDetailsLiker = new UserDetailsImpl(userToLike);
-
-        //when + then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/post/like")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("postId", String.valueOf(postFromDb.getId()))
-                .param("userId", String.valueOf(userToLike.getId()))
-                .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsLiker)));
-
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/post/like")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("postId", String.valueOf(postFromDb.getId()))
-                        .param("userId", String.valueOf(userToLike.getId()))
-                        .header("Authorization", "Bearer " + tokenUtil.generateToken(userDetailsLiker)))
-                .andExpect(jsonPath("$.status").value("Post unliked successfully!"));
     }
 
     @Test

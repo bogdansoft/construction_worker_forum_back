@@ -282,25 +282,6 @@ public class PostServiceTest {
     }
 
     @Test
-    void itShouldLikePost() {
-        //given
-        Post post = new Post();
-        post.setId(1L);
-        User user = new User();
-        user.setId(1L);
-        post.setUser(user);
-        given(postRepository.findById(post.getId())).willReturn(Optional.of(post));
-        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-
-        //when
-        postService.likePost(post.getId(), user.getId());
-
-        //then
-        verify(postRepository, atLeastOnce()).findById(anyLong());
-        verify(userRepository, atLeastOnce()).findById(anyLong());
-    }
-
-    @Test
     void itShouldFollowPost() {
         //given
         Post post = new Post();
