@@ -1,6 +1,7 @@
 package com.construction_worker_forum_back.service;
 
 import com.construction_worker_forum_back.client.NotificationClient;
+import com.construction_worker_forum_back.config.mapper.ModelMapStructConfig;
 import com.construction_worker_forum_back.model.Notification;
 import com.construction_worker_forum_back.model.dto.PostDto;
 import com.construction_worker_forum_back.model.dto.PostRequestDto;
@@ -42,6 +43,7 @@ public class PostService {
     private final UserService userService;
     private final TopicService topicService;
     private final ModelMapper modelMapper;
+    private final ModelMapStructConfig mapStructConfig;
     private final NotificationClient notificationClient;
 
     public List<PostDto> getAllPosts() {
@@ -102,7 +104,8 @@ public class PostService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
                 .getFollowers()
                 .stream()
-                .map(user -> modelMapper.map(user, FollowerSimpleDto.class))
+                // .map(user -> modelMapper.map(user, FollowerSimpleDto.class))
+                .map(mapStructConfig::toFollowerSimpleDto)
                 .toList();
     }
 
@@ -213,7 +216,6 @@ public class PostService {
         TopicDto topicById = topicService
                 .findTopicById(postRequestDto.getTopicId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
 
         EntityUpdateUtil.setEntityLastEditor(userRepository, postFromDb, postRequestDto.getUserId());
         modelMapper.map(postRequestDto, postFromDb);
